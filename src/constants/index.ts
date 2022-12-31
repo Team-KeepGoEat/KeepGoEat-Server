@@ -1,2 +1,2 @@
-export { default as responseMessage } from "./responseMessage";
-export { default as statusCode } from "./statusCode";
+export { default as rm } from "./responseMessage";
+export { default as sc } from "./statusCode";

@@ -1,1 +1,1 @@
-export {  } from "";
+export { default as goalController } from "./goalController";

@@ -27,5 +27,8 @@ export default {
   CREATE_IMAGE_SUCCESS: "이미지 저장 성공",
   CREATE_IMAGE_FAIL: "이미지 저장 실패",
 
+  // 목표
+  GET_GOALS_SUCCESS_FOR_MYPAGE: "마이페이지 뷰 조회 성공"
+
 
 };
