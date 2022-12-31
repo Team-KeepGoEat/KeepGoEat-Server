@@ -5,14 +5,14 @@ import { goalService } from "../service";
 
 
 const getGoalsByUserId = async (req:Request, res:Response) => {
-  const userId = req.user.id;
+  const { userId } = req.params;
   if (!userId) {
     return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
   }
 
-  const data = goalService.getGoalsByUserId(userId);
+  const foundGoals = await goalService.getGoalsByUserId(+userId);
 
-  return res.status(sc.OK).send(success(sc.OK, rm.GET_GOALS_SUCCESS_FOR_MYPAGE));
+  return res.status(sc.OK).send(success(sc.OK, rm.GET_GOALS_SUCCESS_FOR_MYPAGE, foundGoals));
 
 };
 

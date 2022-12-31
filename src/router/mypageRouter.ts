@@ -1,7 +1,8 @@
 import { Router } from "express";
-import router from ".";
 import { goalController } from "../controller";
 
-router.get("/", goalController.getGoalsByUserId);
+const router:Router = Router();
+
+router.get("/:userId", goalController.getGoalsByUserId);
 
 export default router;
