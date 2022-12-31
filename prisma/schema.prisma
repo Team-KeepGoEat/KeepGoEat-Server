@@ -11,3 +11,45 @@ model test {
   id   Int     @id @default(autoincrement())
   name String? @db.VarChar(100)
 }
+
+model Cheering_Message {
+  cheering_message_id Int    @id @default(autoincrement())
+  cheering_message    String @db.VarChar(100)
+}
+
+model Daily_Achieved_History {
+  daily_achieved_id Int      @id @default(autoincrement())
+  achieved_at       DateTime
+  goal_id           Int
+  Goal              Goal     @relation(fields: [goal_id], references: [goal_id], onDelete: NoAction, onUpdate: NoAction, map: "goal_id")
+}
+
+model Goal {
+  goal_id                  Int                        @id @default(autoincrement())
+  content                  String                     @db.VarChar(200)
+  is_more                  Boolean
+  is_ongoing               Boolean                    @default(true)
+  total_count              Int                        @default(0)
+  started_at               DateTime                   @default(now())
+  kept_at                  DateTime?
+  is_achieved              Boolean                    @default(false)
+  writer_id                Int
+  Daily_Achieved_History   Daily_Achieved_History[]
+  User                     User                       @relation(fields: [writer_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "writer_id")
+  Monthly_Achieved_History Monthly_Achieved_History[]
+}
+
+model Monthly_Achieved_History {
+  monthly_achieved_history_id Int       @id @default(autoincrement())
+  monthly_achieved_at         DateTime?
+  monthly_count               Int
+  goal_id                     Int?
+  Goal                        Goal?     @relation(fields: [goal_id], references: [goal_id], onDelete: NoAction, onUpdate: NoAction, map: "Monthly_Achieved_History_Goal_null_fk")
+}
+
+model User {
+  user_id       Int    @id(map: "table_name_pkey") @default(autoincrement())
+  kakao_id      String @db.VarChar(100)
+  platform_type String @db.VarChar(100)
+  Goal          Goal[]
+}
