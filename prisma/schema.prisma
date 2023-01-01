@@ -41,7 +41,7 @@ model Goal {
 
 model Monthly_Achieved_History {
   monthly_achieved_history_id Int       @id @default(autoincrement())
-  monthly_achieved_at         DateTime?
+  monthly_achieved_at         DateTime? @db.Date
   monthly_count               Int
   goal_id                     Int?
   Goal                        Goal?     @relation(fields: [goal_id], references: [goal_id], onDelete: NoAction, onUpdate: NoAction, map: "Monthly_Achieved_History_Goal_null_fk")
@@ -49,7 +49,7 @@ model Monthly_Achieved_History {
 
 model User {
   user_id       Int    @id(map: "table_name_pkey") @default(autoincrement())
-  kakao_id      String @db.VarChar(100)
+  email         String @db.VarChar(100)
   platform_type String @db.VarChar(100)
   Goal          Goal[]
 }
