@@ -11,7 +11,7 @@ const getGoalsByUserId = async (userId: number) => {
   return allGoals;
 };
 
-const getGoalByUserId = async (goalId: number) => {
+const getGoalByGoalId = async (goalId: number) => {
   const goal = await prisma.goal.findUnique({
     where: {
       goalId: goalId
@@ -23,7 +23,7 @@ const getGoalByUserId = async (goalId: number) => {
 
 const goalService = {
   getGoalsByUserId,
-  getGoalByUserId
+  getGoalByGoalId
 };
 
 export default goalService;
