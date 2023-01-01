@@ -16,8 +16,18 @@ const getGoalsByUserId = async (req:Request, res:Response) => {
 
 };
 
+// 목표 추가
+// const createGoal = async (req: Request, res: Response) => {
+//   const { goalContent } = req.body;
+
+//   const data = await GoalService.createGoal(goalContent);
+
+
+// }
+
 const goalController = {
-  getGoalsByUserId
+  getGoalsByUserId,
+  // createGoal,
 };
 
 export default goalController;
