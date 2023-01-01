@@ -6,35 +6,35 @@ import { userService } from "../service";
 import jwt from "../modules/jwt";
 
 const auth = async(req: Request, res: Response) => {
-  const { accessToken, platform } = req.body;
+  const { platformAccessToken, platform } = req.body;
 
-  if ( !accessToken || !platform ) {
+  if ( !platformAccessToken || !platform ) {
     return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
   }
 
   try {
     // accessToken으로 카카오에서 유저 정보 받아옴
-    let user;
+    let platformUser;
     switch (platform) {
       case "KAKAO": 
-        user = await kakao(accessToken as string);
-        if (!user) {
+        platformUser = await kakao(platformAccessToken as string);
+        if (!platformUser) {
           console.log("kakaoAccount를 받아오는 과정에서 에러 발생")
         }
         break;
     }
 
-    if (!user) {
+    if (!platformUser) {
       res.send(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.UNAUTHORIZED_PLATFORM_USER));
     }
 
-    const existingUser = await userService.getUserByPlatformId(user.email, platform);
+    const existingUser = await userService.getUserByPlatformId(platformUser.email, platform);
 
     // 이미 가입한 유정일 경우
     // 과정이 너무 비슷하니 빼도 메소드로 빼도 ㄱㅊ을지도
     if (existingUser) {
       const { refreshToken } = jwt.createRefreshToken();
-      const { accessToken } = jwt.signup(+existingUser.id, existingUser.email);
+      const { accessToken } = jwt.signup(+existingUser.userId, existingUser.email);
       const signinResult = {
         type: "login",
         email: existingUser.email, // 유저 테이블에 email 추가
@@ -44,9 +44,9 @@ const auth = async(req: Request, res: Response) => {
       return res.status(sc.OK).send(success(sc.OK, rm.SIGNIN_SUCCESS, signinResult))
     }
 
-    const newUser = await userService.createUser();
+    const newUser = await userService.createUser(platformUser.email, platform);
     const { refreshToken } = jwt.createRefreshToken();
-    const { accessToken } = jwt.signup(existingUser);
+    const { accessToken } = jwt.signup(newUser.userId, newUser.email);
     
     const signupResult = {
       type: "login",
