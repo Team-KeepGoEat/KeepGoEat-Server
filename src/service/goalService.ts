@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 const getGoalsByUserId = async (userId: number) => {
   const allGoals = await prisma.goal.findMany({
     where: {
-      writer_id: userId
+      writerId: userId,
     }
   });
 
@@ -14,7 +14,7 @@ const getGoalsByUserId = async (userId: number) => {
 const getGoalByUserId = async (goalId: number) => {
   const goal = await prisma.goal.findUnique({
     where: {
-      goal_id: goalId
+      goalId,
     }
   });
 
@@ -22,18 +22,13 @@ const getGoalByUserId = async (goalId: number) => {
 };
 
 // 목표 추가
-const createGoal = async (goalId: number, goalContent: string, isMore: boolean, isOngoing: boolean, writerId: number, totalCount: number, startedAt: string, keptAt: string, isAchieved: boolean) => {
+const createGoal = async (goalContent: string, isMore: boolean, startedAt: string) => {
   const data = await prisma.goal.create({
     data: {
-      goalId,
       goalContent,
       isMore,
-      isOngoing,
-      writerId,
-      totalCount,
+      writerId: 1,
       startedAt,
-      keptAt,
-      isAchieved,
     },
   });
 
