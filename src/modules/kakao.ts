@@ -8,7 +8,7 @@ const kakao = async(accessToken: string) => {
   try {
     const kakaoUser = await axios({
       method: "GET",
-      url: "카카오에등록한url",
+      url: "https://kapi.kakao.com/v2/user/me",
       headers: {
         Authorization: `Bearer ${accessToken}`
       },

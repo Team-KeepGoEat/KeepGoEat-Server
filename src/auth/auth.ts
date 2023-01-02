@@ -25,12 +25,12 @@ const auth = async(req: Request, res: Response) => {
     }
 
     if (!platformUser) {
-      res.send(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.UNAUTHORIZED_PLATFORM_USER));
+      return res.send(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.UNAUTHORIZED_PLATFORM_USER));
     }
 
     const existingUser = await userService.getUserByPlatformId(platformUser.email, platform);
 
-    // 이미 가입한 유정일 경우
+    // 이미 가입한 유저일 경우
     // 과정이 너무 비슷하니 빼도 메소드로 빼도 ㄱㅊ을지도
     if (existingUser) {
       const { refreshToken } = jwt.createRefreshToken();
@@ -50,16 +50,16 @@ const auth = async(req: Request, res: Response) => {
     
     const signupResult = {
       type: "login",
-        email: newUser.email, // 유저 테이블에 email 추가
-        accessToken: accessToken,
-        refreshToken: refreshToken
+      email: newUser.email, // 유저 테이블에 email 추가
+      accessToken: accessToken,
+      refreshToken: refreshToken
     };
     
     return res.status(sc.CREATED).send(success(sc.CREATED, rm.SIGNUP_SUCCESS, signupResult));
 
   } catch (error) {
     console.log("소셜 로그인 및 회원가입 에러 ", error);
-    res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+    return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
   }
 
 };

@@ -1,7 +1,7 @@
-const jwt = require("jsonwebtoken");
+import jwt from "jsonwebtoken";
 import { accessTokenOption, refreshTokenOption} from "../constants/jwtTokenOptions";
 
-const secretKey = process.env.JWT_ALGO
+const secretOrPrivateKey = process.env.JWT_SECRET as string;
 
 const signup = (userId: number, email:string) => {
   const payload = {
@@ -10,7 +10,7 @@ const signup = (userId: number, email:string) => {
   };
 
   const result = {
-    accessToken: jwt.sign(payload, secretKey, accessTokenOption)
+    accessToken: jwt.sign(payload, secretOrPrivateKey, accessTokenOption)
   };
 
   return result
@@ -18,8 +18,9 @@ const signup = (userId: number, email:string) => {
 
 
 const createRefreshToken = () => {
+
   const result = {
-    refreshToken: jwt.sign({}, secretKey, refreshTokenOption)
+    refreshToken: jwt.sign({}, secretOrPrivateKey, refreshTokenOption)
   };
 
   return result; 
