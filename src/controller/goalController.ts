@@ -29,7 +29,7 @@ const createGoal = async (req: Request, res: Response) => {
   if (!data) {
 		return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
 	} 
-	return res.status(200).json({ status: 200, message: "목표 추가에 성공했습니다.", data });
+	return res.status(sc.OK).send(success(sc.OK, rm.CREATE_GOAL_SUCCESS, data));
 }
 
 const goalController = {
