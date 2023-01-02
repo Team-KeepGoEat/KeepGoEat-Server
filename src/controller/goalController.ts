@@ -26,9 +26,8 @@ const createGoal = async (req: Request, res: Response) => {
   const createdAt = dayjs() as unknown;
   const data = await goalService.createGoal(goalContent, isMore, createdAt as string);
 
-  // 수정하기!
   if (!data) {
-		return res.status(400).json({ status: 400, message: "탈퇴했거나 가입하지 않은 유저입니다." });
+		return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
 	} 
 	return res.status(200).json({ status: 200, message: "목표 추가에 성공했습니다.", data });
 }
