@@ -1,9 +1,8 @@
 import axios from "axios";
-import { rm, sc } from "../constants"
-import { fail, success } from "../constants/response";
+import platformToken from "../constants/platformToken";
 
-const kakao = async(accessToken: string) => {
-  console.log("accessToken 카카오에 검증 시작")
+const kakao = async (accessToken: string) => {
+  console.log("########## accessToken 카카오에 검증 시작 ##########")
   
   try {
     const kakaoUser = await axios({
@@ -16,8 +15,12 @@ const kakao = async(accessToken: string) => {
 
     const kakaoAccount= kakaoUser.data.kakao_account;
 
-    // kakaoAccount 못찾아왔을 때 분기처리 로직 필요함
-    console.log("kakao에서 받아온 카카오 정보 ",kakaoAccount);
+    if (!kakaoAccount.is_email_valid == !kakaoAccount.is_email_verified) {
+      console.log("########## 해당 카카오 계정의 이메일에 문제가 있음 ########## ")
+      return platformToken.INVALID_PLATFORM_USER;
+    }
+
+    console.log("########## kakao에서 받아온 카카오 정보 ", kakaoAccount , " ##########");
     
     return kakaoAccount;
 

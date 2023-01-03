@@ -48,8 +48,9 @@ model Monthly_Achieved_History {
 }
 
 model User {
-  userId       Int    @id(map: "table_name_pkey") @default(autoincrement())
-  email        String @db.VarChar(100)
-  platformType String @db.VarChar(100)
+  userId       Int     @id(map: "table_name_pkey") @default(autoincrement())
+  email        String  @db.VarChar(100)
+  platformType String  @db.VarChar(100)
+  refreshToken String? @db.VarChar(500)
   Goal         Goal[]
 }

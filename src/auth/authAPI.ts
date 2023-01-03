@@ -4,8 +4,9 @@ import { fail, success } from "../constants/response";
 import kakao from "../modules/kakao";
 import { userService } from "../service";
 import jwt from "../modules/jwt";
+import platformToken from "../constants/platformToken";
 
-const auth = async(req: Request, res: Response) => {
+const auth = async (req: Request, res: Response) => {
   const { platformAccessToken, platform } = req.body;
 
   if ( !platformAccessToken || !platform ) {
@@ -15,17 +16,19 @@ const auth = async(req: Request, res: Response) => {
   try {
     // accessToken으로 카카오에서 유저 정보 받아옴
     let platformUser;
-    switch (platform) {
+    switch (platform) { 
       case "KAKAO": 
         platformUser = await kakao(platformAccessToken as string);
-        if (!platformUser) {
-          console.log("kakaoAccount를 받아오는 과정에서 에러 발생")
+        
+        if (platformUser === platformToken.INVALID_PLATFORM_USER) {
+          return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.UNAUTHORIZED_PLATFORM_USER));
         }
         break;
     }
 
     if (!platformUser) {
-      return res.send(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.UNAUTHORIZED_PLATFORM_USER));
+      console.log("########## socialAccount를 받아오지 못함 ##########")
+      return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.UNAUTHORIZED_PLATFORM_USER));
     }
 
     const existingUser = await userService.getUserByPlatformId(platformUser.email, platform);
@@ -44,8 +47,8 @@ const auth = async(req: Request, res: Response) => {
       return res.status(sc.OK).send(success(sc.OK, rm.SIGNIN_SUCCESS, signinResult))
     }
 
-    const newUser = await userService.createUser(platformUser.email, platform);
     const { refreshToken } = jwt.createRefreshToken();
+    const newUser = await userService.createUser(platformUser.email, platform, refreshToken);
     const { accessToken } = jwt.signup(newUser.userId, newUser.email);
     
     const signupResult = {
