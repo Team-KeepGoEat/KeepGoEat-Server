@@ -36,7 +36,7 @@ const auth = async(req: Request, res: Response) => {
       const { refreshToken } = jwt.createRefreshToken();
       const { accessToken } = jwt.signup(+existingUser.userId, existingUser.email);
       const signinResult = {
-        type: "login",
+        type: "signin",
         email: existingUser.email, // 유저 테이블에 email 추가
         accessToken: accessToken,
         refreshToken: refreshToken
@@ -49,7 +49,7 @@ const auth = async(req: Request, res: Response) => {
     const { accessToken } = jwt.signup(newUser.userId, newUser.email);
     
     const signupResult = {
-      type: "login",
+      type: "signup",
       email: newUser.email, // 유저 테이블에 email 추가
       accessToken: accessToken,
       refreshToken: refreshToken

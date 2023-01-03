@@ -12,6 +12,16 @@ const getUserByPlatformId = async(userPlatformId: string, platform: string) => {
   return foundUser;
 };
 
+const getUserByUserId = async(userId: number) => {
+  const foundUser = await prisma.user.findUnique({
+    where: {
+      userId
+    }
+  });
+
+  return foundUser;
+};
+
 const createUser = async(email: string, platform: string) => {
   const newUser = await prisma.user.create({
     data: {
@@ -25,7 +35,8 @@ const createUser = async(email: string, platform: string) => {
 
 const userService = {
   getUserByPlatformId,
-  createUser
+  createUser,
+  getUserByUserId
 };
 
 export default userService;
