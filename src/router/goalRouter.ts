@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { goalController } from "../controller";
-import auth from "../auth/authAPI";
+import auth from "../middlewares/auth";
 
 const router: Router = Router();
 
