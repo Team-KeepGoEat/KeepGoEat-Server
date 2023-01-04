@@ -37,10 +37,21 @@ const createGoal = async (goalContent: string, isMore: boolean, startedAt:string
   return { goalId };
 };
 
+// 목표 삭제
+const deleteGoal = async (goalId: number) => {
+  await prisma.goal.delete({
+    where: {
+      goalId,
+    },
+  })
+  return goalId;
+};
+
 const goalService = {
   getGoalsByUserId,
   createGoal,
-  getGoalByGoalId
+  deleteGoal,
+  getGoalByGoalId,
 };
 
 export default goalService;

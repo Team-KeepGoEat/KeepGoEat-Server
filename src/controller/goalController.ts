@@ -35,11 +35,20 @@ const createGoal = async (req: Request, res: Response) => {
 
     return res.status(sc.OK).send(success(sc.OK, rm.CREATE_GOAL_SUCCESS, data));
   } catch (error) {
-    console.log(error);
     return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR)); // 서버 내부 에러
   }
 }
 
+// 목표 삭제
+const deleteGoal = async (req: Request, res: Response) => {
+  try {
+    const { goalId } = req.params;
+    const deletedGoalId = await goalService.deleteGoal(+goalId);
+    return res.status(sc.OK).send(success(sc.OK, rm.DELETE_GOAL_SUCCESS, { "goalId": deletedGoalId }));
+  } catch (error) {
+    return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR)); // 서버 내부 에러
+  }
+};
 
 const getHistoryByGoalId = async(req:Request, res:Response) => {
   // middleware로 유저 검증하는 로직도 필요함
@@ -74,6 +83,7 @@ const getHistoryByGoalId = async(req:Request, res:Response) => {
 const goalController = {
   getGoalsByUserId,
   createGoal,
+  deleteGoal,
   getHistoryByGoalId
 };
 
