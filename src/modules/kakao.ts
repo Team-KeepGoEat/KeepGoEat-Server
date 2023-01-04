@@ -15,10 +15,12 @@ const kakao = async (accessToken: string) => {
 
     const kakaoAccount= kakaoUser.data.kakao_account;
 
+    /*
     if (!kakaoAccount.is_email_valid == !kakaoAccount.is_email_verified) {
       console.log("########## 해당 카카오 계정의 이메일에 문제가 있음 ########## ")
       return platformToken.INVALID_PLATFORM_USER;
     }
+    */
 
     console.log("########## kakao에서 받아온 카카오 정보 ", kakaoAccount , " ##########");
     

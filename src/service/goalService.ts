@@ -40,9 +40,37 @@ const getGoalByGoalId = async (goalId: number) => {
   return goal;
 };
 
+// 목표 추가
+const createGoal = async (goalContent: string, isMore: boolean, startedAt:string) => {
+  const data = await prisma.goal.create({
+    data: {
+      goalContent,
+      isMore,
+      writerId: 1,
+      startedAt,
+    },
+  });
+
+  const goalId = data.goalId
+
+  return { goalId };
+};
+
+// 목표 삭제
+const deleteGoal = async (goalId: number) => {
+  await prisma.goal.delete({
+    where: {
+      goalId,
+    },
+  })
+  return goalId;
+};
+
 const goalService = {
   getGoalsForMypage,
-  getGoalByGoalId
+  getGoalByGoalId,
+  createGoal,
+  deleteGoal,
 };
 
 export default goalService;
