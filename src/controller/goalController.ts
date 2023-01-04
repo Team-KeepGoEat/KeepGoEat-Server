@@ -1,4 +1,4 @@
-import e, { Request, Response } from "express";
+import { Request, Response } from "express";
 import { sc, rm } from "../constants";
 import { fail, success } from "../constants/response";
 import { goalService } from "../service";
@@ -8,15 +8,32 @@ import { monthlyAchievedHistoryService } from "../service";
 import date from "../modules/date"
 import boxCounter from "../modules/boxCounter"
 
-const getGoalsByUserId = async (req:Request, res:Response) => {
-  const { userId } = req.params;
-  if (!userId) {
+const sortType = {
+  ALL: "all",
+  MORE: "more",
+  LESS: "less"
+};
+
+const getMypageByUserId = async (req:Request, res:Response) => {
+  const userId = req.user.userId;
+
+  console.log("user ", userId)
+  const sort = req.query.sort as string;
+  
+  if (!userId || !sort) {
     return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
   }
 
-  const foundGoals = await goalService.getGoalsByUserId(+userId);
+  if (sort !== sortType.ALL && sort !== sortType.MORE && sort !== sortType.LESS) {
+    console.log("sort ", sort);
+    console.log("sortType.MORE ", sortType.MORE);
+    console.log("more" !== sortType.MORE);
+    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+  }
+  
+  const foundGoals = await goalService.getGoalsForMypage(+userId, sort as string);
 
-  return res.status(sc.OK).send(success(sc.OK, rm.GET_GOALS_SUCCESS_FOR_MYPAGE, foundGoals));
+  return res.status(sc.OK).send(success(sc.OK, rm.GET_GOALS_SUCCESS_FOR_MYPAGE, { "goals": foundGoals, "goalCount": foundGoals.length }));
 
 };
 
@@ -67,7 +84,6 @@ const getHistoryByGoalId = async(req:Request, res:Response) => {
   const lastMonthCount = await monthlyAchievedHistoryService.getMonthlyHistory(date.getLastMonth());
   
   const data = {
-    "writerId": foundGoal.writerId,
     "goalId": foundGoal.goalId,
     "isMore": foundGoal.isMore,
     "thisMonthCount": thisMonthCount,
@@ -81,7 +97,7 @@ const getHistoryByGoalId = async(req:Request, res:Response) => {
 }
 
 const goalController = {
-  getGoalsByUserId,
+  getMypageByUserId,
   createGoal,
   deleteGoal,
   getHistoryByGoalId

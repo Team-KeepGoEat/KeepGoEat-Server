@@ -31,7 +31,7 @@ model Goal {
   isOngoing                Boolean                    @default(true)
   totalCount               Int                        @default(0)
   startedAt                DateTime                   @default(now())
-  kept_at                  DateTime?
+  keptAt                   DateTime?
   isAchieved               Boolean                    @default(false)
   writerId                 Int
   Daily_Achieved_History   Daily_Achieved_History[]
