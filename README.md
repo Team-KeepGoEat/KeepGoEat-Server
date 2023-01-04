@@ -63,7 +63,56 @@ chore - Other changes that don't modify src or test files
 ### console 개체의 메서드에 대한 호출 또는 할당을 불허
 
 ## 🥗 branch 전략
+0. dev가 default 브랜치입니다
+필요시 stg나 prod 브랜치를 추가로 생성합니다
+
+1. 기능별로 feature/기능이름 으로 브랜치를 dev에서 딴다
+    - dev로 체크아웃 한 뒤에 브랜치를 따야됨
+    - dev는 항상 풀을 받아놓은 상태
+    - 브랜치를 따기 전에는 항상 dev에 풀을 받아놓아야 함
+    
+    ```
+    git checkout dev
+    
+    git pull origin dev --no-rebase
+    
+    git branch feature/onboarding
+    ```
+    
+2. 해당 기능 브랜치에서 기능 개발을 함
+
+3. 개발 완료 후 해당 remote 기능 브랜치에 push
+    ```
+    git push origin feature/onboarding
+    ```
+    
+4. pr 날린 뒤 문제 없으면 dev에 merge함
 
 ## 🥗 foldering
+root-dir
+  ㄴprisma
+  ㄴsrc
+    ㄴconfig
+    ㄴconstants
+    ㄴcontroller
+    ㄴinterfaces
+    ㄴmiddlewares
+    ㄴmodules
+    ㄴrouter
+    ㄴservice
+    ㄴauth
 
 ## 🥗 전체 API 로직 구현 진척도
+한빛 
+ㄴ목표 추가 90%
+ㄴ목표 보관 20%
+ㄴ목표 삭제 90%
+ㄴ목표 수정 20%
+
+승하
+ㄴ목표 달성 0%
+ㄴ홈 화면조회 0%
+ㄴ기록뷰 90%
+ㄴ마이페이지 조회 90%
+ㄴ소셜로그인 및 회원가입 90%
+ㄴ토큰 재발급 90%
