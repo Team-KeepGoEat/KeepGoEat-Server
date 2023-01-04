@@ -22,17 +22,18 @@ const getGoalByUserId = async (goalId: number) => {
 };
 
 // 목표 추가
-const createGoal = async (goalContent: string, isMore: boolean, startedAt: string) => {
+const createGoal = async (goalContent: string, isMore: boolean) => {
   const data = await prisma.goal.create({
     data: {
       goalContent,
       isMore,
       writerId: 1,
-      startedAt,
     },
   });
 
-  return data;
+  const goalId = data.goalId
+
+  return { goalId };
 };
 
 const goalService = {

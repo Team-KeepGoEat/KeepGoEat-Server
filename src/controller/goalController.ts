@@ -3,6 +3,7 @@ import { sc, rm } from "../constants";
 import { fail, success } from "../constants/response";
 import { goalService } from "../service";
 import dayjs from "dayjs";
+import { prisma } from "@prisma/client";
 
 
 
