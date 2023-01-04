@@ -105,7 +105,7 @@ const updateGoal = async (goalId: number, goalContent: string, isMore: boolean) 
       isMore,
     },
   });
-  return goalId;
+  return data.goalId;
 }
 
 const goalService = {
