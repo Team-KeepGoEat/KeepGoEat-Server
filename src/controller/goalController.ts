@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { sc, rm } from "../constants";
 import { fail, success } from "../constants/response";
-import { goalService } from "../service";
+import { goalService, userService } from "../service";
 import dayjs from "dayjs";
 import { prisma } from "@prisma/client";
 import { monthlyAchievedHistoryService } from "../service";
@@ -36,7 +36,7 @@ const getMypageByUserId = async (req:Request, res:Response) => {
   return res.status(sc.OK).send(success(sc.OK, rm.GET_GOALS_SUCCESS_FOR_MYPAGE, { "goals": foundGoals, "goalCount": foundGoals.length }));
 
 };
-
+    
 // 목표 추가
 const createGoal = async (req: Request, res: Response) => {
   const userId = req.user.userId;
@@ -73,6 +73,15 @@ const deleteGoal = async (req: Request, res: Response) => {
   }
 };
 
+// 목표 수정
+const updateGoal = async(req: Request, res: Response) => {
+  const { goalContent, isMore } = req.body;
+  const { goalId } = req.params;
+
+  const updatedGoalId = await goalService.updateGoal(+goalId, goalContent, isMore);
+  return res.status(sc.OK).send(success(sc.OK, rm.UPDATE_GOAL_SUCCESS, { "goalId": updatedGoalId }));
+};
+
 const getHistoryByGoalId = async(req:Request, res:Response) => {
   // middleware로 유저 검증하는 로직도 필요함
   const { goalId } = req.params;
@@ -106,6 +115,7 @@ const goalController = {
   getMypageByUserId,
   createGoal,
   deleteGoal,
+  updateGoal,
   getHistoryByGoalId
 };
 
