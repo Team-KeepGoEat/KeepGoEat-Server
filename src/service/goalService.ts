@@ -1,14 +1,33 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-const getGoalsByUserId = async (userId: number) => {
-  const allGoals = await prisma.goal.findMany({
-    where: {
-      writerId: userId
-    }
-  });
+const getGoalsForMypage = async (userId: number, isMore:boolean | string) => {
+  let goals;
+  
+  if (isMore === "") {
+    goals = await prisma.goal.findMany({
+      where: {
+        writerId: userId,
+        isOngoing: false,
+      },
+      orderBy: {
+        startedAt: "desc"
+      },
+    });
+  }
 
-  return allGoals;
+  goals = await prisma.goal.findMany({
+    where: {
+      writerId: userId,
+      isOngoing: false,
+      isMore: isMore as boolean
+    },
+    orderBy: {
+      startedAt: "desc"
+    },
+  });
+  
+  return goals;
 };
 
 const getGoalByGoalId = async (goalId: number) => {
@@ -22,7 +41,7 @@ const getGoalByGoalId = async (goalId: number) => {
 };
 
 const goalService = {
-  getGoalsByUserId,
+  getGoalsForMypage,
   getGoalByGoalId
 };
 

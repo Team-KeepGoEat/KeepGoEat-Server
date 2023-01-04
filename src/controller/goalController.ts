@@ -6,19 +6,28 @@ import { monthlyAchievedHistoryService } from "../service";
 import date from "../modules/date"
 import boxCounter from "../modules/boxCounter"
 
-const getGoalsByUserId = async (req:Request, res:Response) => {
+// type isMoreType = boolean | "" 
+
+const getMypageByUserId = async (req:Request, res:Response) => {
   const { userId } = req.params;
-  if (!userId) {
+  const { isMore } = req.query;
+  if (!userId || !isMore) {
     return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
   }
 
-  const foundGoals = await goalService.getGoalsByUserId(+userId);
+  /*
+  if (typeof isMore !== isMoreType) {
+    
+  }
+  */
+
+  const foundGoals = await goalService.getGoalsForMypage(+userId, isMore);
 
   return res.status(sc.OK).send(success(sc.OK, rm.GET_GOALS_SUCCESS_FOR_MYPAGE, foundGoals));
 
 };
 
-const getHistoryByGoalId = async(req:Request, res:Response) => {
+const getHistoryByGoalId = async (req:Request, res:Response) => {
   // middleware로 유저 검증하는 로직도 필요함
   const { goalId } = req.params;
   if (!goalId) {
@@ -35,7 +44,6 @@ const getHistoryByGoalId = async(req:Request, res:Response) => {
   const lastMonthCount = await monthlyAchievedHistoryService.getMonthlyHistory(date.getLastMonth());
   
   const data = {
-    "writerId": foundGoal.writerId,
     "goalId": foundGoal.goalId,
     "isMore": foundGoal.isMore,
     "thisMonthCount": thisMonthCount,
@@ -49,7 +57,7 @@ const getHistoryByGoalId = async(req:Request, res:Response) => {
 }
 
 const goalController = {
-  getGoalsByUserId,
+  getMypageByUserId,
   getHistoryByGoalId
 };
 
