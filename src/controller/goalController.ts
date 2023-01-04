@@ -1,9 +1,8 @@
 import { Request, Response } from "express";
 import { sc, rm } from "../constants";
 import { fail, success } from "../constants/response";
-import { goalService, userService } from "../service";
+import { goalService, cheeringMessageService } from "../service";
 import dayjs from "dayjs";
-import { prisma } from "@prisma/client";
 import { monthlyAchievedHistoryService } from "../service";
 import date from "../modules/date"
 import boxCounter from "../modules/boxCounter"
@@ -95,8 +94,8 @@ const getHistoryByGoalId = async(req:Request, res:Response) => {
     return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
   }
 
-  const thisMonthCount = await monthlyAchievedHistoryService.getMonthlyHistory(date.getCurrentMonth());
-  const lastMonthCount = await monthlyAchievedHistoryService.getMonthlyHistory(date.getLastMonth());
+  const thisMonthCount = await monthlyAchievedHistoryService.getMonthlyHistory(date.getCurrentMonth(), +goalId);
+  const lastMonthCount = await monthlyAchievedHistoryService.getMonthlyHistory(date.getLastMonth(), +goalId);
   
   const data = {
     "goalId": foundGoal.goalId,
@@ -111,12 +110,29 @@ const getHistoryByGoalId = async(req:Request, res:Response) => {
   return res.status(sc.OK).send(success(sc.OK, rm.GET_GOAL_SUCCESS_FOR_HISTORY, data));
 }
 
+const getHome = async (req: Request, res: Response) => {
+  const userId = req.user.userId;
+  if (!userId) {
+    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
+  }
+
+  const result = await goalService.getHomeGoalsByUserId(date.getCurrentMonth(), +userId);
+  const cheeringMessage = await cheeringMessageService.getRamdomMessage();
+
+  return res.status(sc.OK).send(success(sc.OK, rm.GET_GOALS_SUCCCESS_FOR_HOME, { 
+    "goals": result,
+    "goalCount": result.length,
+    "cheeringMessage": cheeringMessage
+   }));
+};
+
 const goalController = {
   getMypageByUserId,
   createGoal,
   deleteGoal,
   updateGoal,
-  getHistoryByGoalId
+  getHistoryByGoalId,
+  getHome
 };
 
 export default goalController;

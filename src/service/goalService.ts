@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import monthlyAchievedHistoryService from "./monthlyAchievedHistoryService";
 const prisma = new PrismaClient();
 
 const getGoalsForMypage = async (userId: number, sort: string) => {
@@ -68,6 +69,40 @@ const getGoalByGoalId = async (goalId: number) => {
   return goal;
 };
 
+const getHomeGoalsByUserId = async (currentMonth: string , userId: number) => {
+
+  const goals = await prisma.goal.findMany({
+    where: {
+      writerId: userId,
+      isOngoing: true
+    },
+    orderBy: {
+      startedAt: "desc"
+    }
+  });
+
+  const rst = goals.map((goal) => {
+    const thisMonthCount = monthlyAchievedHistoryService.getMonthlyHistory(currentMonth, goal.goalId);
+
+    return {
+      goalId: goal.goalId,
+      goalContent: goal.goalContent,
+      isMore: goal.isMore,
+      isOngoing: goal.isOngoing,
+      totalCount: goal.totalCount,
+      startedAt: goal.startedAt,
+      keptAt: goal.keptAt === null ? "" : goal.keptAt,
+      isAchieved: goal.isAchieved,
+      writerId: goal.writerId,
+      thisMonthCount: thisMonthCount
+    }
+  });
+
+  console.log("rst ", rst);
+
+  return rst;
+}
+
 // 목표 추가
 const createGoal = async (userId:number, goalContent: string, isMore: boolean, startedAt: string) => {
   const data = await prisma.goal.create({
@@ -114,6 +149,7 @@ const goalService = {
   createGoal,
   deleteGoal,
   updateGoal,
+  getHomeGoalsByUserId
 };
 
 export default goalService;
