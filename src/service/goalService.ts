@@ -44,6 +44,7 @@ const deleteGoal = async (goalId: number) => {
       goalId,
     },
   })
+  return goalId;
 };
 
 const goalService = {
