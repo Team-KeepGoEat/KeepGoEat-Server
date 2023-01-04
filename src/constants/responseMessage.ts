@@ -11,6 +11,8 @@ export default {
   SIGNIN_FAIL: "로그인 실패",
   ALREADY_NICKNAME: "이미 사용중인 닉네임입니다.",
   INVALID_PASSWORD: "잘못된 비밀번호입니다.",
+  UNAUTHORIZED_PLATFORM_USER: "권한이 없는 유저입니다.",
+  NOT_EXISITING_USER: "유저가 없습니다",
 
   // 토큰
   CREATE_TOKEN_SUCCESS: "토큰 재발급 성공",
@@ -27,8 +29,11 @@ export default {
   CREATE_IMAGE_SUCCESS: "이미지 저장 성공",
   CREATE_IMAGE_FAIL: "이미지 저장 실패",
 
-  // 목표
-  GET_GOALS_SUCCESS_FOR_MYPAGE: "마이페이지 뷰 조회 성공"
+  // 마이페이지
+  GET_GOALS_SUCCESS_FOR_MYPAGE: "마이페이지 뷰 조회 성공",
+
+  // 기록뷰
+  GET_GOAL_SUCCESS_FOR_HISTORY: "마이페이지 뷰 조회 성공"
 
 
 };

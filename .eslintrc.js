@@ -33,6 +33,8 @@ module.exports = {
         ]
       }
     ],
+    // 이 규칙은 외부 모듈을 const로 가져오는 것을 경고합니다. 
+    "@typescript-eslint/no-var-requires": "warn",
     // 이 규칙은 멤버 표현식에서 개행 일관성을 유지하는 목표를 가집니다.
     "dot-location": "off",
     // 이 규칙은 카멜케이스를 사용하도록 경고합니다.

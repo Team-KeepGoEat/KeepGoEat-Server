@@ -1,0 +1,1 @@
+export const TOTAL_BLANK_BOX_COUNT = 35
