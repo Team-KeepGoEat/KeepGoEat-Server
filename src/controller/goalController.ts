@@ -41,10 +41,16 @@ const createGoal = async (req: Request, res: Response) => {
 
 // 목표 삭제
 const deleteGoal = async (req: Request, res: Response) => {
-  const { goalId } = req.params;
-
-  await goalService.deleteGoal(+goalId);
-  return res.status(sc.OK).send(success(sc.OK, rm.DELETE_GOAL_SUCCESS));
+  try {
+    const { goalId } = req.params;
+    if (!goalId) {
+      return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+    }
+    await goalService.deleteGoal(+goalId);
+    return res.status(sc.OK).send(success(sc.OK, rm.DELETE_GOAL_SUCCESS));
+  } catch (error) {
+    return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR)); // 서버 내부 에러
+  }
 };
 
 const getHistoryByGoalId = async(req:Request, res:Response) => {
