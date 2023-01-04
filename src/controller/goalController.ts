@@ -44,7 +44,7 @@ const createGoal = async (req: Request, res: Response) => {
 const deleteGoal = async (req: Request, res: Response) => {
   const { goalId } = req.params;
 
-  await deleteService.deleteUser(goalId);
+  await GoalService.deleteUser(goalId);
   return res.status(sc.OK).send(success(sc.OK, rm.DELETE_GOAL_SUCCESS));
 };
 
