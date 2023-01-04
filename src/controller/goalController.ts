@@ -26,8 +26,8 @@ const createGoal = async (req: Request, res: Response) => {
     const { goalContent, isMore } = req.body;
 
     // dayjs 모듈에서 시간을 받아서 서버측에서 클라로 찍어주기
-    const createdAt = dayjs() as unknown;
-    const data = await goalService.createGoal(goalContent, isMore, createdAt as string);
+    const startedAt = dayjs() as unknown;
+    const data = await goalService.createGoal(goalContent, isMore, startedAt as string);
     if (!goalContent || !isMore) {
       return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST)); // 데이터 비정상적 입력
     } 

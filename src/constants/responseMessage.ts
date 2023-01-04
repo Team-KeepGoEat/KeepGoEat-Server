@@ -32,7 +32,6 @@ export default {
 
   // 목표
   CREATE_GOAL_SUCCESS: "목표 추가에 성공했습니다.",
-  GET_GOALS_SUCCESS_FOR_MYPAGE: "마이페이지 뷰 조회 성공",
 
   // 마이페이지
   GET_GOALS_SUCCESS_FOR_MYPAGE: "마이페이지 뷰 조회 성공",
