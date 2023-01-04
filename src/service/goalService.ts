@@ -58,7 +58,6 @@ const updateGoal = async (goalId: number, goalContent: string, isMore: boolean) 
       isMore,
     },
   });
-
   return goalId;
 }
 
