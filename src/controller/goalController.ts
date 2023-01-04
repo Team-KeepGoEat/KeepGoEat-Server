@@ -43,9 +43,6 @@ const createGoal = async (req: Request, res: Response) => {
 const deleteGoal = async (req: Request, res: Response) => {
   try {
     const { goalId } = req.params;
-    if (!goalId) {
-      return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
-    }
     const deletedGoalId = await goalService.deleteGoal(+goalId);
     return res.status(sc.OK).send(success(sc.OK, rm.DELETE_GOAL_SUCCESS, { "goalId": deletedGoalId }));
   } catch (error) {
