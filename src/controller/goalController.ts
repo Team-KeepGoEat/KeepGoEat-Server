@@ -40,6 +40,13 @@ const createGoal = async (req: Request, res: Response) => {
   }
 }
 
+// 목표 삭제
+const deleteGoal = async (req: Request, res: Response) => {
+  const { goalId } = req.params;
+
+  await deleteService.deleteUser(goalId);
+  return res.status(sc.OK).send(success(sc.OK, rm.DELETE_GOAL_SUCCESS));
+};
 
 const getHistoryByGoalId = async(req:Request, res:Response) => {
   // middleware로 유저 검증하는 로직도 필요함
@@ -74,6 +81,7 @@ const getHistoryByGoalId = async(req:Request, res:Response) => {
 const goalController = {
   getGoalsByUserId,
   createGoal,
+  deleteGoal,
   getHistoryByGoalId
 };
 
