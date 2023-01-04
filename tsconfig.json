@@ -24,5 +24,6 @@
   "exclude": [
     "node_modules", //? build 시 제외
     "tests"
-  ]
+  ],
+  "files": ["src/constants/type.d.ts"]
 }
