@@ -4,17 +4,17 @@ const prisma = new PrismaClient();
 const getGoalsByUserId = async (userId: number) => {
   const allGoals = await prisma.goal.findMany({
     where: {
-      writerId: userId,
+      writerId: userId
     }
   });
 
   return allGoals;
 };
 
-const getGoalByUserId = async (goalId: number) => {
+const getGoalByGoalId = async (goalId: number) => {
   const goal = await prisma.goal.findUnique({
     where: {
-      goalId,
+      goalId: goalId
     }
   });
 
@@ -38,8 +38,8 @@ const createGoal = async (goalContent: string, isMore: boolean) => {
 
 const goalService = {
   getGoalsByUserId,
-  getGoalByUserId,
   createGoal,
+  getGoalByGoalId
 };
 
 export default goalService;
