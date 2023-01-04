@@ -7,8 +7,9 @@ import { JwtPayload } from "jsonwebtoken";
 import { userService } from '../service';
 
 const auth = async (req: Request, res: Response, next: NextFunction) => {
-  const { accessToken } = req.headers;
+  const accessToken = req.headers.accesstoken;
 
+  console.log("accessToken ", accessToken);
   if (!accessToken) {
     return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
   }
