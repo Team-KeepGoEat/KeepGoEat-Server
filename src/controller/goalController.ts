@@ -73,8 +73,8 @@ const deleteGoal = async (req: Request, res: Response) => {
   }
 };
 
-const getHistoryByGoalId = async(req:Request, res:Response) => {
-  // middleware로 유저 검증하는 로직도 필요함
+const getHistoryByGoalId = async (req:Request, res:Response) => {
+  
   const { goalId } = req.params;
   if (!goalId) {
     return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
@@ -99,7 +99,7 @@ const getHistoryByGoalId = async(req:Request, res:Response) => {
     "emptyBoxCount": boxCounter.getEmptyBoxCount(thisMonthCount)
   }
 
-  return res.status(sc.OK).send(success(sc.OK, rm.GET_GOAL_SUCCESS_FOR_HISTORY, data));
+  return res.status(sc.OK).send(success(sc.OK, rm.GET_GOALS_SUCCESS_FOR_MYPAGE, data));
 }
 
 const goalController = {
