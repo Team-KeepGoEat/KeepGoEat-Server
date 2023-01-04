@@ -1,7 +1,7 @@
 import e, { Request, Response } from "express";
 import { sc, rm } from "../constants";
 import { fail, success } from "../constants/response";
-import { goalService } from "../service";
+import { goalService, userService } from "../service";
 import dayjs from "dayjs";
 import { prisma } from "@prisma/client";
 import { monthlyAchievedHistoryService } from "../service";
@@ -19,13 +19,12 @@ const getGoalsByUserId = async (req:Request, res:Response) => {
   return res.status(sc.OK).send(success(sc.OK, rm.GET_GOALS_SUCCESS_FOR_MYPAGE, foundGoals));
 
 };
-
+    
 // 목표 추가
 const createGoal = async (req: Request, res: Response) => {
   try {
     const { goalContent, isMore } = req.body;
-
-    if (!goalContent || !isMore) {
+    if (goalContent === null || isMore === null) {                                 // // isMore === false인 경우까지 BAD REQUEST 출력되지 않도록 처리                   
       return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE)); // 데이터 비정상적 입력
     } 
 
@@ -48,6 +47,15 @@ const deleteGoal = async (req: Request, res: Response) => {
   } catch (error) {
     return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR)); // 서버 내부 에러
   }
+};
+
+// 목표 수정
+const updateGoal = async(req: Request, res: Response) => {
+  const { goalContent, isMore } = req.body;
+  const { goalId } = req.params;
+
+  const updatedGoalId = await goalService.updateGoal(+goalId, goalContent, isMore);
+  return res.status(sc.OK).send(success(sc.OK, rm.UPDATE_GOAL_SUCCESS, { "goalId": updatedGoalId }));
 };
 
 const getHistoryByGoalId = async(req:Request, res:Response) => {
@@ -84,6 +92,7 @@ const goalController = {
   getGoalsByUserId,
   createGoal,
   deleteGoal,
+  updateGoal,
   getHistoryByGoalId
 };
 
