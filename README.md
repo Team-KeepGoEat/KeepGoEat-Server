@@ -2,10 +2,10 @@
 🥗 킵고잇 킵서버 gbzg
 ❗ 킵고잇 킵서버는 아직 리드미 수정중..
 
-##🥗 ERD
+## 🥗 ERD
 ![image](https://user-images.githubusercontent.com/82032418/210483620-a84873c2-6ba9-4792-9f69-4ca82727dcb3.png)
 
-##🥗 역할 분담
+## 🥗 역할 분담
 |임승하|
 |:---:|
 |Lead|
@@ -16,7 +16,7 @@
 |Potato|
 |목표 추가 api, 목표 보관 api, 목표 삭제 api, 목표 수정 api|
 
-##🥗 commit convention
+## 🥗 commit convention
 ### Commit Message Structure
 ```
 <type>[optional scope]: <description>
@@ -51,7 +51,7 @@ ci - Chnage to our CI configuration files and scripts(ex: Travis, Circle, Github
 chore - Other changes that don't modify src or test files
 ```
 
-##🥗 coding convention
+## 🥗 coding convention
 ### 선언되지 않은 type, interface, function 등을 사용하는 것 금지
 ### any 타입을 사용할 시 경고
 ### 빈 함수를 사용하는 것 금지. 단, 화살표 함수 예외
@@ -62,8 +62,8 @@ chore - Other changes that don't modify src or test files
 ### 들여쓰기로 스페이스 2번을 하지 않을 경우 에러
 ### console 개체의 메서드에 대한 호출 또는 할당을 불허
 
-##🥗 branch 전략
+## 🥗 branch 전략
 
-##🥗 foldering
+## 🥗 foldering
 
-##🥗 전체 API 로직 구현 진척도
+## 🥗 전체 API 로직 구현 진척도
