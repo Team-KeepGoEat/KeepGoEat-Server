@@ -1,4 +1,4 @@
-import e, { Request, Response } from "express";
+import { Request, Response } from "express";
 import { sc, rm } from "../constants";
 import { fail, success } from "../constants/response";
 import { goalService } from "../service";
@@ -8,24 +8,32 @@ import { monthlyAchievedHistoryService } from "../service";
 import date from "../modules/date"
 import boxCounter from "../modules/boxCounter"
 
-// type isMoreType = boolean | "" 
+const sortType = {
+  ALL: "all",
+  MORE: "more",
+  LESS: "less"
+};
 
 const getMypageByUserId = async (req:Request, res:Response) => {
-  const { userId } = req.params;
-  const { isMore } = req.query;
-  if (!userId || !isMore) {
+  const userId = req.user.userId;
+
+  console.log("user ", userId)
+  const sort = req.query.sort as string;
+  
+  if (!userId || !sort) {
     return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
   }
 
-  /*
-  if (typeof isMore !== isMoreType) {
-    
+  if (sort !== sortType.ALL && sort !== sortType.MORE && sort !== sortType.LESS) {
+    console.log("sort ", sort);
+    console.log("sortType.MORE ", sortType.MORE);
+    console.log("more" !== sortType.MORE);
+    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
   }
-  */
+  
+  const foundGoals = await goalService.getGoalsForMypage(+userId, sort as string);
 
-  const foundGoals = await goalService.getGoalsForMypage(+userId, isMore);
-
-  return res.status(sc.OK).send(success(sc.OK, rm.GET_GOALS_SUCCESS_FOR_MYPAGE, foundGoals));
+  return res.status(sc.OK).send(success(sc.OK, rm.GET_GOALS_SUCCESS_FOR_MYPAGE, { "goals": foundGoals, "goalCount": foundGoals.length }));
 
 };
 

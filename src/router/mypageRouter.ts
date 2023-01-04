@@ -3,6 +3,6 @@ import { goalController } from "../controller";
 
 const router:Router = Router();
 
-router.get("/:userId", goalController.getMypageByUserId);
+router.get("/", goalController.getMypageByUserId);
 
 export default router;
