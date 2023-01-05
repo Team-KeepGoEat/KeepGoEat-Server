@@ -39,12 +39,12 @@ const createGoal = async (goalContent: string, isMore: boolean, startedAt:string
 
 // 목표 삭제
 const deleteGoal = async (goalId: number) => {
-  await prisma.goal.delete({
+  const data = await prisma.goal.delete({
     where: {
       goalId,
     },
   })
-  return goalId;
+  return data.goalId;
 };
 
 const goalService = {
