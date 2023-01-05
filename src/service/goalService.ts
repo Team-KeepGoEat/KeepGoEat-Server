@@ -86,12 +86,12 @@ const createGoal = async (userId:number, goalContent: string, isMore: boolean, s
 
 // 목표 삭제
 const deleteGoal = async (goalId: number) => {
-  await prisma.goal.delete({
+  const data = await prisma.goal.delete({
     where: {
       goalId,
     },
   })
-  return goalId;
+  return data.goalId;
 };
 
 // 목표 수정
@@ -105,6 +105,20 @@ const updateGoal = async (goalId: number, goalContent: string) => {
     },
   });
   return data.goalId;
+};
+
+// 목표 보관
+const keepGoal = async(goalId: number, isOngoing: boolean, keptAt: string) => {
+  const data = await prisma.goal.update({
+    where: {
+      goalId,
+    }, 
+    data: {
+      isOngoing,
+      keptAt,
+    }
+  });
+  return data.goalId;
 }
 
 const goalService = {
@@ -113,6 +127,7 @@ const goalService = {
   createGoal,
   deleteGoal,
   updateGoal,
+  keepGoal,
 };
 
 export default goalService;

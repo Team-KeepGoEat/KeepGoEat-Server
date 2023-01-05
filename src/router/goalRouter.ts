@@ -4,6 +4,9 @@ import auth from "../middlewares/auth";
 
 const router: Router = Router();
 
+//* 목표 보관 - POST ~/goal/keep/:goalId 
+router.post("/keep/:goalId", auth, goalController.keepGoal);
+
 //* 목표 수정 - POST ~/goal/:goalId
 router.post("/:goalId", auth, goalController.updateGoal);
 

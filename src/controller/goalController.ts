@@ -46,9 +46,9 @@ const createGoal = async (req: Request, res: Response) => {
   }
 
   try {
-    const { goalContent, isMore } = req.body;
+    const { goalContent, isMore } = req.body; // createGoal DTO 는 request header나 parameter에는 안쓴다~~ response body request body에 쓴다. api별로 createGoalDTO 이런식으로!
 
-    if (!goalContent || goalContent === " " || isMore === null) {
+    if (!goalContent || goalContent === " " || isMore === null || isMore === undefined) {
       return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE)); // 데이터 비정상적 입력
     } 
 
@@ -90,6 +90,26 @@ const updateGoal = async(req: Request, res: Response) => {
   
 };
 
+// 목표 보관
+const keepGoal = async(req:Request, res:Response) => {
+  const { goalId } = req.params;
+  const isOngoing = false;
+  const keptAt = dayjs().format();
+
+  if (!goalId) {
+    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+  }
+
+  try {
+    const keptGoalId = await goalService.keepGoal(+goalId, isOngoing, keptAt);
+    console.log(keptAt);
+    return res.status(sc.OK).send(success(sc.OK, rm.KEEP_GOAL_SUCCESS, { "goalId": keptGoalId }));
+  } catch (error) {
+    return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR)); // 서버 내부 에러
+  }
+
+};
+
 const getHistoryByGoalId = async(req:Request, res:Response) => {
   // middleware로 유저 검증하는 로직도 필요함
   const { goalId } = req.params;
@@ -124,6 +144,7 @@ const goalController = {
   createGoal,
   deleteGoal,
   updateGoal,
+  keepGoal,
   getHistoryByGoalId
 };
 
