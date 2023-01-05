@@ -46,9 +46,9 @@ const createGoal = async (req: Request, res: Response) => {
   }
 
   try {
-    const { goalContent, isMore } = req.body;
+    const { goalContent, isMore } = req.body; // createGoal DTO 는 request header나 parameter에는 안쓴다~~ response body request body에 쓴다. api별로 createGoalDTO 이런식으로!
 
-    if (!goalContent || goalContent === " " || isMore === null) {
+    if (!goalContent || goalContent === " " || isMore === null || isMore === undefined) {
       return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE)); // 데이터 비정상적 입력
     } 
 
