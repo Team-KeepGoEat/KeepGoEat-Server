@@ -75,7 +75,7 @@ const deleteGoal = async (req: Request, res: Response) => {
 };
 
 // 목표 수정
-const updateGoal = async(req: Request, res: Response) => {
+const updateGoal = async (req: Request, res: Response) => {
   const { goalContent } = req.body;
   const { goalId } = req.params;
 
@@ -146,14 +146,21 @@ const getHome = async (req: Request, res: Response) => {
     return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
   }
 
-  const result = await goalService.getHomeGoalsByUserId(date.getCurrentMonth(), +userId);
-  const cheeringMessage = await cheeringMessageService.getRamdomMessage();
+  try {
+    const result = await goalService.getHomeGoalsByUserId(date.getCurrentMonth(), +userId);
+    const cheeringMessage = await cheeringMessageService.getRamdomMessage();
+    
+    return res.status(sc.OK).send(success(sc.OK, rm.GET_GOALS_SUCCCESS_FOR_HOME, {
+      "goals": result,
+      "goalCount": result.length,
+      "cheeringMessage": cheeringMessage.cheeringMessage
+    }));
+  
+  } catch (error) {
+    return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+  }
 
-  return res.status(sc.OK).send(success(sc.OK, rm.GET_GOALS_SUCCCESS_FOR_HOME, {
-    "goals": result,
-    "goalCount": result.length,
-    "cheeringMessage": cheeringMessage.cheeringMessage
-  }));
+  
 };
 
 const achieveGoal = async (req: Request, res: Response) => {
