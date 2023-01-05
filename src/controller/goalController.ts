@@ -94,7 +94,7 @@ const updateGoal = async(req: Request, res: Response) => {
 // 목표 보관
 const keepGoal = async(req:Request, res:Response) => {
   const { goalId } = req.params;
-  const { isOngoing } = req.body;
+  const isOngoing = false;
   const keptAt = dayjs().format();
 
   if (!goalId) {
