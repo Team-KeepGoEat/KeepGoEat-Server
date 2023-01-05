@@ -106,8 +106,20 @@ const updateGoal = async (goalId: number, goalContent: string, isMore: boolean) 
     },
   });
   return data.goalId;
-}
+};
 
+// 목표 보관
+const keepGoal = async(goalId: number, keptAt: timestamp) => {
+  const data = await prisma.goal.update({
+    // where: {
+    //   goalId
+    // }, 
+    // data: {
+    //   i
+    // }
+  });
+
+}
 const goalService = {
   getGoalsForMypage,
   getGoalByGoalId,

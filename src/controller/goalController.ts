@@ -91,14 +91,24 @@ const updateGoal = async(req: Request, res: Response) => {
   
 };
 
+// 목표 보관
+const keepGoal = async(req:Request, res:Response) => {
+  const { goalId } = req.params;
+  const { keptAt } = req.body;
+
+  const keptGoal = await goalService.keepGoal(+goalId, keptAt);
+  
+};
+
 const getHistoryByGoalId = async(req:Request, res:Response) => {
   // middleware로 유저 검증하는 로직도 필요함
   const { goalId } = req.params;
+  const { keptAt } = req.body;
   if (!goalId) {
     return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
   }
 
-  const foundGoal = await goalService.getGoalByGoalId(+goalId);
+  const foundGoal = await goalService.getGoalByGoalId(+goalId, keptAt);
 
   if (!foundGoal) {
     return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
@@ -125,6 +135,7 @@ const goalController = {
   createGoal,
   deleteGoal,
   updateGoal,
+  keepGoal,
   getHistoryByGoalId
 };
 
