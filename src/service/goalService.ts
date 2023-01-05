@@ -109,23 +109,26 @@ const updateGoal = async (goalId: number, goalContent: string, isMore: boolean) 
 };
 
 // 목표 보관
-const keepGoal = async(goalId: number, keptAt: timestamp) => {
+const keepGoal = async(goalId: number, isOngoing: boolean, keptAt: string) => {
   const data = await prisma.goal.update({
-    // where: {
-    //   goalId
-    // }, 
-    // data: {
-    //   i
-    // }
+    where: {
+      goalId,
+    }, 
+    data: {
+      isOngoing: false,
+      keptAt,
+    }
   });
-
+  return data.goalId;
 }
+
 const goalService = {
   getGoalsForMypage,
   getGoalByGoalId,
   createGoal,
   deleteGoal,
   updateGoal,
+  keepGoal,
 };
 
 export default goalService;

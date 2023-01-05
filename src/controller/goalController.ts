@@ -94,10 +94,20 @@ const updateGoal = async(req: Request, res: Response) => {
 // 목표 보관
 const keepGoal = async(req:Request, res:Response) => {
   const { goalId } = req.params;
-  const { keptAt } = req.body;
+  const { isOngoing } = req.body;
+  const keptAt = dayjs().format();
 
-  const keptGoal = await goalService.keepGoal(+goalId, keptAt);
-  
+  if (!goalId) {
+    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+  }
+
+  try {
+    const keptGoalId = await goalService.keepGoal(+goalId, isOngoing, keptAt);
+    return res.status(sc.OK).send(success(sc.OK, rm.KEEP_GOAL_SUCCESS, { "goalId": keptGoalId }));
+  } catch (error) {
+    return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR)); // 서버 내부 에러
+  }
+
 };
 
 const getHistoryByGoalId = async(req:Request, res:Response) => {
