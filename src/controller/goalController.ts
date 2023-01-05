@@ -77,8 +77,37 @@ const updateGoal = async(req: Request, res: Response) => {
   const { goalContent, isMore } = req.body;
   const { goalId } = req.params;
 
-  const updatedGoalId = await goalService.updateGoal(+goalId, goalContent, isMore);
-  return res.status(sc.OK).send(success(sc.OK, rm.UPDATE_GOAL_SUCCESS, { "goalId": updatedGoalId }));
+  if (!goalId) {
+    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+  }
+
+  try {
+    const updatedGoalId = await goalService.updateGoal(+goalId, goalContent, isMore);
+    return res.status(sc.OK).send(success(sc.OK, rm.UPDATE_GOAL_SUCCESS, { "goalId": updatedGoalId }));
+  } catch (error) {
+    return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR)); // 서버 내부 에러
+  }
+  
+};
+
+// 목표 보관
+const keepGoal = async(req:Request, res:Response) => {
+  const { goalId } = req.params;
+  const isOngoing = false;
+  const keptAt = dayjs().format();
+
+  if (!goalId) {
+    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+  }
+
+  try {
+    const keptGoalId = await goalService.keepGoal(+goalId, isOngoing, keptAt);
+    console.log(keptAt);
+    return res.status(sc.OK).send(success(sc.OK, rm.KEEP_GOAL_SUCCESS, { "goalId": keptGoalId }));
+  } catch (error) {
+    return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR)); // 서버 내부 에러
+  }
+
 };
 
 const getHistoryByGoalId = async(req:Request, res:Response) => {
@@ -148,7 +177,8 @@ const goalController = {
   updateGoal,
   getHistoryByGoalId,
   getHome,
-  achieveGoal
+  achieveGoal,
+  keepGoal
 };
 
 export default goalController;

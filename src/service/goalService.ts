@@ -144,6 +144,20 @@ const updateGoal = async (goalId: number, goalContent: string, isMore: boolean) 
     },
   });
   return data.goalId;
+};
+
+// 목표 보관
+const keepGoal = async(goalId: number, isOngoing: boolean, keptAt: string) => {
+  const data = await prisma.goal.update({
+    where: {
+      goalId,
+    }, 
+    data: {
+      isOngoing,
+      keptAt,
+    }
+  });
+  return data.goalId;
 }
 
 // 목표 달성
@@ -220,6 +234,7 @@ const goalService = {
   getHomeGoalsByUserId,
   achieveGoal,
   updateIsAchieved,
+  keepGoal,
 };
 
 export default goalService;
