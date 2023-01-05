@@ -18,7 +18,6 @@ const sortType = {
 const getMypageByUserId = async (req: Request, res: Response) => {
   const userId = req.user.userId;
 
-  console.log("user ", userId)
   const sort = req.query.sort as string;
 
   if (!userId || !sort) {
@@ -26,15 +25,15 @@ const getMypageByUserId = async (req: Request, res: Response) => {
   }
 
   if (sort !== sortType.ALL && sort !== sortType.MORE && sort !== sortType.LESS) {
-    console.log("sort ", sort);
-    console.log("sortType.MORE ", sortType.MORE);
-    console.log("more" !== sortType.MORE);
     return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
   }
 
-  const foundGoals = await goalService.getGoalsForMypage(+userId, sort as string);
-
-  return res.status(sc.OK).send(success(sc.OK, rm.GET_GOALS_SUCCESS_FOR_MYPAGE, { "goals": foundGoals, "goalCount": foundGoals.length }));
+  try {
+    const foundGoals = await goalService.getGoalsForMypage(+userId, sort as string);
+    return res.status(sc.OK).send(success(sc.OK, rm.GET_GOALS_SUCCESS_FOR_MYPAGE, { "goals": foundGoals, "goalCount": foundGoals.length }));
+  } catch (error) {
+    return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+  }
 
 };
 
