@@ -43,7 +43,7 @@ export default {
   GET_GOALS_SUCCESS_FOR_MYPAGE: "마이페이지 뷰 조회 성공",
 
   // 기록뷰
-  GET_GOAL_SUCCESS_FOR_HISTORY: "마이페이지 뷰 조회 성공",
+  GET_GOAL_SUCCESS_FOR_HISTORY: "기록뷰 조회 성공",
 
   // 홈뷰
   GET_GOALS_SUCCCESS_FOR_HOME: "홈 뷰 조회 성공"

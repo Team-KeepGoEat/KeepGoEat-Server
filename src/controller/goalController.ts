@@ -117,26 +117,31 @@ const getHistoryByGoalId = async (req: Request, res: Response) => {
     return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
   }
 
-  const foundGoal = await goalService.getGoalByGoalId(+goalId);
+  try {
+    const foundGoal = await goalService.getGoalByGoalId(+goalId);
 
-  if (!foundGoal) {
-    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+    if (!foundGoal) {
+      return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+    }
+
+    const thisMonthCount = await monthlyAchievedHistoryService.getMonthlyHistoryCount(date.getCurrentMonth(), +goalId);
+    const lastMonthCount = await monthlyAchievedHistoryService.getMonthlyHistoryCount(date.getLastMonth(), +goalId);
+
+    const data = {
+      "goalId": foundGoal.goalId,
+      "isMore": foundGoal.isMore,
+      "thisMonthCount": thisMonthCount,
+      "lastMonthCount": lastMonthCount,
+      "goalContent": foundGoal.goalContent,
+      "blankBoxCount": boxCounter.getBlankBoxCount(),
+      "emptyBoxCount": boxCounter.getEmptyBoxCount(thisMonthCount)
+    }
+
+    return res.status(sc.OK).send(success(sc.OK, rm.GET_GOAL_SUCCESS_FOR_HISTORY, data));
+  
+  } catch (error) {
+    return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
   }
-
-  const thisMonthCount = await monthlyAchievedHistoryService.getMonthlyHistoryCount(date.getCurrentMonth(), +goalId);
-  const lastMonthCount = await monthlyAchievedHistoryService.getMonthlyHistoryCount(date.getLastMonth(), +goalId);
-
-  const data = {
-    "goalId": foundGoal.goalId,
-    "isMore": foundGoal.isMore,
-    "thisMonthCount": thisMonthCount,
-    "lastMonthCount": lastMonthCount,
-    "goalContent": foundGoal.goalContent,
-    "blankBoxCount": boxCounter.getBlankBoxCount(),
-    "emptyBoxCount": boxCounter.getEmptyBoxCount(thisMonthCount)
-  }
-
-  return res.status(sc.OK).send(success(sc.OK, rm.GET_GOALS_SUCCESS_FOR_MYPAGE, data));
 }
 
 const getHome = async (req: Request, res: Response) => {
@@ -148,18 +153,18 @@ const getHome = async (req: Request, res: Response) => {
   try {
     const result = await goalService.getHomeGoalsByUserId(date.getCurrentMonth(), +userId);
     const cheeringMessage = await cheeringMessageService.getRamdomMessage();
-    
+
     return res.status(sc.OK).send(success(sc.OK, rm.GET_GOALS_SUCCCESS_FOR_HOME, {
       "goals": result,
       "goalCount": result.length,
       "cheeringMessage": cheeringMessage.cheeringMessage
     }));
-  
+
   } catch (error) {
     return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
   }
 
-  
+
 };
 
 const achieveGoal = async (req: Request, res: Response) => {
