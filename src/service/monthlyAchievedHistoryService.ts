@@ -29,8 +29,9 @@ const getMonthlyHistoryCount = async (targetMonth: string, goalId: number) => {
 const updateMonthlyHistory = async (targetMonth: string, goalId: number, isAdded: boolean) => {
 
   const monthlyAchievedHistory = await getMonthlyHistory(targetMonth, goalId);
-  
+
   if (!monthlyAchievedHistory) {
+    console.log("[updateMonthlyHistory]: 존재하지 않는 월별 목표 달성임");
     return null;
   }
 
@@ -46,6 +47,7 @@ const updateMonthlyHistory = async (targetMonth: string, goalId: number, isAdded
       }
     });
 
+    console.log("[updateMonthlyHistory]: 월별 목표 달성 업데이트(취소) 성공, ", updatedHistory);
     return updatedHistory.monthlyCount;
   };
 
@@ -55,11 +57,12 @@ const updateMonthlyHistory = async (targetMonth: string, goalId: number, isAdded
     },
     data: {
       monthlyCount: {
-        decrement: 1,
+        increment: 1,
       },
     }
   });
 
+  console.log("[updateMonthlyHistory]: 월별 목표 달성 업데이트(달성) 성공 ", updatedHistory);
   return updatedHistory.monthlyCount;
 };
 
