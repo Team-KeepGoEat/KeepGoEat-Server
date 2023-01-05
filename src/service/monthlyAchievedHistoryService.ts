@@ -18,11 +18,12 @@ const getMonthlyHistory = async (targetMonth: string, goalId: number) => {
 
 const getMonthlyHistoryCount = async (targetMonth: string, goalId: number) => {
   const monthlyAchievedHistory = await getMonthlyHistory(targetMonth, goalId);
-
+  console.log("monthlyAchievedHistory ", monthlyAchievedHistory )
   if (!monthlyAchievedHistory) {
     return 0;
   }
 
+  console.log("monthlyAchievedHistory cnt", monthlyAchievedHistory.monthlyCount )
   return monthlyAchievedHistory.monthlyCount;
 };
 
