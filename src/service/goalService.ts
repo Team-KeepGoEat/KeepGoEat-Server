@@ -1,5 +1,8 @@
 import { PrismaClient } from "@prisma/client";
+import dailyAchievedHistoryService from "./dailyAchievedHistoryService";
 import monthlyAchievedHistoryService from "./monthlyAchievedHistoryService";
+import dayjs from "dayjs";
+import date from "../modules/date";
 const prisma = new PrismaClient();
 
 const getGoalsForMypage = async (userId: number, sort: string) => {
@@ -141,7 +144,86 @@ const updateGoal = async (goalId: number, goalContent: string, isMore: boolean) 
     },
   });
   return data.goalId;
+};
+
+// 목표 보관
+const keepGoal = async(goalId: number, isOngoing: boolean, keptAt: string) => {
+  const data = await prisma.goal.update({
+    where: {
+      goalId,
+    }, 
+    data: {
+      isOngoing,
+      keptAt,
+    }
+  });
+  return data.goalId;
 }
+
+// 목표 달성
+const achieveGoal = async (goalId: number, isAchieved: boolean) => {
+  // 목표 테이블에 반영
+  const updatedGoal = await goalService.updateIsAchieved(goalId, isAchieved); // 목표 테이블의 isAchieved 업데이트
+  const currentMonth = date.getCurrentMonth(); 
+
+  // 달성 취소했을 경우
+  if (!isAchieved) {
+    const now = dayjs().format();
+    const dailyAchievedHistory = dailyAchievedHistoryService.getDailyAchievedHistory(now, goalId);
+  
+    // 달성 기록이 없는 경우
+    if (!dailyAchievedHistory) {
+      return null;
+    }
+
+    // 달성 기록이 있는 경우
+    await dailyAchievedHistoryService.deleteDailyAchievedHistoryById(dailyAchievedHistory.dailyAchievedId); // 달성 기록 삭제 
+    const thisMonthCount = await monthlyAchievedHistoryService.updateMonthlyHistory(currentMonth, goalId, isAchieved) // 달성 기록 업데이터
+    
+    return {
+      "thisMonthCount": thisMonthCount,
+      "goalId": updatedGoal.goalId
+    };
+  }
+
+  // 달성 버튼 눌렀을 경우
+  const now = dayjs().format();
+    const dailyAchievedHistory = dailyAchievedHistoryService.getDailyAchievedHistory(now, goalId);
+  
+    // 달성 기록이 없는 경우
+    if (!dailyAchievedHistory) {
+      await dailyAchievedHistoryService.createDailyAchievedHistory(goalId); // 당일 달성 기록 추가
+      const thisMonthCount = await monthlyAchievedHistoryService.updateMonthlyHistory(currentMonth, goalId, isAchieved); // montlyCount 에 +1
+      
+      return {
+        "thisMonthCount": thisMonthCount,
+        "goalId": updatedGoal.goalId
+      };
+    }
+
+    await dailyAchievedHistoryService.updateDailyAchievedHistory(now, goalId) // 당일 달성 기록 갱신
+    const thisMonth = await monthlyAchievedHistoryService.getMonthlyHistory(currentMonth, goalId, isAchieved); // montlyCount 에 +1
+
+    // 당일 달성 기록 있으면 갱신
+    return {
+      "thisMonthCount": thisMonth.thismonthcount,
+      "goalId": updatedGoal.goalId
+    };  
+};
+
+// 목표 isAchieve 업데이트
+const updateIsAchieved = async (goalId: number, isAchieved: boolean) => {
+  const updatedGoal = await prisma.goal.update({
+    where: {
+      goalId: goalId
+    },
+    data: {
+      isAchieved: isAchieved
+    }
+  });
+
+  return updatedGoal;
+};
 
 const goalService = {
   getGoalsForMypage,
@@ -149,7 +231,10 @@ const goalService = {
   createGoal,
   deleteGoal,
   updateGoal,
-  getHomeGoalsByUserId
+  getHomeGoalsByUserId,
+  achieveGoal,
+  updateIsAchieved,
+  keepGoal,
 };
 
 export default goalService;

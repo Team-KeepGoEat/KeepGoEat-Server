@@ -8,9 +8,19 @@ const getLastMonth = () => {
   return dayjs().format("YYYY-MM")
 };
 
+const getStartDate = (targetDate: string) => {
+  return dayjs(targetDate).startOf("date").format();
+}
+
+const getEndDate = (targetDate: string) => {
+  return dayjs(targetDate).endOf("date").format();
+}
+
 const date = {
   getCurrentMonth,
-  getLastMonth
+  getLastMonth,
+  getStartDate,
+  getEndDate
 }
 
 export default date;
