@@ -103,6 +103,7 @@ const keepGoal = async(req:Request, res:Response) => {
 
   try {
     const keptGoalId = await goalService.keepGoal(+goalId, isOngoing, keptAt);
+    console.log(keptAt);
     return res.status(sc.OK).send(success(sc.OK, rm.KEEP_GOAL_SUCCESS, { "goalId": keptGoalId }));
   } catch (error) {
     return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR)); // 서버 내부 에러
@@ -113,12 +114,11 @@ const keepGoal = async(req:Request, res:Response) => {
 const getHistoryByGoalId = async(req:Request, res:Response) => {
   // middleware로 유저 검증하는 로직도 필요함
   const { goalId } = req.params;
-  const { keptAt } = req.body;
   if (!goalId) {
     return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
   }
 
-  const foundGoal = await goalService.getGoalByGoalId(+goalId, keptAt);
+  const foundGoal = await goalService.getGoalByGoalId(+goalId);
 
   if (!foundGoal) {
     return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
