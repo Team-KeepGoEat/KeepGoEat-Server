@@ -33,6 +33,8 @@ export default {
   // 목표
   CREATE_GOAL_SUCCESS: "목표 추가에 성공했습니다.",
   DELETE_GOAL_SUCCESS: "목표 삭제에 성공했습니다.",
+  UPDATE_GOAL_SUCCESS: "목표 수정에 성공했습니다.",
+  KEEP_GOAL_SUCCESS: "목표 보관에 성공했습니다.",
 
   // 마이페이지
   GET_GOALS_SUCCESS_FOR_MYPAGE: "마이페이지 뷰 조회 성공",

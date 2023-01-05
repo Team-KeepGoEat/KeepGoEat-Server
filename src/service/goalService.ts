@@ -1,14 +1,61 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-const getGoalsByUserId = async (userId: number) => {
-  const allGoals = await prisma.goal.findMany({
+const getGoalsForMypage = async (userId: number, sort: string) => {
+  let goals;
+  let isMore;
+
+  if (sort !== "all") {
+    sort === "more" ? isMore = true : isMore = false;
+    goals = await prisma.goal.findMany({
+      where: {
+        writerId: userId,
+        isOngoing: false,
+        isMore: isMore
+      },
+      orderBy: {
+        startedAt: "desc"
+      },
+    });
+
+    return goals.map((goal) => {
+      return {
+        goalId: goal.goalId,
+        goalContent: goal.goalContent,
+        isMore: goal.isMore,
+        isOngoing: goal.isOngoing,
+        totalCount: goal.totalCount,
+        startedAt: goal.startedAt,
+        keptAt: goal.keptAt === null ? "" : goal.keptAt,
+        isAchieved: goal.isAchieved,
+        writerId: goal.writerId
+      }
+    });
+  }
+
+  goals = await prisma.goal.findMany({
     where: {
-      writerId: userId
-    }
+      writerId: userId,
+      isOngoing: false
+    },
+    orderBy: {
+      startedAt: "desc"
+    },
   });
 
-  return allGoals;
+  return goals.map((goal) => {
+    return {
+      goalId: goal.goalId,
+      goalContent: goal.goalContent,
+      isMore: goal.isMore,
+      isOngoing: goal.isOngoing,
+      totalCount: goal.totalCount,
+      startedAt: goal.startedAt,
+      keptAt: goal.keptAt === null ? "" : goal.keptAt,
+      isAchieved: goal.isAchieved,
+      writerId: goal.writerId
+    }
+  });
 };
 
 const getGoalByGoalId = async (goalId: number) => {
@@ -22,12 +69,12 @@ const getGoalByGoalId = async (goalId: number) => {
 };
 
 // 목표 추가
-const createGoal = async (goalContent: string, isMore: boolean, startedAt:string) => {
+const createGoal = async (userId:number, goalContent: string, isMore: boolean, startedAt: string) => {
   const data = await prisma.goal.create({
     data: {
       goalContent,
       isMore,
-      writerId: 1,
+      writerId:  userId,
       startedAt,
     },
   });
@@ -47,11 +94,41 @@ const deleteGoal = async (goalId: number) => {
   return data.goalId;
 };
 
+// 목표 수정
+const updateGoal = async (goalId: number, goalContent: string, isMore: boolean) => {
+  const data = await prisma.goal.update({
+    where: {
+      goalId
+    },
+    data: {
+      goalContent, 
+      isMore,
+    },
+  });
+  return data.goalId;
+};
+
+// 목표 보관
+const keepGoal = async(goalId: number, isOngoing: boolean, keptAt: string) => {
+  const data = await prisma.goal.update({
+    where: {
+      goalId,
+    }, 
+    data: {
+      isOngoing,
+      keptAt,
+    }
+  });
+  return data.goalId;
+}
+
 const goalService = {
-  getGoalsByUserId,
+  getGoalsForMypage,
+  getGoalByGoalId,
   createGoal,
   deleteGoal,
-  getGoalByGoalId,
+  updateGoal,
+  keepGoal,
 };
 
 export default goalService;
