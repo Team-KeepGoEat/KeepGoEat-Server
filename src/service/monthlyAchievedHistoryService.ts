@@ -10,19 +10,34 @@ const getMonthlyHistory = async (targetMonth: string, goalId: number) => {
   });
 
   if (!monthlyAchievedCount) {
-    return 0
+    return null;
   }
 
-  return monthlyAchievedCount.monthlyCount;
+  return monthlyAchievedCount;
+};
+
+const getMonthlyHistoryCount = async (targetMonth: string, goalId: number) => {
+  const monthlyAchievedHistory = await getMonthlyHistory(targetMonth, goalId);
+
+  if (!monthlyAchievedHistory) {
+    return 0;
+  }
+
+  return monthlyAchievedHistory.monthlyCount;
 };
 
 const updateMonthlyHistory = async (targetMonth: string, goalId: number, isAdded: boolean) => {
 
+  const monthlyAchievedHistory = await getMonthlyHistory(targetMonth, goalId);
+  
+  if (!monthlyAchievedHistory) {
+    return null;
+  }
+
   if (!isAdded) {
-    const monthlyAchievedCount = await prisma.monthly_Achieved_History.updateMany({
+    const updatedHistory = await prisma.monthly_Achieved_History.update({
       where: {
-        monthlyAchievedAt: targetMonth,
-        goalId: goalId
+        monthlyAchievedHistoryId: monthlyAchievedHistory.monthlyAchievedHistoryId
       },
       data: {
         monthlyCount: {
@@ -31,27 +46,27 @@ const updateMonthlyHistory = async (targetMonth: string, goalId: number, isAdded
       }
     });
 
-    return monthlyAchievedCount.monthlyCount;
+    return updatedHistory.monthlyCount;
   };
 
-  const monthlyAchievedCount = await prisma.monthly_Achieved_History.updateMany({
+  const updatedHistory = await prisma.monthly_Achieved_History.update({
     where: {
-      monthlyAchievedAt: targetMonth,
-      goalId: goalId
+      monthlyAchievedHistoryId: monthlyAchievedHistory.monthlyAchievedHistoryId
     },
     data: {
       monthlyCount: {
-        increment: 1,
+        decrement: 1,
       },
     }
   });
 
-  return monthlyAchievedCount.monthlyCount;
+  return updatedHistory.monthlyCount;
 };
 
 const monthlyAchievedHistoryService = {
   getMonthlyHistory,
-  updateMonthlyHistory
+  updateMonthlyHistory,
+  getMonthlyHistoryCount
 }
 
 export default monthlyAchievedHistoryService;
