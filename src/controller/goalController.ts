@@ -169,12 +169,13 @@ const achieveGoal = async (req: Request, res: Response) => {
   let data;
   try {
 
-    const data = await goalService.achieveGoal(+goalId, isAchieved as boolean);
+    data = await goalService.achieveGoal(+goalId, isAchieved as boolean);
     console.log("Data ", data);
 
   } catch (error) {
     return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR)); // 서버 내부 에러
   }
+
   if (data === achievedError.DOUBLE_ACHIEVED_ERROR) {
     return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.ACHIEVE_GOAL_FAIL_FOR_DOUBLE_ACHIEVE));
   }
