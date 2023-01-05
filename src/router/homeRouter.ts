@@ -3,6 +3,6 @@ import { goalController } from "../controller";
 
 const router:Router = Router();
 
-router.post("/", goalController.getHome);
+router.get("/", goalController.getHome);
 
 export default router;
