@@ -126,13 +126,29 @@ const getHome = async (req: Request, res: Response) => {
    }));
 };
 
+const achieveGoal = async (req: Request, res:Response) => {
+  const userId = req.user.userId;
+  const { goalId } = req.params;
+  const { isAchieved } = req.body;
+
+  if (!userId || isAchieved === null) {
+    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
+  }
+
+  
+
+  
+  
+}
+
 const goalController = {
   getMypageByUserId,
   createGoal,
   deleteGoal,
   updateGoal,
   getHistoryByGoalId,
-  getHome
+  getHome,
+  achieveGoal
 };
 
 export default goalController;
