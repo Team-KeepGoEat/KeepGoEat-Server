@@ -160,7 +160,6 @@ const keepGoal = async(goalId: number, isOngoing: boolean, keptAt: string) => {
 }
 
 // 목표 달성
-/*
 const achieveGoal = async (goalId: number, isAchieved: boolean) => {
   // 목표 테이블에 반영
   const updatedGoal = await goalService.updateIsAchieved(goalId, isAchieved); // 목표 테이블의 isAchieved 업데이트
@@ -169,7 +168,7 @@ const achieveGoal = async (goalId: number, isAchieved: boolean) => {
   // 달성 취소했을 경우
   if (!isAchieved) {
     const now = dayjs().format();
-    const dailyAchievedHistory = dailyAchievedHistoryService.getDailyAchievedHistory(now, goalId);
+    const dailyAchievedHistory = await dailyAchievedHistoryService.getDailyAchievedHistory(now, goalId);
   
     // 달성 기록이 없는 경우
     if (!dailyAchievedHistory) {
@@ -202,15 +201,14 @@ const achieveGoal = async (goalId: number, isAchieved: boolean) => {
     }
 
     await dailyAchievedHistoryService.updateDailyAchievedHistory(now, goalId) // 당일 달성 기록 갱신
-    const thisMonth = await monthlyAchievedHistoryService.getMonthlyHistory(currentMonth, goalId, isAchieved); // montlyCount 에 +1
+    const thisMonthCount = await monthlyAchievedHistoryService.updateMonthlyHistory(currentMonth, goalId, isAchieved); // montlyCount 에 +1
 
-    // 당일 달성 기록 있으면 갱신
     return {
-      "thisMonthCount": thisMonth.thismonthcount,
+      "thisMonthCount": thisMonthCount,
       "goalId": updatedGoal.goalId
     };  
 };
-*/
+
 
 // 목표 isAchieve 업데이트
 const updateIsAchieved = async (goalId: number, isAchieved: boolean) => {
@@ -233,7 +231,7 @@ const goalService = {
   deleteGoal,
   updateGoal,
   getHomeGoalsByUserId,
-  // achieveGoal,
+  achieveGoal,
   updateIsAchieved,
   keepGoal,
 };

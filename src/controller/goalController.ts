@@ -123,8 +123,8 @@ const getHistoryByGoalId = async(req:Request, res:Response) => {
     return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
   }
 
-  const thisMonthCount = await monthlyAchievedHistoryService.getMonthlyHistory(date.getCurrentMonth(), +goalId);
-  const lastMonthCount = await monthlyAchievedHistoryService.getMonthlyHistory(date.getLastMonth(), +goalId);
+  const thisMonthCount = await monthlyAchievedHistoryService.getMonthlyHistoryCount(date.getCurrentMonth(), +goalId);
+  const lastMonthCount = await monthlyAchievedHistoryService.getMonthlyHistoryCount(date.getLastMonth(), +goalId);
   
   const data = {
     "goalId": foundGoal.goalId,
