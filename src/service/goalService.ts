@@ -69,7 +69,7 @@ const getGoalByGoalId = async (goalId: number) => {
   return goal;
 };
 
-const getHomeGoalsByUserId = async (currentMonth: string , userId: number) => {
+const getHomeGoalsByUserId = async (currentMonth: string, userId: number) => {
 
   const goals = await prisma.goal.findMany({
     where: {
@@ -81,8 +81,8 @@ const getHomeGoalsByUserId = async (currentMonth: string , userId: number) => {
     }
   });
 
-  const rst = goals.map((goal) => {
-    const thisMonthCount = monthlyAchievedHistoryService.getMonthlyHistory(currentMonth, goal.goalId);
+  const rst = goals.map(async (goal) => {
+    const thisMonthCount = await monthlyAchievedHistoryService.getMonthlyHistory(currentMonth, goal.goalId);
 
     return {
       goalId: goal.goalId,

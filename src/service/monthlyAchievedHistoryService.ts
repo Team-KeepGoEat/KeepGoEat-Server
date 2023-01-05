@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-const getMonthlyHistory = async(targetMonth: string, goalId: number) => {
+const getMonthlyHistory = async (targetMonth: string, goalId: number) => {
   const monthlyAchievedCount = await prisma.monthly_Achieved_History.findFirst({
     where: {
       monthlyAchievedAt: targetMonth,
