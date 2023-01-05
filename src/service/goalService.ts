@@ -115,7 +115,7 @@ const keepGoal = async(goalId: number, isOngoing: boolean, keptAt: string) => {
       goalId,
     }, 
     data: {
-      isOngoing: false,
+      isOngoing,
       keptAt,
     }
   });
