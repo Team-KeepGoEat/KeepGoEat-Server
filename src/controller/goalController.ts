@@ -151,7 +151,7 @@ const getHome = async (req: Request, res: Response) => {
   return res.status(sc.OK).send(success(sc.OK, rm.GET_GOALS_SUCCCESS_FOR_HOME, { 
     "goals": result,
     "goalCount": result.length,
-    "cheeringMessage": cheeringMessage
+    "cheeringMessage": cheeringMessage.cheeringMessage
    }));
 };
 

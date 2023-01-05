@@ -74,7 +74,7 @@ const getGoalByGoalId = async (goalId: number) => {
 
 const getHomeGoalsByUserId = async (currentMonth: string, userId: number) => {
 
-  const goals = await prisma.goal.findMany({
+  const fountGoals = await prisma.goal.findMany({
     where: {
       writerId: userId,
       isOngoing: true
@@ -84,27 +84,26 @@ const getHomeGoalsByUserId = async (currentMonth: string, userId: number) => {
     }
   });
 
-  const rst = goals.map(async (goal) => {
-    const thisMonthCount = await monthlyAchievedHistoryService.getMonthlyHistory(currentMonth, goal.goalId);
+  const result = await Promise.all(
+    fountGoals.map((goal) => {
+      const thisMonthCount = monthlyAchievedHistoryService.getMonthlyHistory(currentMonth, goal.goalId);
+        return {
+          goalId: goal.goalId,
+          goalContent: goal.goalContent,
+          isMore: goal.isMore,
+          isOngoing: goal.isOngoing,
+          totalCount: goal.totalCount,
+          startedAt: goal.startedAt,
+          keptAt: goal.keptAt === null ? "" : goal.keptAt,
+          isAchieved: goal.isAchieved,
+          writerId: goal.writerId,
+          thisMonthCount: thisMonthCount
+        }
+    })
+  );
 
-    return {
-      goalId: goal.goalId,
-      goalContent: goal.goalContent,
-      isMore: goal.isMore,
-      isOngoing: goal.isOngoing,
-      totalCount: goal.totalCount,
-      startedAt: goal.startedAt,
-      keptAt: goal.keptAt === null ? "" : goal.keptAt,
-      isAchieved: goal.isAchieved,
-      writerId: goal.writerId,
-      thisMonthCount: thisMonthCount
-    }
-  });
-
-  console.log("rst ", rst);
-
-  return rst;
-}
+  return result;
+};
 
 // 목표 추가
 const createGoal = async (userId:number, goalContent: string, isMore: boolean, startedAt: string) => {
@@ -161,6 +160,7 @@ const keepGoal = async(goalId: number, isOngoing: boolean, keptAt: string) => {
 }
 
 // 목표 달성
+/*
 const achieveGoal = async (goalId: number, isAchieved: boolean) => {
   // 목표 테이블에 반영
   const updatedGoal = await goalService.updateIsAchieved(goalId, isAchieved); // 목표 테이블의 isAchieved 업데이트
@@ -210,6 +210,7 @@ const achieveGoal = async (goalId: number, isAchieved: boolean) => {
       "goalId": updatedGoal.goalId
     };  
 };
+*/
 
 // 목표 isAchieve 업데이트
 const updateIsAchieved = async (goalId: number, isAchieved: boolean) => {
@@ -232,7 +233,7 @@ const goalService = {
   deleteGoal,
   updateGoal,
   getHomeGoalsByUserId,
-  achieveGoal,
+  // achieveGoal,
   updateIsAchieved,
   keepGoal,
 };
