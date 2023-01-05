@@ -75,15 +75,14 @@ const deleteGoal = async (req: Request, res: Response) => {
 
 // 목표 수정
 const updateGoal = async(req: Request, res: Response) => {
-  const { goalContent, isMore } = req.body;
+  const { goalContent } = req.body;
   const { goalId } = req.params;
 
-  if (!goalId) {
-    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
-  }
-
   try {
-    const updatedGoalId = await goalService.updateGoal(+goalId, goalContent, isMore);
+    const updatedGoalId = await goalService.updateGoal(+goalId, goalContent);
+    if (!goalContent || goalContent === " ") {
+      return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
+    }
     return res.status(sc.OK).send(success(sc.OK, rm.UPDATE_GOAL_SUCCESS, { "goalId": updatedGoalId }));
   } catch (error) {
     return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR)); // 서버 내부 에러

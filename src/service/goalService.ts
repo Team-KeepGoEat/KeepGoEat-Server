@@ -95,14 +95,13 @@ const deleteGoal = async (goalId: number) => {
 };
 
 // 목표 수정
-const updateGoal = async (goalId: number, goalContent: string, isMore: boolean) => {
+const updateGoal = async (goalId: number, goalContent: string) => {
   const data = await prisma.goal.update({
     where: {
       goalId
     },
     data: {
-      goalContent, 
-      isMore,
+      goalContent 
     },
   });
   return data.goalId;
