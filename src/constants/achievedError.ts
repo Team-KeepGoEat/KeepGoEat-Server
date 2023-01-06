@@ -1,0 +1,4 @@
+export default {
+  DOUBLE_CANCELED_ERROR: -3,
+  DOUBLE_ACHIEVED_ERROR: -2,
+};
