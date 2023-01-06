@@ -9,7 +9,7 @@ const getRamdomMessage = async () => {
   });
 
   if (randoms.length === 0) {
-    return null;
+    return "";
   } 
 
   return randoms[0].cheeringMessage;
