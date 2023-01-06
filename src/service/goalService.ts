@@ -96,8 +96,8 @@ const getHomeGoalsByUserId = async (currentMonth: string, userId: number) => {
         isMore: goal.isMore,
         isOngoing: goal.isOngoing,
         totalCount: goal.totalCount,
-        startedAt: goal.startedAt,
-        keptAt: goal.keptAt === null ? "" : goal.keptAt,
+        startedAt: date.dateFormatter(goal.startedAt),
+        keptAt: goal.keptAt === null ? "" : date.dateFormatter(goal.keptAt),
         isAchieved: goal.isAchieved,
         writerId: goal.writerId,
         thisMonthCount: thisMonthCount

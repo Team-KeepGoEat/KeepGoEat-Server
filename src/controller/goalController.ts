@@ -162,8 +162,6 @@ const getHome = async (req: Request, res: Response) => {
   } catch (error) {
     return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
   }
-
-
 };
 
 const achieveGoal = async (req: Request, res: Response) => {
