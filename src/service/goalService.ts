@@ -89,7 +89,7 @@ const getHomeGoalsByUserId = async (currentMonth: string, userId: number) => {
   const result = await Promise.all(
     fountGoals.map(async (goal) => {
       const thisMonthCount = await monthlyAchievedHistoryService.getMonthlyHistoryCount(currentMonth, goal.goalId);
-      console.log("thisMonthCount ", thisMonthCount )
+
       return {
         goalId: goal.goalId,
         goalContent: goal.goalContent,

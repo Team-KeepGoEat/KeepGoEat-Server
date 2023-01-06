@@ -7,6 +7,7 @@ import { monthlyAchievedHistoryService } from "../service";
 import date from "../modules/date"
 import boxCounter from "../modules/boxCounter";
 import achievedError from "../constants/achievedError";
+import time from "../modules/time";
 
 const sortType = {
   ALL: "all",
@@ -152,11 +153,13 @@ const getHome = async (req: Request, res: Response) => {
   try {
     const result = await goalService.getHomeGoalsByUserId(date.getCurrentMonth(), +userId);
     const cheeringMessage = await cheeringMessageService.getRamdomMessage();
+    const currentDayTime = await time.getDayTime();
 
     return res.status(sc.OK).send(success(sc.OK, rm.GET_GOALS_SUCCCESS_FOR_HOME, {
       "goals": result,
       "goalCount": result.length,
-      "cheeringMessage": cheeringMessage.cheeringMessage
+      "cheeringMessage": cheeringMessage.cheeringMessage,
+      "daytime": currentDayTime
     }));
 
   } catch (error) {

@@ -8,7 +8,6 @@ const getRamdomMessage = async () => {
     skip: skip
   });
 
-  console.log("ramdoms ", ramdoms);
   return ramdoms[0];
 }
 
