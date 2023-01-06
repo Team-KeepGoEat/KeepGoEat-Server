@@ -42,7 +42,7 @@ model Goal {
 model Monthly_Achieved_History {
   monthlyAchievedHistoryId Int    @id @default(autoincrement())
   monthlyAchievedAt        String @db.VarChar(100)
-  monthlyCount             Int
+  monthlyCount             Int    @default(1)
   goalId                   Int?
   Goal                     Goal?  @relation(fields: [goalId], references: [goalId], onDelete: NoAction, onUpdate: NoAction, map: "Monthly_Achieved_History_Goal_null_fk")
 }

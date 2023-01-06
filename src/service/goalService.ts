@@ -176,16 +176,21 @@ const achieveGoal = async (goalId: number, isAchieved: boolean) => {
       const now = dayjs().format();
       const dailyAchievedHistory = await dailyAchievedHistoryService.getDailyAchievedHistory(now, goalId);
 
-      // 달성 기록이 없는 경우
+      // 일별 달성 기록이 없는 경우
       if (!dailyAchievedHistory) {
         console.log("달성 취소(isAchieved false) 요청 실패. 달성이 안된 목표를 취소하려함");
         return achievedError.DOUBLE_CANCELED_ERROR;
       }
 
-      // 달성 기록이 있는 경우
+      // 일별 달성 기록이 있는 경우
       await dailyAchievedHistoryService.deleteDailyAchievedHistoryById(dailyAchievedHistory.dailyAchievedId); // 달성 기록 삭제 
+      // 월별 달성 기록이 있는지 확인하고 있으면 월별 달성 기록 -1 해줌 없으면 에러
       const thisMonthCount = await monthlyAchievedHistoryService.updateMonthlyHistory(currentMonth, goalId, isAchieved) // 달성 기록 업데이터
 
+      if (!thisMonthCount) {
+        console.log("월별 달성 기록이 없는 목표를 취소하려함");
+        return achievedError.CANCELED_NOT_EXISTING_MONTHLY;
+      }
       console.log("###### 달성 취소(isAchieved false) 요청 성공 ######");
       return {
         "thisMonthCount": thisMonthCount,
@@ -200,10 +205,12 @@ const achieveGoal = async (goalId: number, isAchieved: boolean) => {
     console.log("dailyAchievedHistory ", dailyAchievedHistory);
     console.log("목표 달성 시작")
 
-    // 달성 기록이 없는 경우
+    // 일별 달성 기록이 없는 경우
     if (!dailyAchievedHistory) {
       console.log("목표 달성 기록이 없음")
-      await dailyAchievedHistoryService.createDailyAchievedHistory(goalId); // 당일 달성 기록 추가
+      // 당일 달성 기록 추가
+      await dailyAchievedHistoryService.createDailyAchievedHistory(goalId); 
+      // 월별 달성 기록이 없으면 만들어주고 있으면 업데이트해줌
       const thisMonthCount = await monthlyAchievedHistoryService.updateMonthlyHistory(currentMonth, goalId, isAchieved); // montlyCount 에 +1
 
       return {
