@@ -10,7 +10,7 @@ const resetIsAchieved = async () => {
       }
     });
   } catch (error) {
-    console.log("isAchieved 업데이트 ", error);
+    console.log("isAchieved 업데이트 실패 ", error);
   }
 };
 
