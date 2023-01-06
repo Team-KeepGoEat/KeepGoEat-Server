@@ -7,7 +7,6 @@ import { monthlyAchievedHistoryService } from "../service";
 import date from "../modules/date"
 import boxCounter from "../modules/boxCounter";
 import achievedError from "../constants/achievedError";
-import { off } from "process";
 
 const sortType = {
   ALL: "all",
@@ -18,7 +17,8 @@ const sortType = {
 const getMypageByUserId = async (req: Request, res: Response) => {
   const userId = req.user.userId;
 
-  console.log("user ", userId)
+  console.log("마이페이지 시작");
+  console.log("user ", userId);
   const sort = req.query.sort as string;
 
   if (!userId || !sort) {
