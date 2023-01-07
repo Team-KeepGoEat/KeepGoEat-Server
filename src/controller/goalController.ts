@@ -156,7 +156,6 @@ const achieveGoal = async (req: Request, res: Response) => {
 };
 
 const goalController = {
-  getMypageByUserId,
   createGoal,
   deleteGoal,
   updateGoal,
