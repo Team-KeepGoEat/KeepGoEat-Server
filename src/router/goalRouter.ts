@@ -12,7 +12,7 @@ router.post(
   goalController.keepGoal
 );
 
-router.post("/achieve/:goalId", auth, goalController.achieveGoal);
+router.post("/achieve/:goalId", goalController.achieveGoal);
 
 //* 목표 수정 - POST ~/goal/:goalId
 router.post(

@@ -3,14 +3,16 @@ import { CreateGoalDTO } from "../interfaces/goal/CreateGoalDTO";
 import { Request, Response } from "express";
 import { sc, rm } from "../constants";
 import { fail, success } from "../constants/response";
-import { goalService, cheeringMessageService } from "../service";
 import dayjs from "dayjs";
-import { monthlyAchievedHistoryService } from "../service";
+import { dailyAchievedHistoryService, goalService } from "../service";
 import date from "../modules/date"
 import boxCounter from "../modules/boxCounter";
 import achievedError from "../constants/achievedError";
 import { validationResult } from "express-validator";
+<<<<<<< HEAD
 
+=======
+>>>>>>> 97eb3032eaba9f473d29aac7d682fbf5befc2737
 
 const sortType = {
   ALL: "all",
@@ -133,8 +135,8 @@ const getHistoryByGoalId = async (req: Request, res: Response) => {
       return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
     }
 
-    const thisMonthCount = await monthlyAchievedHistoryService.getMonthlyHistoryCount(date.getCurrentMonth(), +goalId);
-    const lastMonthCount = await monthlyAchievedHistoryService.getMonthlyHistoryCount(date.getLastMonth(), +goalId);
+    const thisMonthCount = await dailyAchievedHistoryService.getAchievedCount(+goalId, date.getCurrentMonthMinus9());
+    const lastMonthCount = await dailyAchievedHistoryService.getAchievedCount(+goalId, date.getLastMonthMinus9());
 
     const data = {
       "goalId": foundGoal.goalId,
@@ -152,29 +154,6 @@ const getHistoryByGoalId = async (req: Request, res: Response) => {
     return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
   }
 }
-
-const getHome = async (req: Request, res: Response) => {
-  const userId = req.user.userId;
-  if (!userId) {
-    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
-  }
-
-  try {
-    const result = await goalService.getHomeGoalsByUserId(date.getCurrentMonth(), +userId);
-    const cheeringMessage = await cheeringMessageService.getRamdomMessage();
-
-    return res.status(sc.OK).send(success(sc.OK, rm.GET_GOALS_SUCCCESS_FOR_HOME, {
-      "goals": result,
-      "goalCount": result.length,
-      "cheeringMessage": cheeringMessage.cheeringMessage
-    }));
-
-  } catch (error) {
-    return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
-  }
-
-
-};
 
 const achieveGoal = async (req: Request, res: Response) => {
   const userId = req.user.userId;
@@ -214,7 +193,6 @@ const goalController = {
   deleteGoal,
   updateGoal,
   getHistoryByGoalId,
-  getHome,
   achieveGoal,
   keepGoal
 };
