@@ -182,18 +182,14 @@ const achieveGoal = async (goalId: number, isAchieved: boolean) => {
         return achievedError.DOUBLE_CANCELED_ERROR;
       }
 
+      
       // 일별 달성 기록이 있는 경우
       await dailyAchievedHistoryService.deleteDailyAchievedHistoryById(dailyAchievedHistory.dailyAchievedId); // 달성 기록 삭제 
-      // 월별 달성 기록이 있는지 확인하고 있으면 월별 달성 기록 -1 해줌 없으면 에러
-      const thisMonthCount = await monthlyAchievedHistoryService.updateMonthlyHistory(currentMonth, goalId, isAchieved) // 달성 기록 업데이터
+      const groupBy = await dailyAchievedHistoryService.getAchievedCount(goalId, "2023-01")
 
-      if (!thisMonthCount) {
-        console.log("월별 달성 기록이 없는 목표를 취소하려함");
-        return achievedError.CANCELED_NOT_EXISTING_MONTHLY;
-      }
       console.log("###### 달성 취소(isAchieved false) 요청 성공 ######");
       return {
-        "thisMonthCount": thisMonthCount,
+        "groupBy": groupBy,
         "goalId": updatedGoal.goalId,
         "updatedIsAchieved": updatedGoal.isAchieved
       };
@@ -211,10 +207,10 @@ const achieveGoal = async (goalId: number, isAchieved: boolean) => {
       // 당일 달성 기록 추가
       await dailyAchievedHistoryService.createDailyAchievedHistory(goalId); 
       // 월별 달성 기록이 없으면 만들어주고 있으면 업데이트해줌
-      const thisMonthCount = await monthlyAchievedHistoryService.updateMonthlyHistory(currentMonth, goalId, isAchieved); // montlyCount 에 +1
+      const groupBy = await dailyAchievedHistoryService.getAchievedCount(goalId, "2023-01")
 
       return {
-        "thisMonthCount": thisMonthCount,
+        "groupBy": groupBy,
         "goalId": updatedGoal.goalId,
         "updatedIsAchieved": updatedGoal.isAchieved
       };

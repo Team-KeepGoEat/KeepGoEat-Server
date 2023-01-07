@@ -8,17 +8,21 @@ const getLastMonth = () => {
   return dayjs().subtract(1, "month").format("YYYY-MM");
 };
 
-const getStartDate = (targetDate: string) => {
-  return dayjs(targetDate).startOf("date").format();
+const getStartDateMinus9 = (targetDate: string) => {
+  return dayjs(targetDate).subtract(9, "hour").startOf("date").format();
 }
 
-const getEndDate = (targetDate: string) => {
-  return dayjs(targetDate).endOf("date").format();
+const getEndDateMinus9 = (targetDate: string) => {
+  return dayjs(targetDate).subtract(9, "hour").endOf("date").format();
+}
+
+const getNowPlus9 = () => {
+  return dayjs().add(9, "hour").format();
 }
 
 const dateFormatter = (targetDate: unknown) => {
   // console.log(dayjs(targetDate)
-  let year = dayjs(targetDate as string).get("year");
+  const year  = dayjs(targetDate as string).get("year");
   let month: number | string = dayjs(targetDate as string).get("month") + 1;
   let date: number | string = dayjs(targetDate as string).get("date");
 
@@ -36,9 +40,10 @@ const dateFormatter = (targetDate: unknown) => {
 const date = {
   getCurrentMonth,
   getLastMonth,
-  getStartDate,
-  getEndDate,
-  dateFormatter
+  getStartDateMinus9,
+  getEndDateMinus9,
+  dateFormatter,
+  getNowPlus9
 }
 
 export default date;

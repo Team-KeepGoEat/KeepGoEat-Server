@@ -1,4 +1,4 @@
-import dayjs from 'dayjs';
+import dayjs from "dayjs";
 import { PrismaClient } from "@prisma/client";
 import date from "../modules/date";
 const prisma = new PrismaClient();
@@ -9,11 +9,13 @@ const getDailyAchievedHistory = async (targetDate: string, goalId: number) => {
     where: {
       goalId: goalId,
       achievedAt: {
-        lte: date.getEndDate(targetDate),
-        gte: date.getStartDate(targetDate)
+        lte: date.getEndDateMinus9(targetDate),
+        gte: date.getStartDateMinus9(targetDate)
       }
     },
   });
+  console.log("endDate ", date.getEndDateMinus9(targetDate));
+  console.log("startDate ", date.getStartDateMinus9(targetDate));
 
   console.log("[getDailyAchievedHistory] dailyAchievedHistory: ", dailyAchievedHistory);
   return dailyAchievedHistory;
@@ -23,8 +25,9 @@ const getDailyAchievedHistory = async (targetDate: string, goalId: number) => {
 const createDailyAchievedHistory = async (goalId: number) => {
   const newDailyAchievedHistory = await prisma.daily_Achieved_History.create({
     data: {
-      achievedAt: dayjs().format(),
-      goalId: goalId
+      achievedAt: date.getNowPlus9(),
+      goalId: goalId,
+      achievedMonth: "2023-01"
     }
   });
 
@@ -33,20 +36,21 @@ const createDailyAchievedHistory = async (goalId: number) => {
 }
 
 // 달성 버튼 눌렀을 때 오늘 달성된 값 날짜 업데이트
+// 안씀
 const updateDailyAchievedHistory = async (targetDate: string, goalId: number) => {
-  console.log("[updateDailyAchievedHistory] endDate ", date.getEndDate(targetDate));
-  console.log("[updateDailyAchievedHistory] endDate ", date.getStartDate(targetDate));
+  console.log("[updateDailyAchievedHistory] endDate ", date.getEndDateMinus9(targetDate));
+  console.log("[updateDailyAchievedHistory] endDate ", date.getStartDateMinus9(targetDate));
 
   const newDailyAchievedHistory = await prisma.daily_Achieved_History.updateMany({
     where: {
       goalId: goalId,
       achievedAt: {
-        lte: date.getEndDate(targetDate),
-        gte: date.getStartDate(targetDate)
+        lte: date.getEndDateMinus9(targetDate),
+        gte: date.getStartDateMinus9(targetDate)
       }
     },
     data: {
-      achievedAt: dayjs().format(),
+      achievedAt: date.getNowPlus9(),
     }
   });
 
@@ -68,11 +72,30 @@ const deleteDailyAchievedHistoryById = async (achievedId: number) => {
   console.log("[deleteDailyAchievedHistoryById] 월별 달성 목표 삭제 성공");
 }
 
+
+const getAchievedCount = async (goalId: number, achievedMonth: string) => {
+  const groupBy = await prisma.daily_Achieved_History.groupBy({
+    by: ["achievedMonth", "goalId"],
+    where: {
+      goalId: goalId,
+      achievedMonth: achievedMonth
+    },
+    _count: {
+      dailyAchievedId: true,
+    }
+  });
+  console.log("groupBy ", groupBy);
+
+  return groupBy;
+
+}
+
 const dailyAchievedHistoryService = {
   getDailyAchievedHistory,
   createDailyAchievedHistory,
   updateDailyAchievedHistory,
-  deleteDailyAchievedHistoryById
+  deleteDailyAchievedHistoryById,
+  getAchievedCount
 }
 
 export default dailyAchievedHistoryService;

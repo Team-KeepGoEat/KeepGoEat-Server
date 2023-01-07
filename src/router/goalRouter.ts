@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { goalController } from "../controller";
 import auth from "../middlewares/auth";
+import { DateMiddleware } from "../middlewares/date";
 
 const router: Router = Router();
 
