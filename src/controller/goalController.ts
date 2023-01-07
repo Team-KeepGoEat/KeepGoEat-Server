@@ -1,3 +1,4 @@
+import { UpdateGoalDTO } from '../interfaces/goal/UpdateGoalDTO';
 import { CreateGoalDTO } from '../interfaces/goal/CreateGoalDTO';
 import { Request, Response } from "express";
 import { sc, rm } from "../constants";
@@ -77,14 +78,19 @@ const deleteGoal = async (req: Request, res: Response) => {
 
 // 목표 수정
 const updateGoal = async (req: Request, res: Response) => {
-  const { goalContent } = req.body;
+
+  // validation의 결과를 바탕으로 분기 처리
+  const error = validationResult(req);
+  if(!error.isEmpty()) {
+    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
+  }
+
+  const updateGoalDTO: UpdateGoalDTO = req.body;
   const { goalId } = req.params;
 
   try {
-    const updatedGoalId = await goalService.updateGoal(+goalId, goalContent);
-    if (!goalContent || goalContent === " ") {
-      return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
-    }
+
+    const updatedGoalId = await goalService.updateGoal(+goalId, updateGoalDTO);
     return res.status(sc.OK).send(success(sc.OK, rm.UPDATE_GOAL_SUCCESS, { "goalId": updatedGoalId }));
   } catch (error) {
     return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR)); // 서버 내부 에러
