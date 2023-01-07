@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { goalController } from "../controller";
 import auth from "../middlewares/auth";
-const { body } = require('express-validator');
+const { body } = require("express-validator");
 
 const router: Router = Router();
 

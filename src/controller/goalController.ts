@@ -1,5 +1,5 @@
-import { UpdateGoalDTO } from '../interfaces/goal/UpdateGoalDTO';
-import { CreateGoalDTO } from '../interfaces/goal/CreateGoalDTO';
+import { UpdateGoalDTO } from "../interfaces/goal/UpdateGoalDTO";
+import { CreateGoalDTO } from "../interfaces/goal/CreateGoalDTO";
 import { Request, Response } from "express";
 import { sc, rm } from "../constants";
 import { fail, success } from "../constants/response";
@@ -9,7 +9,8 @@ import { monthlyAchievedHistoryService } from "../service";
 import date from "../modules/date"
 import boxCounter from "../modules/boxCounter";
 import achievedError from "../constants/achievedError";
-import { validationResult } from 'express-validator';
+import { validationResult } from "express-validator";
+;
 
 const sortType = {
   ALL: "all",

@@ -1,4 +1,4 @@
-import dayjs from 'dayjs';
+import dayjs from "dayjs";
 import { PrismaClient } from "@prisma/client";
 import date from "../modules/date";
 const prisma = new PrismaClient();
