@@ -79,7 +79,8 @@ const keepGoal = async (req: Request, res: Response) => {
   }
 
   try {
-    const keptGoalId = await goalService.keepGoal(+goalId, isOngoing, date.getNowPlus9());
+    const keptAt = date.getNowPlus9()
+    const keptGoalId = await goalService.keepGoal(+goalId, isOngoing, keptAt);
     return res.status(sc.OK).send(success(sc.OK, rm.KEEP_GOAL_SUCCESS, { "goalId": keptGoalId }));
   } catch (error) {
     return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR)); // 서버 내부 에러
