@@ -1,5 +1,4 @@
 export { default as goalService } from "./goalService";
 export { default as userService } from "./userService";
-export { default as monthlyAchievedHistoryService } from "./monthlyAchievedHistoryService";
 export { default as cheeringMessageService } from "./cheeringMessageService";
 export { default as dailyAchievedHistoryService } from "./dailyAchievedHistoryService";
