@@ -4,6 +4,7 @@ import monthlyAchievedHistoryService from "./monthlyAchievedHistoryService";
 import dayjs from "dayjs";
 import date from "../modules/date";
 import achievedError from "../constants/achievedError";
+
 const prisma = new PrismaClient();
 
 const getGoalsForMypage = async (userId: number, sort: string) => {
@@ -23,15 +24,15 @@ const getGoalsForMypage = async (userId: number, sort: string) => {
       },
     });
 
-    return goals.map((goal) => {
+    const result = goals.map((goal) => {
       return {
         goalId: goal.goalId,
         goalContent: goal.goalContent,
         isMore: goal.isMore,
         isOngoing: goal.isOngoing,
         totalCount: goal.totalCount,
-        startedAt: goal.startedAt,
-        keptAt: goal.keptAt === null ? "" : goal.keptAt,
+        startedAt: dayjs(goal.startedAt).format("YYYY.MM.DD"),
+        keptAt: goal.keptAt === null ? "" : dayjs(goal.keptAt).format("YYYY. MM. DD"),
         isAchieved: goal.isAchieved,
         writerId: goal.writerId
       }
@@ -55,8 +56,8 @@ const getGoalsForMypage = async (userId: number, sort: string) => {
       isMore: goal.isMore,
       isOngoing: goal.isOngoing,
       totalCount: goal.totalCount,
-      startedAt: goal.startedAt,
-      keptAt: goal.keptAt === null ? "" : goal.keptAt,
+      startedAt: date.dateFormatter(goal.startedAt),
+      keptAt: goal.keptAt === null ? "" : date.dateFormatter(goal.keptAt),
       isAchieved: goal.isAchieved,
       writerId: goal.writerId
     }
