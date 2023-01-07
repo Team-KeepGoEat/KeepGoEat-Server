@@ -43,7 +43,6 @@ const deleteGoal = async (req: Request, res: Response) => {
     const deletedGoalId = await goalService.deleteGoal(+goalId);
     return res.status(sc.OK).send(success(sc.OK, rm.DELETE_GOAL_SUCCESS, { "goalId": deletedGoalId }));
   } catch (error) {
-    console.log(error)
     return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR)); // 서버 내부 에러
   }
 };
