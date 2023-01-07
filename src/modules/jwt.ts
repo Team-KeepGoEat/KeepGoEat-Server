@@ -33,8 +33,10 @@ const verify = (accessToken: string) => {
     decodedToken = jwt.verify(accessToken, secretKey);
   } catch (error: any) {
     if (error.message === "jwt expired") {
+      console.log("만료된 토큰")
       return tokenType.TOKEN_EXPIRED;
     } else if (error.message === "invalid token") {
+      console.log("유효하지 않은 토큰 토큰");
       return tokenType.TOKEN_INVALID;
     } else {
       return tokenType.TOKEN_INVALID;

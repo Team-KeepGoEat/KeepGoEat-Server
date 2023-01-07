@@ -1,10 +1,10 @@
-import { fail } from './../constants/response';
+import { fail } from "./../constants/response";
 import { Request, Response, NextFunction } from "express"
 import { sc, rm } from "../constants";
 import jwt from "../modules/jwt";
 import tokenType from "../constants/tokenType";
 import { JwtPayload } from "jsonwebtoken";
-import { userService } from '../service';
+import { userService } from "../service";
 
 const auth = async (req: Request, res: Response, next: NextFunction) => {
   const accessToken = req.headers.accesstoken;
@@ -19,19 +19,19 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
       return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.EXPIRED_TOKEN));
     }
     if (decodedToken === tokenType.TOKEN_INVALID) {
-      return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.INVALID_TOKEN));
+      return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.INVALID_ACCESS_TOKEN));
     }
 
     const userId = (decodedToken as JwtPayload).id;
     if (!userId) {
-      return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.INVALID_TOKEN));
+      return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.INVALID_ACCESS_TOKEN));
     }
 
     const foundUser = await userService.getUserByUserId(userId);
 
     if (!foundUser) {
       return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.NOT_EXISITING_USER));
-    };
+    }
 
     req.user = foundUser;
     next();
