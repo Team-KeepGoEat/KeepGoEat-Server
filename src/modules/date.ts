@@ -30,11 +30,16 @@ const getNowPlus9 = () => {
   return dayjs().add(9, "hour").format();
 }
 
+const minusDate9h = (targetDate: unknown) => {
+  return dayjs(targetDate as string).subtract(9, "hour").format();
+}
+
 const dateFormatter = (targetDate: unknown) => {
   
-  const year  = dayjs(targetDate as string).get("year");
-  let month: number | string = dayjs(targetDate as string).get("month") + 1;
-  let date: number | string = dayjs(targetDate as string).get("date");
+  const minusDate = minusDate9h(targetDate);
+  const year  = dayjs(minusDate as string).get("year");
+  let month: number | string = dayjs(minusDate as string).get("month") + 1;
+  let date: number | string = dayjs(minusDate as string).get("date");
 
   if (1 <= month && month <= 9) {
     month = "0" + month.toString();
@@ -53,7 +58,8 @@ const date = {
   getStartDatePlus9,
   getEndDatePlus9,
   dateFormatter,
-  getNowPlus9
+  getNowPlus9,
+  minusDate9h
 }
 
 export default date;

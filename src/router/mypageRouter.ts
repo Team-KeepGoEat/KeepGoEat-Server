@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { goalController } from "../controller";
+import { mypageController } from "../controller";
 
 const router:Router = Router();
 
-router.get("/", goalController.getMypageByUserId);
+router.get("/", mypageController.getMypageByUserId);
 
 export default router;
