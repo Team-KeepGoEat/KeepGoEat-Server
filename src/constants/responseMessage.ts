@@ -35,12 +35,18 @@ export default {
   DELETE_GOAL_SUCCESS: "목표 삭제에 성공했습니다.",
   UPDATE_GOAL_SUCCESS: "목표 수정에 성공했습니다.",
   KEEP_GOAL_SUCCESS: "목표 보관에 성공했습니다.",
+  ACHIEVE_GOAL_SUCCESS: "목표 달성/취소에 성공했습니다",
+  ACHIEVE_GOAL_FAIL_FOR_DOUBLE_CANCEL: "달성하지 않은 목표를 취소하려는 시도입니다",
+  ACHIEVE_GOAL_FAIL_FOR_DOUBLE_ACHIEVE: "달성한 목표를 또 달성하려는 시도입니다",
 
   // 마이페이지
   GET_GOALS_SUCCESS_FOR_MYPAGE: "마이페이지 뷰 조회 성공",
 
   // 기록뷰
-  GET_GOAL_SUCCESS_FOR_HISTORY: "마이페이지 뷰 조회 성공"
+  GET_GOAL_SUCCESS_FOR_HISTORY: "기록뷰 조회 성공",
+
+  // 홈뷰
+  GET_GOALS_SUCCCESS_FOR_HOME: "홈 뷰 조회 성공"
 
 
 };

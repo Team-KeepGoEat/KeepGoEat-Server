@@ -7,6 +7,8 @@ const router: Router = Router();
 //* 목표 보관 - POST ~/goal/keep/:goalId 
 router.post("/keep/:goalId", auth, goalController.keepGoal);
 
+router.post("/achieve/:goalId", auth, goalController.achieveGoal);
+
 //* 목표 수정 - POST ~/goal/:goalId
 router.post("/:goalId", auth, goalController.updateGoal);
 
