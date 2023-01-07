@@ -9,38 +9,6 @@ import date from "../modules/date"
 import boxCounter from "../modules/boxCounter";
 import achievedError from "../constants/achievedError";
 import { validationResult } from "express-validator";
-<<<<<<< HEAD
-
-=======
->>>>>>> 97eb3032eaba9f473d29aac7d682fbf5befc2737
-
-const sortType = {
-  ALL: "all",
-  MORE: "more",
-  LESS: "less"
-};
-
-const getMypageByUserId = async (req: Request, res: Response) => {
-  const userId = req.user.userId;
-
-  const sort = req.query.sort as string;
-
-  if (!userId || !sort) {
-    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
-  }
-
-  if (sort !== sortType.ALL && sort !== sortType.MORE && sort !== sortType.LESS) {
-    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
-  }
-
-  try {
-    const foundGoals = await goalService.getGoalsForMypage(+userId, sort as string);
-    return res.status(sc.OK).send(success(sc.OK, rm.GET_GOALS_SUCCESS_FOR_MYPAGE, { "goals": foundGoals, "goalCount": foundGoals.length }));
-  } catch (error) {
-    return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
-  }
-
-};
 
 // 목표 추가
 const createGoal = async (req: Request, res: Response) => {
