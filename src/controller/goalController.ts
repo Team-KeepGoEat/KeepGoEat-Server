@@ -87,7 +87,7 @@ const updateGoal = async (req: Request, res: Response) => {
   const { goalId } = req.params;
 
   try {
-    const updatedGoalId = await goalService.updateGoal(+goalId, updateGoalDTO.goalContent);
+    const updatedGoalId = await goalService.updateGoal(+goalId, updateGoalDTO);
     return res.status(sc.OK).send(success(sc.OK, rm.UPDATE_GOAL_SUCCESS, { "goalId": updatedGoalId }));
   } catch (error) {
     return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR)); // 서버 내부 에러

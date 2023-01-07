@@ -8,9 +8,6 @@ const router: Router = Router();
 //* 목표 보관 - POST ~/goal/keep/:goalId 
 router.post(
   "/keep/:goalId", 
-  [
-    body("goalContent").trim().notEmpty(),
-  ],
   auth, 
   goalController.keepGoal
 );
@@ -18,7 +15,14 @@ router.post(
 router.post("/achieve/:goalId", auth, goalController.achieveGoal);
 
 //* 목표 수정 - POST ~/goal/:goalId
-router.post("/:goalId", auth, goalController.updateGoal);
+router.post(
+  "/:goalId", 
+  [
+    body("goalContent").trim().notEmpty(),
+  ],
+  auth, 
+  goalController.updateGoal
+);
 
 //* 목표 삭제 - DELETE ~/goal/:goalId
 router.delete("/:goalId", auth, goalController.deleteGoal);
