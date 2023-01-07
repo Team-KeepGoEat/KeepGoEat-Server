@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { goalController } from "../controller";
 import auth from "../middlewares/auth";
+const { body } = require('express-validator');
 
 const router: Router = Router();
 
@@ -16,6 +17,14 @@ router.post("/:goalId", auth, goalController.updateGoal);
 router.delete("/:goalId", auth, goalController.deleteGoal);
 
 //* 목표 추가 - POST ~/goal
-router.post("/", auth, goalController.createGoal);
+router.post(
+  "/", 
+  [
+    body("goalContent").trim().notEmpty(), // 공백 문자열도 NULL VALUE 에러 걸리도록
+    body("isMore").notEmpty(),
+  ], 
+  auth, 
+  goalController.createGoal
+);
 
 export default router;
