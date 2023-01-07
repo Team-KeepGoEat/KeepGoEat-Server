@@ -19,12 +19,12 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
       return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.EXPIRED_TOKEN));
     }
     if (decodedToken === tokenType.TOKEN_INVALID) {
-      return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.INVALID_TOKEN));
+      return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.INVALID_ACCESS_TOKEN));
     }
 
     const userId = (decodedToken as JwtPayload).id;
     if (!userId) {
-      return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.INVALID_TOKEN));
+      return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.INVALID_ACCESS_TOKEN));
     }
 
     const foundUser = await userService.getUserByUserId(userId);
