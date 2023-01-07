@@ -27,8 +27,7 @@ const createGoal = async (req: Request, res: Response) => {
     const createGoalDTO: CreateGoalDTO = req.body; // createGoal DTO 는 request header나 parameter에는 안쓴다~~ response body request body에 쓴다. api별로 createGoalDTO 이런식으로!
 
     // dayjs 모듈에서 시간을 받아서 서버측에서 클라로 찍어주기
-    const startedAt = dayjs().format();
-    const data = await goalService.createGoal(userId, createGoalDTO, startedAt as string);
+    const data = await goalService.createGoal(userId, createGoalDTO, date.getNowPlus9());
 
     return res.status(sc.OK).send(success(sc.OK, rm.CREATE_GOAL_SUCCESS, data));
   } catch (error) {
