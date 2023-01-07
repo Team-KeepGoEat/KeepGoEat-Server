@@ -86,7 +86,7 @@ const getAchievedCount = async (goalId: number, achievedMonth: string) => {
   });
   console.log("groupBy ", groupBy);
 
-  return groupBy;
+  return groupBy[0]._count.dailyAchievedId;
 
 }
 
