@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { CreateGoalDTO } from "../interfaces/goal/CreateGoalDTO";
 import dailyAchievedHistoryService from "./dailyAchievedHistoryService";
 import monthlyAchievedHistoryService from "./monthlyAchievedHistoryService";
 import dayjs from "dayjs";
@@ -109,12 +110,12 @@ const getHomeGoalsByUserId = async (currentMonth: string, userId: number) => {
 };
 
 // 목표 추가
-const createGoal = async (userId: number, goalContent: string, isMore: boolean, startedAt: string) => {
+const createGoal = async (userId: number, createGoalDTO: CreateGoalDTO, startedAt: string) => {
   const data = await prisma.goal.create({
     data: {
-      goalContent,
-      isMore,
-      writerId: userId,
+      goalContent: createGoalDTO.goalContent,
+      isMore: createGoalDTO.isMore,
+      writerId:  userId,
       startedAt,
     },
   });
