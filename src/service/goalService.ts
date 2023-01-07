@@ -168,11 +168,11 @@ const achieveGoal = async (goalId: number, isAchieved: boolean) => {
     // 목표 테이블에 반영
     const updatedGoal = await goalService.updateIsAchieved(goalId, isAchieved); // 목표 테이블의 isAchieved 업데이트
     console.log(updatedGoal.goalContent, " 목표의 isAchieved 변경: ", updatedGoal.isAchieved);
-    const currentMonth = date.getCurrentMonth();
 
     // 달성 취소했을 경우
     if (!isAchieved) {
       console.log("###### 달성된 목표 취소 시작 ######")
+      // const now = date.getNowPlus9();
       const now = dayjs().format();
       const dailyAchievedHistory = await dailyAchievedHistoryService.getDailyAchievedHistory(now, goalId);
 
@@ -182,7 +182,6 @@ const achieveGoal = async (goalId: number, isAchieved: boolean) => {
         return achievedError.DOUBLE_CANCELED_ERROR;
       }
 
-      
       // 일별 달성 기록이 있는 경우
       await dailyAchievedHistoryService.deleteDailyAchievedHistoryById(dailyAchievedHistory.dailyAchievedId); // 달성 기록 삭제 
       const groupBy = await dailyAchievedHistoryService.getAchievedCount(goalId, "2023-01")
@@ -205,8 +204,9 @@ const achieveGoal = async (goalId: number, isAchieved: boolean) => {
     if (!dailyAchievedHistory) {
       console.log("목표 달성 기록이 없음")
       // 당일 달성 기록 추가
-      await dailyAchievedHistoryService.createDailyAchievedHistory(goalId); 
-      // 월별 달성 기록이 없으면 만들어주고 있으면 업데이트해줌
+      const currentMonth = date.getCurrentMonthMinus9();
+      await dailyAchievedHistoryService.createDailyAchievedHistory(goalId, currentMonth); 
+    
       const groupBy = await dailyAchievedHistoryService.getAchievedCount(goalId, "2023-01")
 
       return {

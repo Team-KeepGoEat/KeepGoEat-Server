@@ -9,25 +9,25 @@ const getDailyAchievedHistory = async (targetDate: string, goalId: number) => {
     where: {
       goalId: goalId,
       achievedAt: {
-        lte: date.getEndDateMinus9(targetDate),
-        gte: date.getStartDateMinus9(targetDate)
+        lte: date.getEndDatePlus9(targetDate),
+        gte: date.getStartDatePlus9(targetDate)
       }
     },
   });
-  console.log("endDate ", date.getEndDateMinus9(targetDate));
-  console.log("startDate ", date.getStartDateMinus9(targetDate));
+  console.log("endDate ", date.getEndDatePlus9(targetDate));
+  console.log("startDate ", date.getStartDatePlus9(targetDate));
 
   console.log("[getDailyAchievedHistory] dailyAchievedHistory: ", dailyAchievedHistory);
   return dailyAchievedHistory;
 };
 
 // 달성 버튼 눌렀을 때 오늘 달성된 값 저장
-const createDailyAchievedHistory = async (goalId: number) => {
+const createDailyAchievedHistory = async (goalId: number, targetMonth: string) => {
   const newDailyAchievedHistory = await prisma.daily_Achieved_History.create({
     data: {
       achievedAt: date.getNowPlus9(),
       goalId: goalId,
-      achievedMonth: "2023-01"
+      achievedMonth: targetMonth
     }
   });
 
@@ -38,15 +38,15 @@ const createDailyAchievedHistory = async (goalId: number) => {
 // 달성 버튼 눌렀을 때 오늘 달성된 값 날짜 업데이트
 // 안씀
 const updateDailyAchievedHistory = async (targetDate: string, goalId: number) => {
-  console.log("[updateDailyAchievedHistory] endDate ", date.getEndDateMinus9(targetDate));
-  console.log("[updateDailyAchievedHistory] endDate ", date.getStartDateMinus9(targetDate));
+  console.log("[updateDailyAchievedHistory] endDate ", date.getStartDatePlus9(targetDate));
+  console.log("[updateDailyAchievedHistory] endDate ", date.getEndDatePlus9(targetDate));
 
   const newDailyAchievedHistory = await prisma.daily_Achieved_History.updateMany({
     where: {
       goalId: goalId,
       achievedAt: {
-        lte: date.getEndDateMinus9(targetDate),
-        gte: date.getStartDateMinus9(targetDate)
+        lte: date.getStartDatePlus9(targetDate),
+        gte: date.getEndDatePlus9(targetDate)
       }
     },
     data: {
