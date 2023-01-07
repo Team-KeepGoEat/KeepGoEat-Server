@@ -5,6 +5,7 @@ import monthlyAchievedHistoryService from "./monthlyAchievedHistoryService";
 import dayjs from "dayjs";
 import date from "../modules/date";
 import achievedError from "../constants/achievedError";
+import { UpdateGoalDTO } from "../interfaces/goal/UpdateGoal";
 
 const prisma = new PrismaClient();
 
@@ -136,13 +137,13 @@ const deleteGoal = async (goalId: number) => {
 };
 
 // 목표 수정
-const updateGoal = async (goalId: number, goalContent: string) => {
+const updateGoal = async (goalId: number, updateGoalDTO: UpdateGoalDTO) => {
   const data = await prisma.goal.update({
     where: {
       goalId
     },
     data: {
-      goalContent 
+      goalContent: updateGoalDTO.goalContent,
     },
   });
   return data.goalId;
