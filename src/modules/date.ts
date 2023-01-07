@@ -1,22 +1,32 @@
-import dayjs from "dayjs";
+import dayjs, { tz } from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const getCurrentMonthMinus9 = () => {
-  return dayjs().subtract(9, "hour").format("YYYY-MM");
+  dayjs.tz.setDefault("Asia/Seoul");
+  return dayjs().tz().subtract(9, "hour").format("YYYY-MM");
 };
 
 const getLastMonthMinus9 = () => {
-  return dayjs().subtract(9, "hour").subtract(1, "month").format("YYYY-MM");
+  dayjs.tz.setDefault("Asia/Seoul");
+  return dayjs().tz().subtract(9, "hour").subtract(1, "month").format("YYYY-MM");
 };
 
 const getStartDatePlus9 = (targetDate: string) => {
-  return dayjs(targetDate).add(9, "hour").startOf("date").format();
+  dayjs.tz.setDefault("Asia/Seoul");
+  return dayjs(targetDate).tz().add(9, "hour").startOf("date").format();
 }
 
 const getEndDatePlus9 = (targetDate: string) => {
-  return dayjs(targetDate).add(9, "hour").endOf("date").format();
+  dayjs.tz.setDefault("Asia/Seoul");
+  return dayjs(targetDate).tz().add(9, "hour").endOf("date").format();
 }
 
 const getNowPlus9 = () => {
+  dayjs.tz.setDefault("Asia/Seoul");
   return dayjs().add(9, "hour").format();
 }
 
