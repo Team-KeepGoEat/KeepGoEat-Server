@@ -10,7 +10,7 @@ import date from "../modules/date"
 import boxCounter from "../modules/boxCounter";
 import achievedError from "../constants/achievedError";
 import { validationResult } from "express-validator";
-;
+
 
 const sortType = {
   ALL: "all",
