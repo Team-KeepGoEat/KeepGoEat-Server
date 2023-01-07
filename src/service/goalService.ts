@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { CreateGoalDTO } from "../interfaces/goal/CreateGoalDTO";
 const prisma = new PrismaClient();
 
 const getGoalsForMypage = async (userId: number, sort: string) => {
@@ -69,7 +70,7 @@ const getGoalByGoalId = async (goalId: number) => {
 };
 
 // 목표 추가
-const createGoal = async (createGoalDTO: CreateGoalDTO, userId, startedAt) => {
+const createGoal = async (userId: number, createGoalDTO: CreateGoalDTO, startedAt: string) => {
   const data = await prisma.goal.create({
     data: {
       goalContent: createGoalDTO.goalContent,
