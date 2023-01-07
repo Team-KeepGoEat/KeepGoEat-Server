@@ -12,13 +12,13 @@ const getHome = async (req: Request, res: Response) => {
   }
 
   try {
-    // const result = await goalService.getHomeGoalsByUserId(date.getCurrentMonth(), +userId);
+    const goals = await goalService.getHomeGoalsByUserId(date.getCurrentMonthMinus9(), +userId);
     const cheeringMessage = await cheeringMessageService.getRamdomMessage();
     const currentDayTime = await time.getDayTime();
 
     return res.status(sc.OK).send(success(sc.OK, rm.GET_GOALS_SUCCCESS_FOR_HOME, {
-      "goals": result,
-      "goalCount": result.length,
+      "goals": goals,
+      "goalCount": goals.length,
       "cheeringMessage": cheeringMessage,
       "daytime": currentDayTime
     }));
