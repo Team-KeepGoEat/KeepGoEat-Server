@@ -1,9 +1,11 @@
 import { PrismaClient } from "@prisma/client";
+import { CreateGoalDTO } from "../interfaces/goal/CreateGoalDTO";
 import dailyAchievedHistoryService from "./dailyAchievedHistoryService";
 import monthlyAchievedHistoryService from "./monthlyAchievedHistoryService";
 import dayjs from "dayjs";
 import date from "../modules/date";
 import achievedError from "../constants/achievedError";
+import { UpdateGoalDTO } from "../interfaces/goal/UpdateGoalDTO";
 
 const prisma = new PrismaClient();
 
@@ -109,12 +111,12 @@ const getHomeGoalsByUserId = async (currentMonth: string, userId: number) => {
 };
 
 // 목표 추가
-const createGoal = async (userId: number, goalContent: string, isMore: boolean, startedAt: string) => {
+const createGoal = async (userId: number, createGoalDTO: CreateGoalDTO, startedAt: string) => {
   const data = await prisma.goal.create({
     data: {
-      goalContent,
-      isMore,
-      writerId: userId,
+      goalContent: createGoalDTO.goalContent,
+      isMore: createGoalDTO.isMore,
+      writerId:  userId,
       startedAt,
     },
   });
@@ -135,13 +137,13 @@ const deleteGoal = async (goalId: number) => {
 };
 
 // 목표 수정
-const updateGoal = async (goalId: number, goalContent: string) => {
+const updateGoal = async (goalId: number, updateGoalDTO: UpdateGoalDTO) => {
   const data = await prisma.goal.update({
     where: {
       goalId
     },
     data: {
-      goalContent 
+      goalContent: updateGoalDTO.goalContent,
     },
   });
   return data.goalId;
