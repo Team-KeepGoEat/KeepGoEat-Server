@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { goalController } from "../controller";
 import auth from "../middlewares/auth";
-const { body } = require('express-validator');
+const { body } = require("express-validator");
 
 const router: Router = Router();
 
@@ -12,7 +12,7 @@ router.post(
   goalController.keepGoal
 );
 
-router.post("/achieve/:goalId", auth, goalController.achieveGoal);
+router.post("/achieve/:goalId", goalController.achieveGoal);
 
 //* 목표 수정 - POST ~/goal/:goalId
 router.post(
