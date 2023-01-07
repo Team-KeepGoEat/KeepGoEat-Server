@@ -1,70 +1,12 @@
 import { PrismaClient } from "@prisma/client";
 import { CreateGoalDTO } from "../interfaces/goal/CreateGoalDTO";
 import dailyAchievedHistoryService from "./dailyAchievedHistoryService";
-import monthlyAchievedHistoryService from "./monthlyAchievedHistoryService";
 import dayjs from "dayjs";
 import date from "../modules/date";
 import achievedError from "../constants/achievedError";
 import { UpdateGoalDTO } from "../interfaces/goal/UpdateGoalDTO";
 
 const prisma = new PrismaClient();
-
-const getGoalsForMypage = async (userId: number, sort: string) => {
-  let goals;
-  let isMore;
-
-  if (sort !== "all") {
-    sort === "more" ? isMore = true : isMore = false;
-    goals = await prisma.goal.findMany({
-      where: {
-        writerId: userId,
-        isOngoing: false,
-        isMore: isMore
-      },
-      orderBy: {
-        startedAt: "desc"
-      },
-    });
-
-    const result = goals.map((goal) => {
-      return {
-        goalId: goal.goalId,
-        goalContent: goal.goalContent,
-        isMore: goal.isMore,
-        isOngoing: goal.isOngoing,
-        totalCount: goal.totalCount,
-        startedAt: dayjs(goal.startedAt).format("YYYY.MM.DD"),
-        keptAt: goal.keptAt === null ? "" : dayjs(goal.keptAt).format("YYYY. MM. DD"),
-        isAchieved: goal.isAchieved,
-        writerId: goal.writerId
-      }
-    });
-  }
-
-  goals = await prisma.goal.findMany({
-    where: {
-      writerId: userId,
-      isOngoing: false
-    },
-    orderBy: {
-      startedAt: "desc"
-    },
-  });
-
-  return goals.map((goal) => {
-    return {
-      goalId: goal.goalId,
-      goalContent: goal.goalContent,
-      isMore: goal.isMore,
-      isOngoing: goal.isOngoing,
-      totalCount: goal.totalCount,
-      startedAt: date.dateFormatter(goal.startedAt),
-      keptAt: goal.keptAt === null ? "" : date.dateFormatter(goal.keptAt),
-      isAchieved: goal.isAchieved,
-      writerId: goal.writerId
-    }
-  });
-};
 
 const getGoalByGoalId = async (goalId: number) => {
   const goal = await prisma.goal.findUnique({
@@ -90,16 +32,16 @@ const getHomeGoalsByUserId = async (currentMonth: string, userId: number) => {
 
   const result = await Promise.all(
     fountGoals.map(async (goal) => {
-      const thisMonthCount = await monthlyAchievedHistoryService.getMonthlyHistoryCount(currentMonth, goal.goalId);
-      console.log("thisMonthCount ", thisMonthCount )
+      const thisMonthCount = await dailyAchievedHistoryService.getAchievedCount(goal.goalId, currentMonth);
+
       return {
         goalId: goal.goalId,
         goalContent: goal.goalContent,
         isMore: goal.isMore,
         isOngoing: goal.isOngoing,
         totalCount: goal.totalCount,
-        startedAt: goal.startedAt,
-        keptAt: goal.keptAt === null ? "" : goal.keptAt,
+        startedAt: date.dateFormatter(goal.startedAt),
+        keptAt: goal.keptAt === null ? "" : date.dateFormatter(goal.keptAt),
         isAchieved: goal.isAchieved,
         writerId: goal.writerId,
         thisMonthCount: thisMonthCount
@@ -168,27 +110,25 @@ const achieveGoal = async (goalId: number, isAchieved: boolean) => {
 
   try {
     // 목표 테이블에 반영
-    const updatedGoal = await goalService.updateIsAchieved(goalId, isAchieved); // 목표 테이블의 isAchieved 업데이트
-    console.log(updatedGoal.goalContent, " 목표의 isAchieved 변경: ", updatedGoal.isAchieved);
-    const currentMonth = date.getCurrentMonth();
+    const updatedGoal = await goalService.updateIsAchieved(goalId, isAchieved); 
+    const currentMonth = date.getCurrentMonthMinus9();
+    const now = dayjs().format();
 
     // 달성 취소했을 경우
     if (!isAchieved) {
-      console.log("###### 달성된 목표 취소 시작 ######")
-      const now = dayjs().format();
+      
       const dailyAchievedHistory = await dailyAchievedHistoryService.getDailyAchievedHistory(now, goalId);
 
-      // 달성 기록이 없는 경우
+      // 일별 달성 기록이 없는 경우
       if (!dailyAchievedHistory) {
         console.log("달성 취소(isAchieved false) 요청 실패. 달성이 안된 목표를 취소하려함");
         return achievedError.DOUBLE_CANCELED_ERROR;
       }
 
-      // 달성 기록이 있는 경우
+      // 일별 달성 기록이 있는 경우
       await dailyAchievedHistoryService.deleteDailyAchievedHistoryById(dailyAchievedHistory.dailyAchievedId); // 달성 기록 삭제 
-      const thisMonthCount = await monthlyAchievedHistoryService.updateMonthlyHistory(currentMonth, goalId, isAchieved) // 달성 기록 업데이터
+      const thisMonthCount = await dailyAchievedHistoryService.getAchievedCount(goalId, currentMonth);
 
-      console.log("###### 달성 취소(isAchieved false) 요청 성공 ######");
       return {
         "thisMonthCount": thisMonthCount,
         "goalId": updatedGoal.goalId,
@@ -197,16 +137,15 @@ const achieveGoal = async (goalId: number, isAchieved: boolean) => {
     }
 
     // 달성 버튼 눌렀을 경우
-    const now = dayjs().format();
     const dailyAchievedHistory = await dailyAchievedHistoryService.getDailyAchievedHistory(now, goalId);
-    console.log("dailyAchievedHistory ", dailyAchievedHistory);
-    console.log("목표 달성 시작")
 
-    // 달성 기록이 없는 경우
+
+    // 일별 달성 기록이 없는 경우
     if (!dailyAchievedHistory) {
-      console.log("목표 달성 기록이 없음")
-      await dailyAchievedHistoryService.createDailyAchievedHistory(goalId); // 당일 달성 기록 추가
-      const thisMonthCount = await monthlyAchievedHistoryService.updateMonthlyHistory(currentMonth, goalId, isAchieved); // montlyCount 에 +1
+      // 당일 달성 기록 추가
+      await dailyAchievedHistoryService.createDailyAchievedHistory(goalId, currentMonth); 
+    
+      const thisMonthCount = await dailyAchievedHistoryService.getAchievedCount(goalId, currentMonth);
 
       return {
         "thisMonthCount": thisMonthCount,
@@ -221,7 +160,7 @@ const achieveGoal = async (goalId: number, isAchieved: boolean) => {
   }
 
   // 달성 기록이 있는 경우
-  console.log("목표 달성 기록이 있음")
+  console.log("이미 달성 기록이 있는 목표를 달성하려고 함");
   return achievedError.DOUBLE_ACHIEVED_ERROR;
 };
 
@@ -241,7 +180,6 @@ const updateIsAchieved = async (goalId: number, isAchieved: boolean) => {
 };
 
 const goalService = {
-  getGoalsForMypage,
   getGoalByGoalId,
   createGoal,
   deleteGoal,

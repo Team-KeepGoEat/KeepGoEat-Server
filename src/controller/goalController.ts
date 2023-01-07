@@ -1,43 +1,14 @@
-import { UpdateGoalDTO } from '../interfaces/goal/UpdateGoalDTO';
-import { CreateGoalDTO } from '../interfaces/goal/CreateGoalDTO';
+import { UpdateGoalDTO } from "../interfaces/goal/UpdateGoalDTO";
+import { CreateGoalDTO } from "../interfaces/goal/CreateGoalDTO";
 import { Request, Response } from "express";
 import { sc, rm } from "../constants";
 import { fail, success } from "../constants/response";
-import { goalService, cheeringMessageService } from "../service";
 import dayjs from "dayjs";
-import { monthlyAchievedHistoryService } from "../service";
+import { dailyAchievedHistoryService, goalService } from "../service";
 import date from "../modules/date"
 import boxCounter from "../modules/boxCounter";
 import achievedError from "../constants/achievedError";
-import { validationResult } from 'express-validator';
-
-const sortType = {
-  ALL: "all",
-  MORE: "more",
-  LESS: "less"
-};
-
-const getMypageByUserId = async (req: Request, res: Response) => {
-  const userId = req.user.userId;
-
-  const sort = req.query.sort as string;
-
-  if (!userId || !sort) {
-    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
-  }
-
-  if (sort !== sortType.ALL && sort !== sortType.MORE && sort !== sortType.LESS) {
-    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
-  }
-
-  try {
-    const foundGoals = await goalService.getGoalsForMypage(+userId, sort as string);
-    return res.status(sc.OK).send(success(sc.OK, rm.GET_GOALS_SUCCESS_FOR_MYPAGE, { "goals": foundGoals, "goalCount": foundGoals.length }));
-  } catch (error) {
-    return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
-  }
-
-};
+import { validationResult } from "express-validator";
 
 // 목표 추가
 const createGoal = async (req: Request, res: Response) => {
@@ -54,10 +25,10 @@ const createGoal = async (req: Request, res: Response) => {
 
   try {
     const createGoalDTO: CreateGoalDTO = req.body; // createGoal DTO 는 request header나 parameter에는 안쓴다~~ response body request body에 쓴다. api별로 createGoalDTO 이런식으로!
+    const startedAt = date.getNowPlus9()
 
     // dayjs 모듈에서 시간을 받아서 서버측에서 클라로 찍어주기
-    const startedAt = dayjs().format();
-    const data = await goalService.createGoal(userId, createGoalDTO, startedAt as string);
+    const data = await goalService.createGoal(userId, createGoalDTO, startedAt);
 
     return res.status(sc.OK).send(success(sc.OK, rm.CREATE_GOAL_SUCCESS, data));
   } catch (error) {
@@ -102,15 +73,13 @@ const updateGoal = async (req: Request, res: Response) => {
 const keepGoal = async (req: Request, res: Response) => {
   const { goalId } = req.params;
   const isOngoing = false;
-  const keptAt = dayjs().format();
 
   if (!goalId) {
     return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
   }
 
   try {
-    const keptGoalId = await goalService.keepGoal(+goalId, isOngoing, keptAt);
-    console.log(keptAt);
+    const keptGoalId = await goalService.keepGoal(+goalId, isOngoing, date.getNowPlus9());
     return res.status(sc.OK).send(success(sc.OK, rm.KEEP_GOAL_SUCCESS, { "goalId": keptGoalId }));
   } catch (error) {
     return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR)); // 서버 내부 에러
@@ -132,8 +101,8 @@ const getHistoryByGoalId = async (req: Request, res: Response) => {
       return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
     }
 
-    const thisMonthCount = await monthlyAchievedHistoryService.getMonthlyHistoryCount(date.getCurrentMonth(), +goalId);
-    const lastMonthCount = await monthlyAchievedHistoryService.getMonthlyHistoryCount(date.getLastMonth(), +goalId);
+    const thisMonthCount = await dailyAchievedHistoryService.getAchievedCount(+goalId, date.getCurrentMonthMinus9());
+    const lastMonthCount = await dailyAchievedHistoryService.getAchievedCount(+goalId, date.getLastMonthMinus9());
 
     const data = {
       "goalId": foundGoal.goalId,
@@ -151,29 +120,6 @@ const getHistoryByGoalId = async (req: Request, res: Response) => {
     return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
   }
 }
-
-const getHome = async (req: Request, res: Response) => {
-  const userId = req.user.userId;
-  if (!userId) {
-    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
-  }
-
-  try {
-    const result = await goalService.getHomeGoalsByUserId(date.getCurrentMonth(), +userId);
-    const cheeringMessage = await cheeringMessageService.getRamdomMessage();
-
-    return res.status(sc.OK).send(success(sc.OK, rm.GET_GOALS_SUCCCESS_FOR_HOME, {
-      "goals": result,
-      "goalCount": result.length,
-      "cheeringMessage": cheeringMessage.cheeringMessage
-    }));
-
-  } catch (error) {
-    return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
-  }
-
-
-};
 
 const achieveGoal = async (req: Request, res: Response) => {
   const userId = req.user.userId;
@@ -208,12 +154,10 @@ const achieveGoal = async (req: Request, res: Response) => {
 };
 
 const goalController = {
-  getMypageByUserId,
   createGoal,
   deleteGoal,
   updateGoal,
   getHistoryByGoalId,
-  getHome,
   achieveGoal,
   keepGoal
 };

@@ -1,26 +1,45 @@
-import dayjs from "dayjs";
+import dayjs, { tz } from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 
-const getCurrentMonth = () => {
-  return dayjs().format("YYYY-MM");
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+const getCurrentMonthMinus9 = () => {
+  dayjs.tz.setDefault("Asia/Seoul");
+  return dayjs().tz().subtract(9, "hour").format("YYYY-MM");
 };
 
-const getLastMonth = () => {
-  return dayjs().subtract(1, "month").format("YYYY-MM");
+const getLastMonthMinus9 = () => {
+  dayjs.tz.setDefault("Asia/Seoul");
+  return dayjs().tz().subtract(9, "hour").subtract(1, "month").format("YYYY-MM");
 };
 
-const getStartDate = (targetDate: string) => {
-  return dayjs(targetDate).startOf("date").format();
+const getStartDatePlus9 = (targetDate: string) => {
+  dayjs.tz.setDefault("Asia/Seoul");
+  return dayjs(targetDate).tz().add(9, "hour").startOf("date").format();
 }
 
-const getEndDate = (targetDate: string) => {
-  return dayjs(targetDate).endOf("date").format();
+const getEndDatePlus9 = (targetDate: string) => {
+  dayjs.tz.setDefault("Asia/Seoul");
+  return dayjs(targetDate).tz().add(9, "hour").endOf("date").format();
+}
+
+const getNowPlus9 = () => {
+  dayjs.tz.setDefault("Asia/Seoul");
+  return dayjs().add(9, "hour").format();
+}
+
+const minusDate9h = (targetDate: unknown) => {
+  return dayjs(targetDate as string).subtract(9, "hour").format();
 }
 
 const dateFormatter = (targetDate: unknown) => {
-  // console.log(dayjs(targetDate)
-  let year = dayjs(targetDate as string).get("year");
-  let month: number | string = dayjs(targetDate as string).get("month") + 1;
-  let date: number | string = dayjs(targetDate as string).get("date");
+  
+  const minusDate = minusDate9h(targetDate);
+  const year  = dayjs(minusDate as string).get("year");
+  let month: number | string = dayjs(minusDate as string).get("month") + 1;
+  let date: number | string = dayjs(minusDate as string).get("date");
 
   if (1 <= month && month <= 9) {
     month = "0" + month.toString();
@@ -34,11 +53,13 @@ const dateFormatter = (targetDate: unknown) => {
 }
 
 const date = {
-  getCurrentMonth,
-  getLastMonth,
-  getStartDate,
-  getEndDate,
-  dateFormatter
+  getCurrentMonthMinus9,
+  getLastMonthMinus9,
+  getStartDatePlus9,
+  getEndDatePlus9,
+  dateFormatter,
+  getNowPlus9,
+  minusDate9h
 }
 
 export default date;
