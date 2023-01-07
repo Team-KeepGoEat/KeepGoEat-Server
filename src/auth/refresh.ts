@@ -5,14 +5,14 @@ import { fail, success } from "../constants/response";
 import tokenType from "../constants/tokenType";
 
 const refresh = (req: Request, res: Response) => {
-  const { accessToken, refreshToken } = req.headers;
+  const { accesstoken, refreshtoken } = req.headers;
 
-  if (!accessToken || !refreshToken) {
+  if (!accesstoken || !refreshtoken) {
     return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.INVALID_TOKEN));
   }
 
   try {
-    const decodedAccess = jwt.verify(accessToken as string);
+    const decodedAccess = jwt.verify(accesstoken as string);
     
     // accessToken이 만료되지 않았을 때 - 400 에러
     if (decodedAccess !== tokenType.TOKEN_EXPIRED) {
@@ -21,7 +21,7 @@ const refresh = (req: Request, res: Response) => {
 
     if (decodedAccess === tokenType.TOKEN_EXPIRED) {
 
-      const decodedRefresh = jwt.verify(refreshToken as string);
+      const decodedRefresh = jwt.verify(refreshtoken as string);
 
       // accessToken이 만료되었고 refreshToken도 만료되었을 때 - 400 에러
       if (decodedRefresh === tokenType.TOKEN_EXPIRED) {

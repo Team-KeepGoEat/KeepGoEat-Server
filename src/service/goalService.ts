@@ -8,63 +8,6 @@ import { UpdateGoalDTO } from "../interfaces/goal/UpdateGoalDTO";
 
 const prisma = new PrismaClient();
 
-const getGoalsForMypage = async (userId: number, sort: string) => {
-  let goals;
-  let isMore;
-
-  if (sort !== "all") {
-    sort === "more" ? isMore = true : isMore = false;
-    goals = await prisma.goal.findMany({
-      where: {
-        writerId: userId,
-        isOngoing: false,
-        isMore: isMore
-      },
-      orderBy: {
-        startedAt: "desc"
-      },
-    });
-
-    const result = goals.map((goal) => {
-      return {
-        goalId: goal.goalId,
-        goalContent: goal.goalContent,
-        isMore: goal.isMore,
-        isOngoing: goal.isOngoing,
-        totalCount: goal.totalCount,
-        startedAt: dayjs(goal.startedAt).format("YYYY.MM.DD"),
-        keptAt: goal.keptAt === null ? "" : dayjs(goal.keptAt).format("YYYY. MM. DD"),
-        isAchieved: goal.isAchieved,
-        writerId: goal.writerId
-      }
-    });
-  }
-
-  goals = await prisma.goal.findMany({
-    where: {
-      writerId: userId,
-      isOngoing: false
-    },
-    orderBy: {
-      startedAt: "desc"
-    },
-  });
-
-  return goals.map((goal) => {
-    return {
-      goalId: goal.goalId,
-      goalContent: goal.goalContent,
-      isMore: goal.isMore,
-      isOngoing: goal.isOngoing,
-      totalCount: goal.totalCount,
-      startedAt: date.dateFormatter(goal.startedAt),
-      keptAt: goal.keptAt === null ? "" : date.dateFormatter(goal.keptAt),
-      isAchieved: goal.isAchieved,
-      writerId: goal.writerId
-    }
-  });
-};
-
 const getGoalByGoalId = async (goalId: number) => {
   const goal = await prisma.goal.findUnique({
     where: {
@@ -242,7 +185,6 @@ const updateIsAchieved = async (goalId: number, isAchieved: boolean) => {
 };
 
 const goalService = {
-  getGoalsForMypage,
   getGoalByGoalId,
   createGoal,
   deleteGoal,
