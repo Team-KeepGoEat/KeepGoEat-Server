@@ -74,7 +74,7 @@ const deleteDailyAchievedHistoryById = async (achievedId: number) => {
 
 
 const getAchievedCount = async (goalId: number, achievedMonth: string) => {
-  const groupBy = await prisma.daily_Achieved_History.groupBy({
+  const dailyAchievedHistoryList = await prisma.daily_Achieved_History.groupBy({
     by: ["achievedMonth", "goalId"],
     where: {
       goalId: goalId,
@@ -84,9 +84,13 @@ const getAchievedCount = async (goalId: number, achievedMonth: string) => {
       dailyAchievedId: true,
     }
   });
-  console.log("groupBy ", groupBy);
+  console.log("[getAchievedCount] groupBy ", dailyAchievedHistoryList);
 
-  return groupBy[0]._count.dailyAchievedId;
+  if (dailyAchievedHistoryList.length === 0){
+    return 0;
+  }
+
+  return dailyAchievedHistoryList[0]._count.dailyAchievedId;
 
 }
 

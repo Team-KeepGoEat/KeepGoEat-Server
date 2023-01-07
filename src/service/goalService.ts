@@ -1,7 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { CreateGoalDTO } from "../interfaces/goal/CreateGoalDTO";
 import dailyAchievedHistoryService from "./dailyAchievedHistoryService";
-import monthlyAchievedHistoryService from "./monthlyAchievedHistoryService";
 import dayjs from "dayjs";
 import date from "../modules/date";
 import achievedError from "../constants/achievedError";
@@ -90,7 +89,7 @@ const getHomeGoalsByUserId = async (currentMonth: string, userId: number) => {
 
   const result = await Promise.all(
     fountGoals.map(async (goal) => {
-      const thisMonthCount = await monthlyAchievedHistoryService.getMonthlyHistoryCount(currentMonth, goal.goalId);
+      const thisMonthCount = await dailyAchievedHistoryService.getAchievedCount(goal.goalId, currentMonth);
 
       return {
         goalId: goal.goalId,
