@@ -5,7 +5,7 @@ import monthlyAchievedHistoryService from "./monthlyAchievedHistoryService";
 import dayjs from "dayjs";
 import date from "../modules/date";
 import achievedError from "../constants/achievedError";
-import { UpdateGoalDTO } from "../interfaces/goal/UpdateGoal";
+import { UpdateGoalDTO } from "../interfaces/goal/UpdateGoalDTO";
 
 const prisma = new PrismaClient();
 
