@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { sc, rm } from "../constants";
 import { fail, success } from "../constants/response";
-import { goalService } from "../service";
+import { mypageService } from "../service";
 
 const sortType = {
   ALL: "all",
@@ -23,7 +23,7 @@ const getMypageByUserId = async (req: Request, res: Response) => {
   }
 
   try {
-    const foundGoals = await goalService.getGoalsForMypage(+userId, sort as string);
+    const foundGoals = await mypageService.getGoalsForMypage(+userId, sort as string);
     return res.status(sc.OK).send(success(sc.OK, rm.GET_GOALS_SUCCESS_FOR_MYPAGE, { "goals": foundGoals, "goalCount": foundGoals.length }));
   } catch (error) {
     return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
