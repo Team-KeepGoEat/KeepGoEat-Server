@@ -27,19 +27,20 @@ const getEndDatePlus9 = (targetDate: string) => {
 
 const getNowPlus9 = () => {
   dayjs.tz.setDefault("Asia/Seoul");
-  return dayjs().add(9, "hour").format();
+  return dayjs().tz().add(9, "hour").format();
 }
 
 const minusDate9h = (targetDate: unknown) => {
-  return dayjs(targetDate as string).subtract(9, "hour").format();
+  dayjs.tz.setDefault("Asia/Seoul");
+  return dayjs(targetDate as string).tz().subtract(9, "hour").format();
 }
 
 const dateFormatter = (targetDate: unknown) => {
-  
+  dayjs.tz.setDefault("Asia/Seoul");
   const minusDate = minusDate9h(targetDate);
-  const year  = dayjs(minusDate as string).get("year");
-  let month: number | string = dayjs(minusDate as string).get("month") + 1;
-  let date: number | string = dayjs(minusDate as string).get("date");
+  const year  = dayjs(minusDate as string).tz().get("year");
+  let month: number | string = dayjs(minusDate as string).tz().get("month") + 1;
+  let date: number | string = dayjs(minusDate as string).tz().get("date");
 
   if (1 <= month && month <= 9) {
     month = "0" + month.toString();
