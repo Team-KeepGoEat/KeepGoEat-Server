@@ -6,7 +6,14 @@ const { body } = require('express-validator');
 const router: Router = Router();
 
 //* 목표 보관 - POST ~/goal/keep/:goalId 
-router.post("/keep/:goalId", auth, goalController.keepGoal);
+router.post(
+  "/keep/:goalId", 
+  [
+    body("goalContent").trim().notEmpty(),
+  ],
+  auth, 
+  goalController.keepGoal
+);
 
 router.post("/achieve/:goalId", auth, goalController.achieveGoal);
 
