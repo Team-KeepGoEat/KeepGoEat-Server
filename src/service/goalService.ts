@@ -11,33 +11,29 @@ const prisma = new PrismaClient();
 const getGoalsForMypage = async (userId: number, sort: string) => {
   let goals;
   let isMore;
-  console.log("sort ", sort);
 
   if (sort !== "all") {
     sort === "more" ? isMore = true : isMore = false;
-    console.log("isMore ", isMore);
     goals = await prisma.goal.findMany({
-      where: { 
-        AND: [        
-          { writerId: userId },
-          { isOngoing: false } ,
-          { isMore: isMore }
-        ]
+      where: {        
+        writerId: userId,
+        isOngoing: false,
+        isMore: isMore
       },
       orderBy: {
         startedAt: "desc"
       },
     });
 
-    const result = goals.map((goal) => {
+    return goals.map((goal) => {
       return {
         goalId: goal.goalId,
         goalContent: goal.goalContent,
         isMore: goal.isMore,
         isOngoing: goal.isOngoing,
         totalCount: goal.totalCount,
-        startedAt: date.minusDate9h(goal.startedAt),
-        keptAt: goal.keptAt === null ? "" : date.minusDate9h(goal.startedAt),
+        startedAt: date.dateFormatter(goal.startedAt),
+        keptAt: goal.keptAt === null ? "" : date.dateFormatter(goal.keptAt),
         isAchieved: goal.isAchieved,
         writerId: goal.writerId
       }
