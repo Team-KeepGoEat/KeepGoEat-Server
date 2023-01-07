@@ -1,3 +1,5 @@
+import { UpdateGoalDTO } from '../interfaces/goal/UpdateGoalDTO';
+import { CreateGoalDTO } from '../interfaces/goal/CreateGoalDTO';
 import { Request, Response } from "express";
 import { sc, rm } from "../constants";
 import { fail, success } from "../constants/response";
@@ -7,6 +9,7 @@ import { monthlyAchievedHistoryService } from "../service";
 import date from "../modules/date"
 import boxCounter from "../modules/boxCounter";
 import achievedError from "../constants/achievedError";
+import { validationResult } from 'express-validator';
 
 const sortType = {
   ALL: "all",
@@ -38,6 +41,11 @@ const getMypageByUserId = async (req: Request, res: Response) => {
 
 // 목표 추가
 const createGoal = async (req: Request, res: Response) => {
+  // validation의 결과를 바탕으로 분기 처리
+  const error = validationResult(req);
+  if(!error.isEmpty()) {
+    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
+  }
   const userId = req.user.userId;
 
   if (!userId) {
@@ -45,15 +53,11 @@ const createGoal = async (req: Request, res: Response) => {
   }
 
   try {
-    const { goalContent, isMore } = req.body; // createGoal DTO 는 request header나 parameter에는 안쓴다~~ response body request body에 쓴다. api별로 createGoalDTO 이런식으로!
-
-    if (!goalContent || goalContent === " " || isMore === null || isMore === undefined) {
-      return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE)); // 데이터 비정상적 입력
-    }
+    const createGoalDTO: CreateGoalDTO = req.body; // createGoal DTO 는 request header나 parameter에는 안쓴다~~ response body request body에 쓴다. api별로 createGoalDTO 이런식으로!
 
     // dayjs 모듈에서 시간을 받아서 서버측에서 클라로 찍어주기
     const startedAt = dayjs().format();
-    const data = await goalService.createGoal(userId, goalContent, isMore, startedAt as string);
+    const data = await goalService.createGoal(userId, createGoalDTO, startedAt as string);
 
     return res.status(sc.OK).send(success(sc.OK, rm.CREATE_GOAL_SUCCESS, data));
   } catch (error) {
@@ -74,14 +78,19 @@ const deleteGoal = async (req: Request, res: Response) => {
 
 // 목표 수정
 const updateGoal = async (req: Request, res: Response) => {
-  const { goalContent } = req.body;
+
+  // validation의 결과를 바탕으로 분기 처리
+  const error = validationResult(req);
+  if(!error.isEmpty()) {
+    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
+  }
+
+  const updateGoalDTO: UpdateGoalDTO = req.body;
   const { goalId } = req.params;
 
   try {
-    const updatedGoalId = await goalService.updateGoal(+goalId, goalContent);
-    if (!goalContent || goalContent === " ") {
-      return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
-    }
+
+    const updatedGoalId = await goalService.updateGoal(+goalId, updateGoalDTO);
     return res.status(sc.OK).send(success(sc.OK, rm.UPDATE_GOAL_SUCCESS, { "goalId": updatedGoalId }));
   } catch (error) {
     return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR)); // 서버 내부 에러
