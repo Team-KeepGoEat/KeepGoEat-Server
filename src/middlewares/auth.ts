@@ -1,10 +1,10 @@
-import { fail } from './../constants/response';
+import { fail } from "./../constants/response";
 import { Request, Response, NextFunction } from "express"
 import { sc, rm } from "../constants";
 import jwt from "../modules/jwt";
 import tokenType from "../constants/tokenType";
 import { JwtPayload } from "jsonwebtoken";
-import { userService } from '../service';
+import { userService } from "../service";
 
 const auth = async (req: Request, res: Response, next: NextFunction) => {
   const accessToken = req.headers.accesstoken;
@@ -31,7 +31,7 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
 
     if (!foundUser) {
       return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.NOT_EXISITING_USER));
-    };
+    }
 
     req.user = foundUser;
     next();

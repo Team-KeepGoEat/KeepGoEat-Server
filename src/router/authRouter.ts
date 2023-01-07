@@ -1,9 +1,9 @@
 import { Router } from "express";
-import auth from "../auth/authAPI";
+import { authController } from "../controller";
 
 const router:Router = Router();
 
-router.post("/refresh", auth);
-router.post("/", auth);
+router.post("/refresh", authController.refresh);
+router.post("/", authController.auth);
 
 export default router;
