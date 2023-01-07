@@ -126,7 +126,7 @@ const achieveGoal = async (goalId: number, isAchieved: boolean) => {
       }
 
       // 일별 달성 기록이 있는 경우
-      await dailyAchievedHistoryService.deleteDailyAchievedHistoryById(dailyAchievedHistory.dailyAchievedId); // 달성 기록 삭제 
+      await dailyAchievedHistoryService.deleteDailyAchievedHistoryById(dailyAchievedHistory.achievedId); // 달성 기록 삭제 
       const thisMonthCount = await dailyAchievedHistoryService.getAchievedCount(goalId, currentMonth);
 
       return {
