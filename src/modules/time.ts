@@ -1,8 +1,13 @@
 import dayjs from "dayjs";
 import dayTime from "../constants/dayTime";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const getDayTime = async () => {
-  const currentHour = dayjs().get("hour");
+  const currentHour = dayjs().tz().get("hour");
 
   if (7 <= currentHour && currentHour < 16) {
     return dayTime.MORNING;

@@ -18,11 +18,11 @@ model Cheering_Message {
 }
 
 model Daily_Achieved_History {
-  dailyAchievedId Int      @id @default(autoincrement())
-  achievedAt      DateTime @default(now())
-  goalId          Int
-  achievedMonth   String?  @db.VarChar(50)
-  Goal            Goal     @relation(fields: [goalId], references: [goalId], onDelete: NoAction, onUpdate: NoAction, map: "goal_id")
+  achievedId    Int      @id @default(autoincrement())
+  achievedAt    DateTime @default(now())
+  goalId        Int
+  achievedMonth String?  @db.VarChar(50)
+  Goal          Goal     @relation(fields: [goalId], references: [goalId], onDelete: NoAction, onUpdate: NoAction, map: "goal_id")
 }
 
 model Goal {
