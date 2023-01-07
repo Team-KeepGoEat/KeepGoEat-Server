@@ -7,7 +7,7 @@ import jwt from "../modules/jwt";
 import platformToken from "../constants/platformToken";
 import tokenType from "../constants/tokenType";
 
-const auth = async (req: Request, res: Response) => {
+const socialLogin = async (req: Request, res: Response) => {
   const { platformAccessToken, platform } = req.body;
 
   if ( !platformAccessToken || !platform ) {
@@ -119,9 +119,9 @@ const refresh = (req: Request, res: Response) => {
 
 };
 
-const authController = {
-  auth,
+const auth = {
+  socialLogin,
   refresh
 }
 
-export default authController;
+export default auth;
