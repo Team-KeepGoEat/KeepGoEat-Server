@@ -32,7 +32,7 @@ const createDailyAchievedHistory = async (goalId: number, targetMonth: string) =
   });
 
   console.log("[createDailyAchievedHistory] 일별 목표 달성 기록 생성 성공 " , newDailyAchievedHistory);
-  return newDailyAchievedHistory.dailyAchievedId;
+  return newDailyAchievedHistory.achievedId;
 }
 
 // 달성 버튼 눌렀을 때 오늘 달성된 값 날짜 업데이트
@@ -65,7 +65,7 @@ const updateDailyAchievedHistory = async (targetDate: string, goalId: number) =>
 const deleteDailyAchievedHistoryById = async (achievedId: number) => {
   await prisma.daily_Achieved_History.delete({
     where: {
-      dailyAchievedId: achievedId
+      achievedId: achievedId
     }
   });
   
@@ -81,7 +81,7 @@ const getAchievedCount = async (goalId: number, achievedMonth: string) => {
       achievedMonth: achievedMonth
     },
     _count: {
-      dailyAchievedId: true,
+      achievedId: true,
     }
   });
   console.log("[getAchievedCount] groupBy ", dailyAchievedHistoryList);
@@ -90,7 +90,7 @@ const getAchievedCount = async (goalId: number, achievedMonth: string) => {
     return 0;
   }
 
-  return dailyAchievedHistoryList[0]._count.dailyAchievedId;
+  return dailyAchievedHistoryList[0]._count.achievedId;
 
 }
 

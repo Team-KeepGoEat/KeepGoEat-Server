@@ -1,15 +1,18 @@
 import dayjs from "dayjs";
 import dayTime from "../constants/dayTime";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const getDayTime = async () => {
-  const now = dayjs().get("hour");
+  const currentHour = dayjs().tz().get("hour");
 
-  if (7 <= now && now <= 16) {
-    console.log("아침")
+  if (7 <= currentHour && currentHour < 16) {
     return dayTime.MORNING;
   }
-  if (5 <= now && now <= 18) {
-    console.log("저녁")
+  if ((0 <= currentHour && currentHour <= 4) || (18 <= currentHour && currentHour < 24)) {
     return dayTime.DINNER;
   }
   return dayTime.SUNSET;
@@ -19,4 +22,4 @@ const time = {
   getDayTime,
 };
 
-export default time;
+export default time

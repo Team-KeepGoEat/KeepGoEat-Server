@@ -1,4 +1,4 @@
-import dayjs from 'dayjs';
+import dayjs from "dayjs";
 import express, { Request, Response } from "express";
 import router from "./router";
 import schedule from "node-schedule";
@@ -16,16 +16,14 @@ app.get("/test", (req: Request, res: Response) => {
 
 app.use("/", router); 
 
-const now = dayjs().format();
 app.listen(PORT, () => {
   console.log(`
         #############################################
-            🛡️ Server listening on port: ${now} 🛡️
+            🛡️ Server listening on port: ${PORT} 🛡️
         #############################################
     `);
 }); 
 
 const job = schedule.scheduleJob(JOB_SCHEDULE_TIME, function () {
-  //실행
   resetIsAchieved();
 });
