@@ -26,26 +26,17 @@ model Daily_Achieved_History {
 }
 
 model Goal {
-  goalId                   Int                        @id @default(autoincrement())
-  goalContent              String                     @db.VarChar(200)
-  isMore                   Boolean
-  isOngoing                Boolean                    @default(true)
-  totalCount               Int                        @default(0)
-  startedAt                DateTime                   @default(now())
-  keptAt                   DateTime?
-  isAchieved               Boolean                    @default(false)
-  writerId                 Int
-  Daily_Achieved_History   Daily_Achieved_History[]
-  User                     User                       @relation(fields: [writerId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "writer_id")
-  Monthly_Achieved_History Monthly_Achieved_History[]
-}
-
-model Monthly_Achieved_History {
-  monthlyAchievedHistoryId Int    @id @default(autoincrement())
-  monthlyAchievedAt        String @db.VarChar(100)
-  monthlyCount             Int    @default(0)
-  goalId                   Int?
-  Goal                     Goal?  @relation(fields: [goalId], references: [goalId], onDelete: NoAction, onUpdate: NoAction, map: "Monthly_Achieved_History_Goal_null_fk")
+  goalId                 Int                      @id @default(autoincrement())
+  goalContent            String                   @db.VarChar(200)
+  isMore                 Boolean
+  isOngoing              Boolean                  @default(true)
+  totalCount             Int                      @default(0)
+  startedAt              DateTime                 @default(now())
+  keptAt                 DateTime?
+  isAchieved             Boolean                  @default(false)
+  writerId               Int
+  Daily_Achieved_History Daily_Achieved_History[]
+  User                   User                     @relation(fields: [writerId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "writer_id")
 }
 
 model User {
