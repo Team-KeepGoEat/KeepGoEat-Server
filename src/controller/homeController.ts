@@ -12,7 +12,7 @@ const getHome = async (req: Request, res: Response) => {
   }
 
   try {
-    const result = await goalService.getHomeGoalsByUserId(date.getCurrentMonth(), +userId);
+    // const result = await goalService.getHomeGoalsByUserId(date.getCurrentMonth(), +userId);
     const cheeringMessage = await cheeringMessageService.getRamdomMessage();
     const currentDayTime = await time.getDayTime();
 
