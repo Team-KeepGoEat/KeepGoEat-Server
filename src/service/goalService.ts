@@ -5,6 +5,11 @@ import dayjs from "dayjs";
 import date from "../modules/date";
 import achievedError from "../constants/achievedError";
 import { UpdateGoalDTO } from "../interfaces/goal/UpdateGoalDTO";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const prisma = new PrismaClient();
 
@@ -52,7 +57,6 @@ const getHomeGoalsByUserId = async (currentMonth: string, userId: number) => {
   return result;
 };
 
-// 목표 추가
 const createGoal = async (userId: number, createGoalDTO: CreateGoalDTO, startedAt: string) => {
   const data = await prisma.goal.create({
     data: {
@@ -68,7 +72,6 @@ const createGoal = async (userId: number, createGoalDTO: CreateGoalDTO, startedA
   return { goalId };
 };
 
-// 목표 삭제
 const deleteGoal = async (goalId: number) => {
   const data = await prisma.goal.delete({
     where: {
@@ -78,7 +81,6 @@ const deleteGoal = async (goalId: number) => {
   return data.goalId;
 };
 
-// 목표 수정
 const updateGoal = async (goalId: number, updateGoalDTO: UpdateGoalDTO) => {
   const data = await prisma.goal.update({
     where: {
@@ -91,7 +93,6 @@ const updateGoal = async (goalId: number, updateGoalDTO: UpdateGoalDTO) => {
   return data.goalId;
 };
 
-// 목표 보관
 const keepGoal = async (goalId: number, isOngoing: boolean, keptAt: string) => {
   const data = await prisma.goal.update({
     where: {
@@ -105,14 +106,15 @@ const keepGoal = async (goalId: number, isOngoing: boolean, keptAt: string) => {
   return data.goalId;
 }
 
-// 목표 달성
 const achieveGoal = async (goalId: number, isAchieved: boolean) => {
 
   try {
     // 목표 테이블에 반영
     const updatedGoal = await goalService.updateIsAchieved(goalId, isAchieved); 
     const currentMonth = date.getCurrentMonthMinus9();
-    const now = dayjs().format();
+
+    dayjs.tz.setDefault("Asia/Seoul");
+    const now = dayjs().tz().format();
 
     // 달성 취소했을 경우
     if (!isAchieved) {
