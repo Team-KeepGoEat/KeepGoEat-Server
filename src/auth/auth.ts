@@ -6,6 +6,7 @@ import { userService } from "../service";
 import jwt from "../modules/jwt";
 import platformToken from "../constants/platformToken";
 import tokenType from "../constants/tokenType";
+import { User } from "@prisma/client";
 
 const socialLogin = async (req: Request, res: Response) => {
   const { platformAccessToken, platform } = req.body;
@@ -32,16 +33,15 @@ const socialLogin = async (req: Request, res: Response) => {
       return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.UNAUTHORIZED_PLATFORM_USER));
     }
 
-    const existingUser = await userService.getUserByPlatformId(platformUser.email, platform);
+    const existingUser = await userService.getUserByEmail(platformUser.email, platform);
 
     // 이미 가입한 유저일 경우
-    // 과정이 너무 비슷하니 빼도 메소드로 빼도 ㄱㅊ을지도
     if (existingUser) {
       const { refreshToken } = jwt.createRefreshToken();
       const { accessToken } = jwt.signup(+existingUser.userId, existingUser.email);
       const signinResult = {
         type: "signin",
-        email: existingUser.email, // 유저 테이블에 email 추가
+        email: existingUser.email, 
         accessToken: accessToken,
         refreshToken: refreshToken
       }
@@ -54,7 +54,7 @@ const socialLogin = async (req: Request, res: Response) => {
     
     const signupResult = {
       type: "signup",
-      email: newUser.email, // 유저 테이블에 email 추가
+      email: newUser.email, 
       accessToken: accessToken,
       refreshToken: refreshToken
     };
@@ -68,7 +68,7 @@ const socialLogin = async (req: Request, res: Response) => {
 
 };
 
-const refresh = (req: Request, res: Response) => {
+const refresh = async (req: Request, res: Response) => {
   const { accesstoken, refreshtoken } = req.headers;
 
   if (!accesstoken || !refreshtoken) {
@@ -84,31 +84,37 @@ const refresh = (req: Request, res: Response) => {
       return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
     }
 
-    // accessToken이 유효하지 않았을 때 - 400 에러
+    // accessToken이 유효하지 않았을 때 - 401 에러
     if (decodedAccess === tokenType.TOKEN_INVALID) {
       console.log("accessToken이 유효하지 않았을 때");
-      return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.INVALID_ACCESS_TOKEN));
+      return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.INVALID_ACCESS_TOKEN));
     }
     
     if (decodedAccess === tokenType.TOKEN_EXPIRED) {
       const decodedRefresh = jwt.verify(refreshtoken as string);
 
-      // accessToken이 만료되었고 refreshToken는 유효하지 않았을 때 - 400 에러
+      // accessToken이 만료되었고 refreshToken는 유효하지 않았을 때 - 401 에러
       if (decodedRefresh === tokenType.TOKEN_INVALID) {
         console.log("accessToken이 만료되었고 refreshToken는 유효하지 않았을 때");
-        return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.INVALID_REFRESH_TOKEN));
+        return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.INVALID_REFRESH_TOKEN));
       }
 
-      // accessToken이 만료되었고 refreshToken도 만료되었을 때 - 400 에러
+      // accessToken이 만료되었고 refreshToken도 만료되었을 때 - 401 에러
       if (decodedRefresh === tokenType.TOKEN_EXPIRED) {
         console.log("accessToken이 만료되었고 refreshToken도 만료되었을 때");
-        return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.EXPIRED_ALL_TOKEN));
+        return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.EXPIRED_ALL_TOKEN));
       }
 
-      // accessToken이 만료되었고 refreshToken은 만료되지 않았을 때 - 엑세스 토큰 재발급해서 엑세스 토큰만 보내줌
-      const newRefreshToken = jwt.createRefreshToken();
+      const user = await userService.findUserByRefreshToken(refreshtoken as string);
 
-      return res.status(sc.OK).send(success(sc.OK, rm.CREATE_TOKEN_SUCCESS, newRefreshToken));
+      // rf로 찾은 유저가 없을 때 - 400 에러 
+      if (!user) {
+        return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NOT_EXISITING_USER));
+      }
+
+      const newAccessToken = jwt.signup((user as User).userId, (user as User).email);
+      
+      return res.status(sc.OK).send(success(sc.OK, rm.CREATE_TOKEN_SUCCESS, { newAccessToken, refreshtoken }));
     }
 
   } catch (error) {

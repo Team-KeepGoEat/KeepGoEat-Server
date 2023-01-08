@@ -10,19 +10,19 @@ const signup = (userId: number, email:string) => {
     email: email
   };
 
-  const result = {
+  const accessToken = {
     accessToken: jwt.sign(payload, secretKey, accessTokenOption)
   };
 
-  return result
+  return accessToken
 }
 
 const createRefreshToken = () => {
-  const result = {
+  const refreshToken = {
     refreshToken: jwt.sign({}, secretKey, refreshTokenOption)
   };
 
-  return result; 
+  return refreshToken; 
 }
 
 const verify = (accessToken: string) => {

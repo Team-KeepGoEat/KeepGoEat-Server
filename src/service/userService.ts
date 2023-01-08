@@ -1,11 +1,11 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-const getUserByPlatformId = async (userPlatformId: string, platform: string) => {
+const getUserByEmail = async (email: string, platform: string) => {
   const foundUser = await prisma.user.findFirst({
     where: {
       platformType: platform,
-      email: userPlatformId
+      email: email
     }
   });
 
@@ -45,7 +45,7 @@ const findUserByRefreshToken = async (refreshToken: string) => {
 }
 
 const userService = {
-  getUserByPlatformId,
+  getUserByEmail,
   createUser,
   getUserByUserId,
   findUserByRefreshToken
