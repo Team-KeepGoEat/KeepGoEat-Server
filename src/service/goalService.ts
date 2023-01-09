@@ -75,7 +75,7 @@ const createGoal = async (userId: number, createGoalDTO: CreateGoalDTO, startedA
 const deleteGoal = async (goalId: number) => {
   const data = await prisma.goal.delete({
     where: {
-      goalId,
+      goalId: goalId,
     },
   })
   return data.goalId;
