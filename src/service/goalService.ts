@@ -73,11 +73,6 @@ const createGoal = async (userId: number, createGoalDTO: CreateGoalDTO, startedA
 };
 
 const deleteGoal = async (goalId: number) => {
-  await prisma.daily_Achieved_History.deleteMany({
-    where: {
-      goalId: goalId,
-    },
-  })
   const data = await prisma.goal.delete({
     where: {
       goalId: goalId,
