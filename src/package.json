@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "lint": "eslint . --cache --fix",
+    "pretest": "npm run lint"
+  },
+  "devDependencies": {
+    "eslint": "^8.31.0"
+  }
+}
