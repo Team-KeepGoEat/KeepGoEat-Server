@@ -35,9 +35,9 @@ const socialLogin = async (req: Request, res: Response) => {
 
     const existingUser = await userService.getUserByEmail(platformUser.email, platform);
 
-    // 이미 가입한 유저일 경우 - 여기서 refresh 토큰 업데이트 해줘야 하는거 아닌지??
     if (existingUser) {
       const { refreshToken } = jwt.createRefreshToken();
+      await userService.updateUserByUserId(existingUser.userId, refreshToken);
       const { accessToken } = jwt.signup(+existingUser.userId, existingUser.email);
       const signinResult = {
         type: "signin",
@@ -112,9 +112,9 @@ const refresh = async (req: Request, res: Response) => {
         return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NOT_EXISITING_USER));
       }
 
-      const newAccessToken = jwt.signup((user as User).userId, (user as User).email);
+      const { accessToken } = jwt.signup((user as User).userId, (user as User).email);
       
-      return res.status(sc.OK).send(success(sc.OK, rm.CREATE_TOKEN_SUCCESS, { newAccessToken, refreshtoken }));
+      return res.status(sc.OK).send(success(sc.OK, rm.CREATE_TOKEN_SUCCESS, { accessToken, refreshtoken }));
     }
 
   } catch (error) {
