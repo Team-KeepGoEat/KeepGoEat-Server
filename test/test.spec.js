@@ -2,12 +2,12 @@ import expect from "chai";
 import request from "https";
 
 import express from "express";
-import Mocha from "mocha";
-import { describe } from "mocha";
+// import Mocha from "mocha";
+// import { describe } from "mocha";
 
 const app = express(); 
 
-Mocha.describe("POST /goal", () => {
+describe("POST /goal", () => {
   it("목표 추가에 성공했습니다.", done => {
     request(app)
       .patch("/goal") // api 요청
