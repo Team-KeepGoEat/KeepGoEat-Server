@@ -12,6 +12,19 @@ const getUserByEmail = async (email: string, platform: string) => {
   return foundUser;
 };
 
+const updateUserByUserId = async (userId: number, refreshToken: string) => {
+  const foundUser = await prisma.user.update({
+    where: {
+      userId: userId
+    },
+    data: {
+      refreshToken: refreshToken
+    }
+  });
+
+  return foundUser;
+}
+
 const getUserByUserId = async (userId: number) => {
   const foundUser = await prisma.user.findUnique({
     where: {
@@ -48,7 +61,8 @@ const userService = {
   getUserByEmail,
   createUser,
   getUserByUserId,
-  getUserByRefreshToken
+  getUserByRefreshToken,
+  updateUserByUserId
 };
 
 export default userService;
