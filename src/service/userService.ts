@@ -34,7 +34,7 @@ const createUser = async (email: string, platform: string, refreshToken: string)
   return newUser;
 }
 
-const findUserByRefreshToken = async (refreshToken: string) => {
+const getUserByRefreshToken = async (refreshToken: string) => {
   const foundUser = await prisma.user.findFirst({
     where: {
       refreshToken: refreshToken
@@ -48,7 +48,7 @@ const userService = {
   getUserByEmail,
   createUser,
   getUserByUserId,
-  findUserByRefreshToken
+  getUserByRefreshToken
 };
 
 export default userService;

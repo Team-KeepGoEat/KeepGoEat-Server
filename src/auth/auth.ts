@@ -105,7 +105,7 @@ const refresh = async (req: Request, res: Response) => {
         return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.EXPIRED_ALL_TOKEN));
       }
 
-      const user = await userService.findUserByRefreshToken(refreshtoken as string);
+      const user = await userService.getUserByRefreshToken(refreshtoken as string);
 
       // rf로 찾은 유저가 없을 때 - 400 에러 
       if (!user) {
