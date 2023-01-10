@@ -1,15 +1,19 @@
 // import expect from "chai";
-import request from "https";
+// import { Request } from "express";
+// import request from "https";
 import express from "express";
-
+// import assert from "assert";
+import request from "supertest"
 const app = express(); 
+// const request = require('supertest');
+
 
 describe("POST /goal", () => {
   it("목표 추가에 성공했습니다.", done => {
     request(app)
       .patch("/goal") // api 요청
       .set("Content-Type", "application/json")
-      .set("accesstoken", process.env.JWT_TOKEN) // header 설정 - JWT_TOKEN은 발급받은 accessToken 넣어서 env에
+      .set("accesstoken", process.env.JWT_TOKEN) // header 설정 
       .send({
         "goalContent" : "하루에 파프리카",
         "isMore": true,
@@ -17,8 +21,7 @@ describe("POST /goal", () => {
       .expect(200) // 예측 상태 코드
       .expect("Content-Type", /json/) // 예측 content content-type
       .then(res => {
-        expect(res.body.data.goalId).to.equal(10); // response body - 이 부분 어떻게 처리해야하는지 몰라서 equal문 찾아보던중....
-        // expect(res.body.data.isSeen).to.equal(true); // 일단 이건 확실히 아니다,,
+        expect(res.body.data.goalId).to.equal(1); // response body
         done();
       })
       .catch(err => {
