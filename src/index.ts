@@ -1,10 +1,10 @@
-import dayjs from "dayjs";
 import express, { Request, Response } from "express";
 import router from "./router";
 import schedule from "node-schedule";
 import { resetIsAchieved } from "./jobs";
 
 const JOB_SCHEDULE_TIME = process.env.JOB_SCHEDULE_TIME as string;
+
 const app = express(); 
 const PORT = 3000;
 
@@ -24,9 +24,6 @@ app.listen(PORT, () => {
     `);
 }); 
 
-console.log("##### before schedule #####");
 const job = schedule.scheduleJob(JOB_SCHEDULE_TIME, function () {
-  console.log("##### schedule #####");
   resetIsAchieved();
 });
-

@@ -3,7 +3,6 @@ import { CreateGoalDTO } from "../interfaces/goal/CreateGoalDTO";
 import { Request, Response } from "express";
 import { sc, rm } from "../constants";
 import { fail, success } from "../constants/response";
-import dayjs from "dayjs";
 import { dailyAchievedHistoryService, goalService } from "../service";
 import date from "../modules/date"
 import boxCounter from "../modules/boxCounter";
