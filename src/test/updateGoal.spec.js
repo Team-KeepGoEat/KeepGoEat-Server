@@ -25,8 +25,6 @@ describe("POST /goal/:goalId with vaild param", () => {
       .expect("Content-Type", "application/json; charset=utf-8") 
       .then(res => {
         // chai.expect(res).to.equal("성공");
-        console.log("*********************");
-        console.log(res.body.data.goalId);
         expect(res.body.data.goalId).to.equal(92); // response body 예측값 검증
         done();
       })
