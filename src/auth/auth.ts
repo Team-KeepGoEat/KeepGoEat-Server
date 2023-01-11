@@ -69,14 +69,15 @@ const socialLogin = async (req: Request, res: Response) => {
 };
 
 const refresh = async (req: Request, res: Response) => {
-  const { accesstoken, refreshtoken } = req.headers;
+  const accessToken = req.headers.accesstoken;
+  const refreshToken = req.headers.refreshtoken;
 
-  if (!accesstoken || !refreshtoken) {
+  if (!accessToken || !refreshToken) {
     return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.NULL_VALUE));
   }
 
   try {
-    const decodedAccess = jwt.verify(accesstoken as string);
+    const decodedAccess = jwt.verify(accessToken as string);
     
     // accessToken이 만료되지 않았을 때 - 400 에러
     if (decodedAccess !== tokenType.TOKEN_EXPIRED) {
@@ -91,7 +92,7 @@ const refresh = async (req: Request, res: Response) => {
     }
     
     if (decodedAccess === tokenType.TOKEN_EXPIRED) {
-      const decodedRefresh = jwt.verify(refreshtoken as string);
+      const decodedRefresh = jwt.verify(refreshToken as string);
 
       // accessToken이 만료되었고 refreshToken는 유효하지 않았을 때 - 401 에러
       if (decodedRefresh === tokenType.TOKEN_INVALID) {
@@ -105,7 +106,7 @@ const refresh = async (req: Request, res: Response) => {
         return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.EXPIRED_ALL_TOKEN));
       }
 
-      const user = await userService.getUserByRefreshToken(refreshtoken as string);
+      const user = await userService.getUserByRefreshToken(refreshToken as string);
 
       // rf로 찾은 유저가 없을 때 - 400 에러 
       if (!user) {
@@ -114,7 +115,7 @@ const refresh = async (req: Request, res: Response) => {
 
       const { accessToken } = jwt.signup((user as User).userId, (user as User).email);
       
-      return res.status(sc.OK).send(success(sc.OK, rm.CREATE_TOKEN_SUCCESS, { accessToken, refreshtoken }));
+      return res.status(sc.OK).send(success(sc.OK, rm.CREATE_TOKEN_SUCCESS, { accessToken, refreshToken }));
     }
 
   } catch (error) {
