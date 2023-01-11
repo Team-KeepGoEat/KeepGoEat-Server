@@ -6,8 +6,7 @@
   "scripts": {
     "dev": "nodemon",
     "build": "tsc && node dist",
-    "test": "mocha",
-    "prepare": "husky install"
+    "test": "mocha"
   },
   "devDependencies": {
     "@types/chai": "^4.3.4",
@@ -20,16 +19,7 @@
     "@types/node-schedule": "^2.1.0",
     "@typescript-eslint/eslint-plugin": "^5.47.1",
     "@typescript-eslint/parser": "^5.47.1",
-<<<<<<< HEAD
-    "chai": "^4.3.7",
-    "husky": "^8.0.3",
-    "lint-staged": "^13.1.0",
-    "mocha": "^10.2.0",
-    "nodemon": "^2.0.20",
-    "supertest": "^6.3.3"
-=======
     "nodemon": "^2.0.20"
->>>>>>> fcccde941d23d5d2d7f8bba9c11704136a066c56
   },
   "dependencies": {
     "@prisma/client": "^4.8.0",
@@ -44,20 +34,6 @@
     "jsonwebtoken": "^9.0.0",
     "node-schedule": "^2.1.0",
     "prisma": "^4.8.0",
-<<<<<<< HEAD
-    "request": "^2.88.2"
-  },
-  "type": "module",
-  "scripts": {
-    "lint:fix": "eslint src --ext .ts --parser-options=project:'tsconfig.json' --fix",
-     "lint-staged": "lint-staged"
-  },
-  "lint-staged": {
-    "*.{ts,tsx}": [
-      "yarn lint:fix"
-    ]
-=======
     "supertest": "^6.3.3"
->>>>>>> fcccde941d23d5d2d7f8bba9c11704136a066c56
   }
 }
