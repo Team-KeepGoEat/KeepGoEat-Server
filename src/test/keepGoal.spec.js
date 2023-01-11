@@ -15,7 +15,7 @@ app.listen(3001, () => console.log("server is listening"));
 describe("POST /goal/keep/:goalId with valid param", () => {
   it("목표 보관에 성공했습니다.", done => {
     const JWT_ACCESSTOKEN = process.env.JWT_ACCESSTOKEN;
-    console.log("JWT_ACCESSTOKEN ", JWT_ACCESSTOKEN)
+    // console.log("JWT_ACCESSTOKEN ", JWT_ACCESSTOKEN)
     request(app)
       .post("/goal/keep/83")
       .set("Content-Type", "application/json")
