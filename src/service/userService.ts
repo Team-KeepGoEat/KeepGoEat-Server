@@ -1,16 +1,29 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-const getUserByPlatformId = async (userPlatformId: string, platform: string) => {
+const getUserByEmail = async (email: string, platform: string) => {
   const foundUser = await prisma.user.findFirst({
     where: {
       platformType: platform,
-      email: userPlatformId
+      email: email
     }
   });
 
   return foundUser;
 };
+
+const updateUserByUserId = async (userId: number, refreshToken: string) => {
+  const foundUser = await prisma.user.update({
+    where: {
+      userId: userId
+    },
+    data: {
+      refreshToken: refreshToken
+    }
+  });
+
+  return foundUser;
+}
 
 const getUserByUserId = async (userId: number) => {
   const foundUser = await prisma.user.findUnique({
@@ -34,7 +47,7 @@ const createUser = async (email: string, platform: string, refreshToken: string)
   return newUser;
 }
 
-const findUserByRefreshToken = async (refreshToken: string) => {
+const getUserByRefreshToken = async (refreshToken: string) => {
   const foundUser = await prisma.user.findFirst({
     where: {
       refreshToken: refreshToken
@@ -45,10 +58,11 @@ const findUserByRefreshToken = async (refreshToken: string) => {
 }
 
 const userService = {
-  getUserByPlatformId,
+  getUserByEmail,
   createUser,
   getUserByUserId,
-  findUserByRefreshToken
+  getUserByRefreshToken,
+  updateUserByUserId
 };
 
 export default userService;
