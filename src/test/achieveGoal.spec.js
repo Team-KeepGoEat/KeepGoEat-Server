@@ -10,10 +10,12 @@ app.use("/", router);
 
 app.listen(3001, () => console.log("server is listening")); 
 
-const JWT_ACCESSTOKEN = "";  // 여기에 jwt 엑세스토큰 넣고 mocha /test/파일명 으로 실행
+// const JWT_ACCESSTOKEN = "";  // 여기에 jwt 엑세스토큰 넣고 mocha /test/파일명 으로 실행
 
 describe("POST /goal/achieve/:goalId with vaild param", () => {
   it("should success and return 200 statusCode", () => {
+    const JWT_ACCESSTOKEN = process.env.JWT_ACCESSTOKEN;
+
     const data = {
       isAchieved: false
     } 
