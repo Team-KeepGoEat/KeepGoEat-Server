@@ -72,7 +72,7 @@ const socialLogin = async (req: Request, res: Response) => {
 
 const refresh = async (req: Request, res: Response) => {
   const accessToken = req.headers.accesstoken;
-  const refreshToken = req.headers.accesstoken;
+  const refreshToken = req.headers.refreshtoken;
 
   if (!accessToken || !refreshToken) {
     return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.NULL_VALUE));
