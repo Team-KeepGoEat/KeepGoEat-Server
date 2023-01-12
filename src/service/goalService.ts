@@ -127,8 +127,9 @@ const achieveGoal = async (goalId: number, isAchieved: boolean) => {
         return achievedError.DOUBLE_CANCELED_ERROR;
       }
 
-      // 일별 달성 기록이 있는 경우
-      await dailyAchievedHistoryService.deleteDailyAchievedHistoryById(dailyAchievedHistory.achievedId); // 달성 기록 삭제 
+      // 일별 달성 기록이 있는 경우 - 달성 기록 삭제 및 total count -1 
+      await dailyAchievedHistoryService.deleteDailyAchievedHistoryById(dailyAchievedHistory.achievedId); 
+      // total count -1
       const thisMonthCount = await dailyAchievedHistoryService.getAchievedCount(goalId, currentMonth);
 
       return {
