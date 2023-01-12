@@ -16,7 +16,7 @@ describe("POST /goal", () => {
     request(app)
       .post("/goal")
       .set("Content-Type", "application/json")
-      .set("accessToken", JWT_ACCESSTOKEN) 
+      .set("accessToken", JWT_ACCESSTOKEN as string) 
       .send({
         "goalContent" : "하루에 파프리카",
         "isMore": true,

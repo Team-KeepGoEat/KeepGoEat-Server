@@ -13,8 +13,9 @@ model test {
 }
 
 model Cheering_Message {
-  cheeringMessageId Int    @id @default(autoincrement())
-  cheeringMessage   String @db.VarChar(100)
+  cheeringMessageId Int      @id @default(autoincrement())
+  cheeringMessage   String   @db.VarChar(100)
+  isGoalExisted     Boolean?
 }
 
 model Daily_Achieved_History {
@@ -22,7 +23,7 @@ model Daily_Achieved_History {
   achievedAt    DateTime @default(now())
   goalId        Int
   achievedMonth String?  @db.VarChar(50)
-  Goal          Goal     @relation(fields: [goalId], references: [goalId], onDelete: NoAction, onUpdate: NoAction, map: "goal_id")
+  Goal          Goal     @relation(fields: [goalId], references: [goalId], onDelete: Cascade, map: "goal_id")
 }
 
 model Goal {
@@ -36,7 +37,7 @@ model Goal {
   isAchieved             Boolean                  @default(false)
   writerId               Int
   Daily_Achieved_History Daily_Achieved_History[]
-  User                   User                     @relation(fields: [writerId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "writer_id")
+  User                   User                     @relation(fields: [writerId], references: [userId], onDelete: Cascade, map: "writer_id")
 }
 
 model User {

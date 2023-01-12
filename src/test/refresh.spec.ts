@@ -10,25 +10,20 @@ app.use("/", router);
 
 app.listen(3001, () => console.log("server is listening")); 
 
-// const JWT_ACCESSTOKEN = "";  // 여기에 jwt 엑세스토큰 넣고 mocha /test/파일명 으로 실행
-
-describe("POST /goal/achieve/:goalId with vaild param", () => {
-  it("should success and return 200 statusCode", () => {
+describe("[POST] /auth/refresh with both expired token", () => {
+  it("should return 401 statusCode and error message", done => {
     const JWT_ACCESSTOKEN = process.env.JWT_ACCESSTOKEN;
+    const JWT_REFRESHTOKEN = process.env.JWT_REFRESHTOKEN;
 
-    const data = {
-      isAchieved: false
-    } 
     request(app)
-      .post("/goal/achieve/1000") 
+      .post("/auth/refresh") 
       .set("Content-Type", "application/json")
-      .set("accesstoken", JWT_ACCESSTOKEN) 
-      .send(data) 
-      .expect(201) 
+      .set("accesstoken", JWT_ACCESSTOKEN as string) 
+      .set("refreshtoken", JWT_REFRESHTOKEN as string) 
+      .expect(401) 
       .expect("Content-Type", "application/json; charset=utf-8") 
       .then(res => {
-        // chai.expect(res).to.equal("성공");  
-        expect(res.body.data.updatedIsAchieved).to.equal(false); // response body 예측값 검증
+        expect(res.body.message).to.equal("모든 토큰이 만료되었습니다."); 
         done();
       })
       .catch(err => {

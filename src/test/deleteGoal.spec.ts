@@ -14,13 +14,13 @@ describe("DELETE /goal/:goalId", () => {
   it("목표 삭제에 성공했습니다.", done => {
     const JWT_ACCESSTOKEN = process.env.JWT_ACCESSTOKEN;
     request(app)
-      .delete("/goal/87")
+      .delete("/goal/97")
       .set("Content-Type", "application/json")
-      .set("accessToken", JWT_ACCESSTOKEN) 
+      .set("accessToken", JWT_ACCESSTOKEN as string) 
       .expect(200) // 예측 상태 코드
       .expect("Content-Type", "application/json; charset=utf-8") 
       .then(res => {
-        expect(res.body.data.goalId).to.equal(87); // response body - equal문 내부에 들어갈 goalID를 매번 잘 맞게 예측해서 넣어야 함
+        expect(res.body.data.goalId).to.equal(97); // response body - equal문 내부에 들어갈 goalID를 매번 잘 맞게 예측해서 넣어야 함
         done();
       })
       .catch(err => {

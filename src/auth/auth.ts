@@ -72,7 +72,7 @@ const refresh = async (req: Request, res: Response) => {
   const { accesstoken, refreshtoken } = req.headers;
 
   if (!accesstoken || !refreshtoken) {
-    return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.NULL_VALUE));
+    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
   }
 
   try {

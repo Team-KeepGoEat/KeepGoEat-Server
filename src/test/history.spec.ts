@@ -10,22 +10,19 @@ app.use("/", router);
 
 app.listen(3001, () => console.log("server is listening")); 
 
-describe("POST /goal/:goalId with vaild param", () => {
-  it("목표 수정에 성공했습니다.", done => {
-    const token = process.env.JWT_ACCESSTOKEN;
-    const data = {
-      "goalContent" : "양파쿵야"
-    }
+// const JWT_ACCESSTOKEN = ""  // 여기에 jwt 엑세스토큰 넣고 mocha /test/파일명 으로 실행
+
+describe("[GET] /history with vaild param", () => {
+  it("should success and return 200 statusCode", done => {
+    const JWT_ACCESSTOKEN = process.env.JWT_ACCESSTOKEN as string;
     request(app)
-      .post("/goal/92") 
+      .get("/history/12345") 
       .set("Content-Type", "application/json")
-      .set("accesstoken", token) 
-      .send(data)
+      .set("accesstoken", JWT_ACCESSTOKEN) 
       .expect(200) 
       .expect("Content-Type", "application/json; charset=utf-8") 
       .then(res => {
-        // chai.expect(res).to.equal("성공");
-        expect(res.body.data.goalId).to.equal(92); // response body 예측값 검증
+        expect(res.body.success).to.equal(true); 
         done();
       })
       .catch(err => {
