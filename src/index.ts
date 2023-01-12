@@ -24,6 +24,9 @@ app.listen(PORT, () => {
     `);
 }); 
 
+console.log("##### before schedule #####");
 const job = schedule.scheduleJob(JOB_SCHEDULE_TIME, function () {
+  console.log("##### schedule #####");
   resetIsAchieved();
 });
+
