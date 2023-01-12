@@ -66,10 +66,10 @@ const createGoal = async (userId: number, createGoalDTO: CreateGoalDTO, startedA
       startedAt,
     },
   });
-
   const goalId = data.goalId
-
+  
   return { goalId };
+  
 };
 
 const deleteGoal = async (goalId: number) => {
