@@ -2,8 +2,10 @@ import { Request, Response } from "express";
 import { sc, rm } from "../constants";
 import { fail, success } from "../constants/response";
 import { goalService, cheeringMessageService } from "../service";
-import date from "../modules/date"
+import date from "../modules/date";
 import time from "../modules/time";
+import slack from "../modules/slack";
+
 
 const getHome = async (req: Request, res: Response) => {
   const userId = req.user.userId;
@@ -24,6 +26,7 @@ const getHome = async (req: Request, res: Response) => {
     }));
 
   } catch (error) {
+    slack.sendErrorMessageToSlack(req.method.toUpperCase(), req.originalUrl, error, req.user?.userId);
     return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
   }
 };
