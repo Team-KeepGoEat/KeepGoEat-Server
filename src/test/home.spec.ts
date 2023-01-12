@@ -12,10 +12,10 @@ app.listen(3001, () => console.log("server is listening"));
 
 const JWT_ACCESSTOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImVtYWlsIjoibHNoMzI4MzI4QG5hdmVyLmNvbSIsImlhdCI6MTY3MzQ2Mjk1NiwiZXhwIjoxNjczOTY2OTU2LCJpc3MiOiJLRUVQR09FQVRfU0VSVkVSIn0.N90z3Kqd9b0ZljcPWpRNl0MAb5oWHnVz-RUvB3nhaKM";  
 
-describe("[GET] /history with vaild param", () => {
+describe("[GET] /home with vaild param", () => {
   it("should success and return 200 statusCode", done => {
     request(app)
-      .get("/history/12345") 
+      .get("/home") 
       .set("Content-Type", "application/json")
       .set("accesstoken", JWT_ACCESSTOKEN) 
       .expect(200) 
