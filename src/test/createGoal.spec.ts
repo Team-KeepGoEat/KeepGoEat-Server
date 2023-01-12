@@ -24,7 +24,7 @@ describe("POST /goal", () => {
       .expect(200) // 예측 상태 코드
       .expect("Content-Type", "application/json; charset=utf-8") 
       .then(res => {
-        expect(res.body.success).to.equal(true); // response body - equal문 내부에 들어갈 goalID를 매번 잘 맞게 예측해서 넣어야 함
+        expect(res.body.success).to.equal(true); // response body 
         done();
       })
       .catch(err => {
@@ -32,18 +32,4 @@ describe("POST /goal", () => {
         done(err);
       })
   });
-  // it("필요한 값이 없습니다.", done => {
-  //   request(app)
-  //     .patch("/goal")
-  //     .set("Content-Type", "application/json")
-  //     .set("accessToken", JWT_ACCESSTOKEN)
-  //     .expect(400)
-  //     .then(() => {
-  //       done();
-  //     })
-  //     .catch(err => {
-  //       console.error("######Error >>", err);
-  //       done(err);
-  //     })
-  // });
 });
