@@ -31,11 +31,8 @@ app.get("/test", (req: Request, res: Response) => {
 app.use("/", router); 
 
 app.listen(PORT, () => {
-  logger.log("debug", `
-        #############################################
-            🛡️ Server listening on port: ${PORT} 🛡️
-        #############################################
-    `);
+  logger.log("debug", "test");
+  console.log(`server listening on ${PORT}`);
 }); 
 
 const job = schedule.scheduleJob(JOB_SCHEDULE_TIME, function () {

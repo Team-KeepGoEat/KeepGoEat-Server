@@ -24,7 +24,7 @@ describe("POST /goal/achieve/:goalId with vaild request body", () => {
       .expect(201) 
       .expect("Content-Type", "application/json; charset=utf-8") 
       .then(res => {
-        expect(res).to.equal("success");  
+        expect(res.body.success).to.equal(true);  
         expect(res.body.data.updatedIsAchieved).to.equal(false); 
         done();
       })
