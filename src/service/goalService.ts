@@ -64,6 +64,7 @@ const createGoal = async (userId: number, createGoalDTO: CreateGoalDTO, startedA
       isMore: createGoalDTO.isMore,
       writerId:  userId,
       startedAt,
+      totalCount: 0
     },
   });
   const goalId = data.goalId
