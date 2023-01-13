@@ -17,15 +17,14 @@ describe("POST /goal/:goalId with vaild param", () => {
       "goalContent" : "양파쿵야"
     }
     request(app)
-      .post("/goal/98") 
+      .post("/goal/89") 
       .set("Content-Type", "application/json")
       .set("accesstoken", token as string) 
       .send(data)
       .expect(200) 
       .expect("Content-Type", "application/json; charset=utf-8") 
       .then(res => {
-        // chai.expect(res).to.equal("성공");
-        expect(res.body.data.goalId).to.equal(98); // response body 예측값 검증
+        expect(res.body.data.goalId).to.equal(89); // response body 예측값 검증
         done();
       })
       .catch(err => {
