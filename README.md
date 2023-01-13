@@ -193,15 +193,15 @@ chore - Other changes that don't modify src or test files
 4. pr 날린 뒤 문제 없으면 dev에 merge함
 
 ## 🥗 foldering
-root-dir
-  ㄴprisma
-  ㄴsrc
-    ㄴconfig
-    ㄴconstants
-    ㄴcontroller
-    ㄴinterfaces
-    ㄴmiddlewares
-    ㄴmodules
-    ㄴrouter
-    ㄴservice
+root-dir<br>
+  ㄴprisma<br>
+  ㄴsrc<br>
+    ㄴconfig<br>
+    ㄴconstants<br>
+    ㄴcontroller<br>
+    ㄴinterfaces<br>
+    ㄴmiddlewares<br>
+    ㄴmodules<br>
+    ㄴrouter<br>
+    ㄴservice<br>
     ㄴauth
