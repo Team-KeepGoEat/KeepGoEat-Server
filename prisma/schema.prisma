@@ -31,7 +31,7 @@ model Goal {
   goalContent            String                   @db.VarChar(200)
   isMore                 Boolean
   isOngoing              Boolean                  @default(true)
-  totalCount             Int                      @default(1)
+  totalCount             Int                      @default(0)
   startedAt              DateTime                 @default(now())
   keptAt                 DateTime?
   isAchieved             Boolean                  @default(false)
