@@ -96,6 +96,7 @@
 ```
 
 ## 🥗 server architecture
+![image](https://user-images.githubusercontent.com/82032418/212338099-62f146fe-4d52-4712-b176-2c92243576d1.png)
 
 ## 🥗 ERD
 ![image](https://user-images.githubusercontent.com/82032418/212294282-f80a425c-89fc-4f0c-82ae-985e6cf36c95.png)
