@@ -2,8 +2,10 @@ import { Request, Response } from "express";
 import { sc, rm } from "../constants";
 import { fail, success } from "../constants/response";
 import { goalService, cheeringMessageService } from "../service";
-import date from "../modules/date"
+import date from "../modules/date";
 import time from "../modules/time";
+import slack from "../modules/slack";
+
 
 const getHome = async (req: Request, res: Response) => {
   const userId = req.user.userId;
@@ -13,7 +15,9 @@ const getHome = async (req: Request, res: Response) => {
 
   try {
     const goals = await goalService.getHomeGoalsByUserId(date.getCurrentMonthMinus9(), +userId);
-    const cheeringMessage = await cheeringMessageService.getRamdomMessage();
+    let isGoalExisted;
+    goals.length === 0 ? isGoalExisted = false : isGoalExisted = true;
+    const cheeringMessage = await cheeringMessageService.getRamdomMessage(isGoalExisted);
     const currentDayTime = await time.getDayTime();
 
     return res.status(sc.OK).send(success(sc.OK, rm.GET_GOALS_SUCCCESS_FOR_HOME, {
@@ -24,6 +28,7 @@ const getHome = async (req: Request, res: Response) => {
     }));
 
   } catch (error) {
+    slack.sendErrorMessageToSlack(req.method.toUpperCase(), req.originalUrl, error, req.user?.userId);
     return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
   }
 };
