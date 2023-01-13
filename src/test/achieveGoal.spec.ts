@@ -10,13 +10,9 @@ app.use("/", router);
 
 app.listen(3001, () => console.log("server is listening")); 
 
-// const JWT_ACCESSTOKEN = "";  // 여기에 jwt 엑세스토큰 넣고 mocha /test/파일명 으로 실행
-
-
-describe("POST /goal/achieve/:goalId with vaild param", () => {
+describe("POST /goal/achieve/:goalId with vaild request body", () => {
   it("should success and return 200 statusCode", done => {
     const JWT_ACCESSTOKEN = process.env.JWT_ACCESSTOKEN;
-
     const data = {
       isAchieved: false
     } 
@@ -29,7 +25,7 @@ describe("POST /goal/achieve/:goalId with vaild param", () => {
       .expect("Content-Type", "application/json; charset=utf-8") 
       .then(res => {
         expect(res).to.equal("success");  
-        expect(res.body.data.updatedIsAchieved).to.equal(false); // response body 예측값 검증
+        expect(res.body.data.updatedIsAchieved).to.equal(false); 
         done();
       })
       .catch(err => {
