@@ -132,7 +132,6 @@ const achieveGoal = async (goalId: number, isAchieved: boolean) => {
       await dailyAchievedHistoryService.deleteDailyAchievedHistoryById(dailyAchievedHistory.achievedId); 
       await updateTotalCount(goalId, isAchieved);
 
-
       const thisMonthCount = await dailyAchievedHistoryService.getAchievedCount(goalId, currentMonth);
 
       return {
@@ -144,7 +143,6 @@ const achieveGoal = async (goalId: number, isAchieved: boolean) => {
 
     // 달성 버튼 눌렀을 경우
     const dailyAchievedHistory = await dailyAchievedHistoryService.getDailyAchievedHistory(now, goalId);
-
 
     // 일별 달성 기록이 없는 경우
     if (!dailyAchievedHistory) {
@@ -198,6 +196,8 @@ const updateTotalCount = async (goalId: number, isAchieved: boolean) => {
       }
     }
   });
+
+  return
 }
 
 
