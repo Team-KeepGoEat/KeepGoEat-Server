@@ -96,6 +96,7 @@
 ```
 
 ## 🥗 server architecture
+![image](https://user-images.githubusercontent.com/82032418/212338099-62f146fe-4d52-4712-b176-2c92243576d1.png)
 
 ## 🥗 ERD
 ![image](https://user-images.githubusercontent.com/82032418/212294282-f80a425c-89fc-4f0c-82ae-985e6cf36c95.png)
@@ -193,15 +194,15 @@ chore - Other changes that don't modify src or test files
 4. pr 날린 뒤 문제 없으면 dev에 merge함
 
 ## 🥗 foldering
-root-dir
-  ㄴprisma
-  ㄴsrc
-    ㄴconfig
-    ㄴconstants
-    ㄴcontroller
-    ㄴinterfaces
-    ㄴmiddlewares
-    ㄴmodules
-    ㄴrouter
-    ㄴservice
+root-dir<br>
+  ㄴprisma<br>
+  ㄴsrc<br>
+    ㄴconfig<br>
+    ㄴconstants<br>
+    ㄴcontroller<br>
+    ㄴinterfaces<br>
+    ㄴmiddlewares<br>
+    ㄴmodules<br>
+    ㄴrouter<br>
+    ㄴservice<br>
     ㄴauth
