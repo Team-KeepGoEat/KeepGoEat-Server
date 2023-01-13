@@ -7,6 +7,7 @@ import jwt from "../modules/jwt";
 import platformToken from "../constants/platformToken";
 import tokenType from "../constants/tokenType";
 import { User } from "@prisma/client";
+import slack from "../modules/slack";
 
 const socialLogin = async (req: Request, res: Response) => {
   const { platformAccessToken, platform } = req.body;
@@ -63,6 +64,7 @@ const socialLogin = async (req: Request, res: Response) => {
 
   } catch (error) {
     console.log("소셜 로그인 및 회원가입 에러 ", error);
+    slack.sendErrorMessageToSlack(req.method.toUpperCase(), req.originalUrl, error, req.user?.userId);
     return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
   }
 
@@ -81,7 +83,6 @@ const refresh = async (req: Request, res: Response) => {
     
     // accessToken이 만료되지 않았을 때 - 400 에러
     if (decodedAccess !== tokenType.TOKEN_EXPIRED) {
-      console.log("accessToken이 만료되지 않았을 때");
       return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
     }
 
@@ -121,6 +122,7 @@ const refresh = async (req: Request, res: Response) => {
   } catch (error) {
 
     console.log("토큰 재발급 에러 ", error);
+    slack.sendErrorMessageToSlack(req.method.toUpperCase(), req.originalUrl, error, req.user?.userId);
     return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
   }
 

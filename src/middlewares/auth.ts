@@ -5,6 +5,7 @@ import jwt from "../modules/jwt";
 import tokenType from "../constants/tokenType";
 import { JwtPayload } from "jsonwebtoken";
 import { userService } from "../service";
+import slack from "../modules/slack";
 
 const auth = async (req: Request, res: Response, next: NextFunction) => {
   const accessToken = req.headers.accesstoken;
@@ -37,6 +38,7 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
     next();
     
   } catch(error) {
+    slack.sendErrorMessageToSlack(req.method.toUpperCase(), req.originalUrl, error, req.user?.userId);
     res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
   }
 };
