@@ -66,10 +66,10 @@ const createGoal = async (userId: number, createGoalDTO: CreateGoalDTO, startedA
       startedAt,
     },
   });
-
   const goalId = data.goalId
-
+  
   return { goalId };
+  
 };
 
 const deleteGoal = async (goalId: number) => {
@@ -129,7 +129,9 @@ const achieveGoal = async (goalId: number, isAchieved: boolean) => {
 
       // 일별 달성 기록이 있는 경우 - 달성 기록 삭제 및 total count -1 
       await dailyAchievedHistoryService.deleteDailyAchievedHistoryById(dailyAchievedHistory.achievedId); 
-      // total count -1
+      await updateTotalCount(goalId, isAchieved);
+
+
       const thisMonthCount = await dailyAchievedHistoryService.getAchievedCount(goalId, currentMonth);
 
       return {
@@ -145,9 +147,10 @@ const achieveGoal = async (goalId: number, isAchieved: boolean) => {
 
     // 일별 달성 기록이 없는 경우
     if (!dailyAchievedHistory) {
-      // 당일 달성 기록 추가
+      // 당일 달성 기록 추가 및 totalCount+1
       await dailyAchievedHistoryService.createDailyAchievedHistory(goalId, currentMonth); 
-    
+      await updateTotalCount(goalId, isAchieved);
+      
       const thisMonthCount = await dailyAchievedHistoryService.getAchievedCount(goalId, currentMonth);
 
       return {
@@ -166,6 +169,35 @@ const achieveGoal = async (goalId: number, isAchieved: boolean) => {
   console.log("이미 달성 기록이 있는 목표를 달성하려고 함");
   return achievedError.DOUBLE_ACHIEVED_ERROR;
 };
+
+const updateTotalCount = async (goalId: number, isAchieved: boolean) => {
+  // 취소한 목표인 경우 total count -1
+  if (!isAchieved) {
+    await prisma.goal.update({
+      where: {
+        goalId: goalId
+      },
+      data: {
+        totalCount: {
+          decrement: 1
+        }
+      }
+    });
+
+    return
+  }
+
+  await prisma.goal.update({
+    where: {
+      goalId: goalId
+    },
+    data: {
+      totalCount: {
+        increment: 1
+      }
+    }
+  });
+}
 
 
 // 목표 isAchieve 업데이트
@@ -191,6 +223,7 @@ const goalService = {
   achieveGoal,
   updateIsAchieved,
   keepGoal,
+  updateTotalCount
 };
 
 export default goalService;
