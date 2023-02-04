@@ -12,14 +12,14 @@ app.listen(3001, () => console.log("server is listening"));
 
 describe("[POST] /auth/refresh with both expired token", () => {
   it("should return 401 statusCode and error message", done => {
-    const JWT_ACCESSTOKEN = process.env.JWT_ACCESSTOKEN;
-    const JWT_REFRESHTOKEN = process.env.JWT_REFRESHTOKEN;
+    const JWT_EXPIRED_ACCESS = process.env.JWT_EXPIRED_ACCESS;
+    const JWT_EXPIRED_REFRESH = process.env.JWT_EXPIRED_REFRESH;
 
     request(app)
       .post("/auth/refresh") 
       .set("Content-Type", "application/json")
-      .set("accesstoken", JWT_ACCESSTOKEN as string) 
-      .set("refreshtoken", JWT_REFRESHTOKEN as string) 
+      .set("accesstoken", JWT_EXPIRED_ACCESS as string) 
+      .set("refreshtoken", JWT_EXPIRED_REFRESH as string) 
       .expect(401) 
       .expect("Content-Type", "application/json; charset=utf-8") 
       .then(res => {

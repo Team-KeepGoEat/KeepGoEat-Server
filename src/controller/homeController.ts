@@ -5,7 +5,7 @@ import { goalService, cheeringMessageService } from "../service";
 import date from "../modules/date";
 import time from "../modules/time";
 import slack from "../modules/slack";
-
+import { debugLog, errorLog } from "../logger/logger";
 
 const getHome = async (req: Request, res: Response) => {
   const userId = req.user.userId;
@@ -20,6 +20,8 @@ const getHome = async (req: Request, res: Response) => {
     const cheeringMessage = await cheeringMessageService.getRamdomMessage(isGoalExisted);
     const currentDayTime = await time.getDayTime();
 
+    debugLog(req.originalUrl, req.method, req.body, req.user?.userId);
+
     return res.status(sc.OK).send(success(sc.OK, rm.GET_GOALS_SUCCCESS_FOR_HOME, {
       "goals": goals,
       "goalCount": goals.length,
@@ -28,7 +30,10 @@ const getHome = async (req: Request, res: Response) => {
     }));
 
   } catch (error) {
+    
     slack.sendErrorMessageToSlack(req.method.toUpperCase(), req.originalUrl, error, req.user?.userId);
+    errorLog(req.originalUrl, req.method, req.body, error, req.user?.userId);
+    
     return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
   }
 };
