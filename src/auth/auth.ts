@@ -18,7 +18,7 @@ const socialLogin = async (req: Request, res: Response) => {
   }
 
   try {
-    // accessToken으로 카카오에서 유저 정보 받아옴
+
     let platformUser;
     switch (platform) { 
       case "KAKAO": 
@@ -28,7 +28,7 @@ const socialLogin = async (req: Request, res: Response) => {
           return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.UNAUTHORIZED_PLATFORM_USER));
         }
         break;
-        
+
       case "APPLE": 
         platformUser = await apple(platformAccessToken as string);
         break;
