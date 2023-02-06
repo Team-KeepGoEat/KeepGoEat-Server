@@ -37,6 +37,7 @@
     "express": "^4.18.2",
     "express-validator": "^6.14.2",
     "jsonwebtoken": "^9.0.0",
+    "jwks-rsa": "^3.0.1",
     "node-schedule": "^2.1.0",
     "prisma": "^4.8.0",
     "supertest": "^6.3.3",

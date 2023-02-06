@@ -2,6 +2,7 @@ import { Request, Response } from "express"
 import { rm, sc } from "../constants"
 import { fail, success } from "../constants/response";
 import kakao from "../modules/kakao";
+import apple from "../modules/apple";
 import { userService } from "../service";
 import jwt from "../modules/jwt";
 import platformToken from "../constants/platformToken";
@@ -26,6 +27,10 @@ const socialLogin = async (req: Request, res: Response) => {
         if (platformUser === platformToken.INVALID_PLATFORM_USER) {
           return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.UNAUTHORIZED_PLATFORM_USER));
         }
+        break;
+        
+      case "APPLE": 
+        platformUser = await apple(platformAccessToken as string);
         break;
     }
 
