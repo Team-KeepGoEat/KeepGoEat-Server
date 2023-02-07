@@ -57,12 +57,21 @@ const getUserByRefreshToken = async (refreshToken: string) => {
   return foundUser;
 }
 
+const deleteUserById = async (userId: number) => {
+  await prisma.user.delete({
+    where: {
+      userId: userId
+    }
+  });
+}
+
 const userService = {
   getUserByEmail,
   createUser,
   getUserByUserId,
   getUserByRefreshToken,
-  updateUserByUserId
+  updateUserByUserId,
+  deleteUserById
 };
 
 export default userService;
