@@ -41,7 +41,7 @@ const createUser = async (email: string, platform: string, refreshToken: string)
       email: email,        
       platformType: platform,
       refreshToken: refreshToken
-     }
+    }
   });
 
   return newUser;
