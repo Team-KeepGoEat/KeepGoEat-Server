@@ -32,10 +32,7 @@ const socialLogin = async (req: Request, res: Response) => {
 
       case "NAVER":
         platformUser = await naver(platformAccessToken as string);
-
-        // if (platformUser === platformToken.INVALID_PLATFORM_USER) {
-        //  return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.UNAUTHORIZED_PLATFORM_USER));
-        //}
+        break;        
 
       case "APPLE": 
         platformUser = await apple(platformAccessToken as string);
