@@ -1,4 +1,5 @@
 import axios from "axios";
+import { rm } from "../constants";
 
 const naver = async (accessToken: string) => {
   console.log("######### accessToken 네이버에 검증 시작 #########");
@@ -17,7 +18,7 @@ const naver = async (accessToken: string) => {
     console.log("######### naver에서 받아온 네이버 정보 ", naverAccount, " #########");
 
     if (!naverUser) { 
-      return null 
+      return rm.NOT_EXISITING_USER;
     }
     return naverAccount;
   } catch (error) {
