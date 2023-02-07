@@ -1,15 +1,26 @@
 import jwt from "jsonwebtoken";
-const { JwksClient } = require('jwks-rsa');
-
+const { JwksClient } = require("jwks-rsa");
+import tokenType from "../constants/tokenType";
 
 const apple = async (identityToken: string) => {
   console.log("########## identityToken 애플에 검증 시작 ##########")
 
   // 클라이언트에서 받아온 identityToken 복호화
-  const decodedToken = jwt.decode(identityToken, { complete: true }) as {
-    header: { kid: string; alg: jwt.Algorithm };
-    payload: { sub: string };
-  };
+  let decodedToken;
+  try { 
+    decodedToken = jwt.decode(identityToken, { complete: true }) as {
+      header: { kid: string; alg: jwt.Algorithm };
+      payload: { sub: string };
+    };
+  } catch (error: any) {
+    console.log("error.message ", error.message)
+    if (error.message === "jwt expired") {
+      console.log("만료된 apple 토큰")
+      return tokenType.TOKEN_EXPIRED;
+    } else {
+      return tokenType.TOKEN_INVALID;
+    }
+  }
   
   // 복호화한 토큰에서 keyId 가져옴
   const keyId = decodedToken.header.kid
