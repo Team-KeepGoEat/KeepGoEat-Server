@@ -12,7 +12,7 @@ const naver = async (accessToken: string) => {
       },
     });
 
-    const naverAccount = naverUser.data.response.id;
+    const naverAccount = naverUser.data.response;
 
     console.log("######### naver에서 받아온 네이버 정보 ", naverAccount, " #########");
 
