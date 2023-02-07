@@ -17,7 +17,7 @@ describe("POST /goal/keep/:goalId with valid param", () => {
       .post("/goal/keep/89")
       .set("Content-Type", "application/json")
       .set("accessToken", JWT_ACCESSTOKEN as string) 
-      .expect(200) // 예측 상태 코드
+      .expect(200) 
       .expect("Content-Type", "application/json; charset=utf-8") 
       .then(res => {
         expect(res.body.data.goalId).to.equal(89); // response body 

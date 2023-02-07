@@ -3,6 +3,7 @@ import { rm, sc } from "../constants"
 import { fail, success } from "../constants/response";
 import kakao from "../modules/kakao";
 import naver from "../modules/naver";
+import apple from "../modules/apple";
 import { userService } from "../service";
 import jwt from "../modules/jwt";
 import platformToken from "../constants/platformToken";
@@ -18,7 +19,7 @@ const socialLogin = async (req: Request, res: Response) => {
   }
 
   try {
-    // accessToken으로 카카오에서 유저 정보 받아옴
+
     let platformUser;
     switch (platform) { 
       case "KAKAO": 
@@ -35,6 +36,9 @@ const socialLogin = async (req: Request, res: Response) => {
         // if (platformUser === platformToken.INVALID_PLATFORM_USER) {
         //  return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.UNAUTHORIZED_PLATFORM_USER));
         //}
+
+      case "APPLE": 
+        platformUser = await apple(platformAccessToken as string);
         break;
     }
 

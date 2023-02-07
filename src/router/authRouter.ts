@@ -3,7 +3,7 @@ import auth from "../auth/auth";
 
 const router:Router = Router();
 
-router.post("/refresh", auth.refresh);
+router.get("/refresh", auth.refresh);
 router.post("/", auth.socialLogin);
 
 // //* 네이버로 로그인하기 라우터

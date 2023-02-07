@@ -14,10 +14,7 @@ const getDailyAchievedHistory = async (targetDate: string, goalId: number) => {
       }
     },
   });
-  console.log("endDate ", date.getEndDatePlus9(targetDate));
-  console.log("startDate ", date.getStartDatePlus9(targetDate));
 
-  console.log("[getDailyAchievedHistory] dailyAchievedHistory: ", dailyAchievedHistory);
   return dailyAchievedHistory;
 };
 

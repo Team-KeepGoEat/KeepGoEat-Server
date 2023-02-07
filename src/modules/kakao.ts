@@ -2,7 +2,6 @@ import axios from "axios";
 import platformToken from "../constants/platformToken";
 
 const kakao = async (accessToken: string) => {
-  console.log("########## accessToken 카카오에 검증 시작 ##########")
   
   try {
     const kakaoUser = await axios({
@@ -21,8 +20,6 @@ const kakao = async (accessToken: string) => {
       return platformToken.INVALID_PLATFORM_USER;
     }
     */
-
-    console.log("########## kakao에서 받아온 카카오 정보 ", kakaoAccount , " ##########");
     
     return kakaoAccount;
 
