@@ -31,6 +31,10 @@ const socialLogin = async (req: Request, res: Response) => {
       case "APPLE": 
         platformUser = await sns.apple(platformAccessToken as string);
         break;
+      
+      case "NAVER": 
+        platformUser = await sns.naver(platformAccessToken as string);
+        break;
     }
 
     if (!platformUser) {
