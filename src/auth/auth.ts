@@ -32,10 +32,7 @@ const socialLogin = async (req: Request, res: Response) => {
 
       case "NAVER":
         platformUser = await naver(platformAccessToken as string);
-
-        // if (platformUser === platformToken.INVALID_PLATFORM_USER) {
-        //  return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.UNAUTHORIZED_PLATFORM_USER));
-        //}
+        break;        
 
       case "APPLE": 
         platformUser = await apple(platformAccessToken as string);
@@ -75,9 +72,14 @@ const socialLogin = async (req: Request, res: Response) => {
     
     return res.status(sc.CREATED).send(success(sc.CREATED, rm.SIGNUP_SUCCESS, signupResult));
 
-  } catch (error) {
+  } catch (error: any) {
     console.log("소셜 로그인 및 회원가입 에러 ", error);
     slack.sendErrorMessageToSlack(req.method.toUpperCase(), req.originalUrl, error, req.user?.userId);
+    
+    // 애플 엑세스코드 만료 시
+    if (error.message === "jwt expired") {
+      return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.UNAUTHORIZED_PLATFORM_USER));
+    }
     return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
   }
 
