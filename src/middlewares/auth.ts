@@ -1,7 +1,7 @@
 import { fail } from "./../constants/response";
 import { Request, Response, NextFunction } from "express"
 import { sc, rm } from "../constants";
-import jwt from "../modules/jwt";
+import jwt from "../modules/jwtHandler";
 import tokenType from "../constants/tokenType";
 import { JwtPayload } from "jsonwebtoken";
 import { userService } from "../service";

@@ -58,11 +58,21 @@ const getUserByRefreshToken = async (refreshToken: string) => {
 }
 
 const deleteUserById = async (userId: number) => {
-  await prisma.user.delete({
+
+  const foundUser = await getUserByUserId(userId);
+
+  if (!foundUser) {
+    return null
+  }
+
+  const deletedUser = await prisma.user.delete({
     where: {
       userId: userId
     }
   });
+
+  return deletedUser;
+
 }
 
 const userService = {

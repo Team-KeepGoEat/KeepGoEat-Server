@@ -2,15 +2,21 @@ import jwt from "jsonwebtoken";
 const { JwksClient } = require("jwks-rsa");
 import axios from "axios";
 import { rm } from "../constants";
+import tokenType from "../constants/tokenType";
 
 const apple = async (identityToken: string) => {
   console.log("########## identityToken 애플에 검증 시작 ##########")
+  console.log("identityToken ", identityToken)
 
   // 클라이언트에서 받아온 identityToken 복호화
   const decodedToken = jwt.decode(identityToken, { complete: true }) as {
     header: { kid: string; alg: jwt.Algorithm };
     payload: { sub: string };
   };
+
+  if (!decodedToken) {
+    return tokenType.INVALID_PLATFORM_USER;
+  }
   
   // 복호화한 토큰에서 keyId 가져옴
   const keyId = decodedToken.header.kid
@@ -45,7 +51,7 @@ const kakao = async (accessToken: string) => {
       },
     });
 
-    const kakaoAccount= kakaoUser.data.kakao_account;
+    const kakaoAccount = kakaoUser.data.kakao_account;
 
     /*
     if (!kakaoAccount.is_email_valid == !kakaoAccount.is_email_verified) {
