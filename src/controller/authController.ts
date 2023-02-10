@@ -14,7 +14,9 @@ const socialLogin = async (req: Request, res: Response) => {
   const { platformAccessToken, platform } = req.body;
 
   if (!platformAccessToken || !platform) {
-    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
+    return res
+      .status(sc.BAD_REQUEST)
+      .send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
   }
 
   try {
@@ -34,12 +36,16 @@ const socialLogin = async (req: Request, res: Response) => {
     }
 
     if (platformUser === tokenType.INVALID_PLATFORM_USER) {
-      return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.UNAUTHORIZED_PLATFORM_USER));
+      return res
+        .status(sc.UNAUTHORIZED)
+        .send(fail(sc.UNAUTHORIZED, rm.UNAUTHORIZED_PLATFORM_USER));
     }
 
     if (!platformUser) {
       console.log("########## socialAccount를 받아오지 못함 ##########")
-      return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.UNAUTHORIZED_PLATFORM_USER));
+      return res
+        .status(sc.UNAUTHORIZED)
+        .send(fail(sc.UNAUTHORIZED, rm.UNAUTHORIZED_PLATFORM_USER));
     }
 
     const existingUser = await userService.getUserByEmail(platformUser.email, platform);
@@ -54,7 +60,9 @@ const socialLogin = async (req: Request, res: Response) => {
         accessToken: accessToken,
         refreshToken: refreshToken
       }
-      return res.status(sc.OK).send(success(sc.OK, rm.SIGNIN_SUCCESS, signinResult))
+      return res
+        .status(sc.OK)
+        .send(success(sc.OK, rm.SIGNIN_SUCCESS, signinResult))
     }
 
     const { refreshToken } = jwtHandler.createRefreshToken();
@@ -190,7 +198,7 @@ const withdrawUser = async (req: Request, res: Response) => {
     return res
       .status(sc.OK)
       .send(success(sc.OK, rm.WITHDRAWAL_SUCCESS));
-      
+
   } catch (error) {
     if (error === 400) {
       return res
