@@ -190,6 +190,7 @@ const withdrawUser = async (req: Request, res: Response) => {
     return res
       .status(sc.OK)
       .send(success(sc.OK, rm.WITHDRAWAL_SUCCESS));
+      
   } catch (error) {
     if (error === 400) {
       return res
