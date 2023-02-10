@@ -76,12 +76,21 @@ const socialLogin = async (req: Request, res: Response) => {
       refreshToken: refreshToken
     };
 
-    return res.status(sc.CREATED).send(success(sc.CREATED, rm.SIGNUP_SUCCESS, signupResult));
+    return res
+      .status(sc.CREATED)
+      .send(success(sc.CREATED, rm.SIGNUP_SUCCESS, signupResult));
 
   } catch (error: any) {
     console.log("소셜 로그인 및 회원가입 에러 ", error);
-    slack.sendErrorMessageToSlack(req.method.toUpperCase(), req.originalUrl, error, req.user?.userId);
-    return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+    slack
+      .sendErrorMessageToSlack(
+        req.method.toUpperCase(), 
+        req.originalUrl, 
+        error, 
+        req.user?.userId);
+    return res
+      .status(sc.INTERNAL_SERVER_ERROR)
+      .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
   }
 
 };
@@ -91,7 +100,9 @@ const refresh = async (req: Request, res: Response) => {
   const refreshToken = req.headers.refreshtoken;
 
   if (!accessToken || !refreshToken) {
-    return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.NULL_VALUE));
+    return res
+      .status(sc.UNAUTHORIZED)
+      .send(fail(sc.UNAUTHORIZED, rm.NULL_VALUE));
   }
 
   try {
@@ -99,13 +110,17 @@ const refresh = async (req: Request, res: Response) => {
 
     // accessToken이 만료되지 않았을 때 - 400 에러
     if (decodedAccess !== tokenType.TOKEN_EXPIRED) {
-      return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+      return res
+        .status(sc.BAD_REQUEST)
+        .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
     }
 
     // accessToken이 유효하지 않았을 때 - 401 에러
     if (decodedAccess === tokenType.TOKEN_INVALID) {
       console.log("accessToken이 유효하지 않았을 때");
-      return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.INVALID_ACCESS_TOKEN));
+      return res
+        .status(sc.UNAUTHORIZED)
+        .send(fail(sc.UNAUTHORIZED, rm.INVALID_ACCESS_TOKEN));
     }
 
     if (decodedAccess === tokenType.TOKEN_EXPIRED) {
@@ -114,32 +129,47 @@ const refresh = async (req: Request, res: Response) => {
       // accessToken이 만료되었고 refreshToken는 유효하지 않았을 때 - 401 에러
       if (decodedRefresh === tokenType.TOKEN_INVALID) {
         console.log("accessToken이 만료되었고 refreshToken는 유효하지 않았을 때");
-        return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.INVALID_REFRESH_TOKEN));
+        return res
+          .status(sc.UNAUTHORIZED)
+          .send(fail(sc.UNAUTHORIZED, rm.INVALID_REFRESH_TOKEN));
       }
 
       // accessToken이 만료되었고 refreshToken도 만료되었을 때 - 401 에러
       if (decodedRefresh === tokenType.TOKEN_EXPIRED) {
         console.log("accessToken이 만료되었고 refreshToken도 만료되었을 때");
-        return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.EXPIRED_ALL_TOKEN));
+        return res
+          .status(sc.UNAUTHORIZED)
+          .send(fail(sc.UNAUTHORIZED, rm.EXPIRED_ALL_TOKEN));
       }
 
       const user = await userService.getUserByRefreshToken(refreshToken as string);
 
       // rf로 찾은 유저가 없을 때 - 400 에러 
       if (!user) {
-        return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NOT_EXISITING_USER));
+        return res
+          .status(sc.BAD_REQUEST)
+          .send(fail(sc.BAD_REQUEST, rm.NOT_EXISITING_USER));
       }
 
       const { accessToken } = jwtHandler.signup((user as User).userId, (user as User).email);
 
-      return res.status(sc.OK).send(success(sc.OK, rm.CREATE_TOKEN_SUCCESS, { accessToken, refreshToken }));
+      return res
+        .status(sc.OK)
+        .send(success(sc.OK, rm.CREATE_TOKEN_SUCCESS, { accessToken, refreshToken }));
     }
 
   } catch (error) {
 
     console.log("토큰 재발급 에러 ", error);
-    slack.sendErrorMessageToSlack(req.method.toUpperCase(), req.originalUrl, error, req.user?.userId);
-    return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+    slack
+      .sendErrorMessageToSlack(
+        req.method.toUpperCase(), 
+        req.originalUrl, 
+        error, 
+        req.user?.userId);
+    return res
+      .status(sc.INTERNAL_SERVER_ERROR)
+      .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
   }
 
 };
