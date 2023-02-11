@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken";
 const { JwksClient } = require("jwks-rsa");
 import axios from "axios";
-import { rm } from "../constants";
 import tokenType from "../constants/tokenType";
 
 const apple = async (identityToken: string) => {
@@ -36,6 +35,8 @@ const apple = async (identityToken: string) => {
       algorithms: [decodedToken.header.alg]
     });
 
+    console.log("애플로그인 정보 ", verifiedDecodedToken)
+
     return verifiedDecodedToken;
 
   } catch (error) {
@@ -64,6 +65,7 @@ const kakao = async (accessToken: string) => {
       return platformToken.INVALID_PLATFORM_USER;
     }
     */
+    console.log("카카오로그인 정보 ", kakaoAccount)
 
     return kakaoAccount;
   
@@ -86,6 +88,8 @@ const naver = async (accessToken: string) => {
     });
 
     const naverAccount = naverUser.data.response;
+
+    console.log("네이버로그인 정보: ", naverAccount)
 
     return naverAccount;
   

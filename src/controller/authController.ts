@@ -178,7 +178,7 @@ const withdrawUser = async (req: Request, res: Response) => {
   const userId = req.user.userId;
   const code = req.body.code;
 
-  if (!userId || !code) {
+  if (!userId) {
     return res
       .status(sc.BAD_REQUEST)
       .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));

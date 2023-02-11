@@ -5,7 +5,7 @@ import auth from "../middlewares/auth";
 const router:Router = Router();
 
 router.get("/refresh", authController.refresh);
-router.get("/withdraw", auth, authController.socialLogin);
+router.get("/withdraw", auth, authController.withdrawUser);
 router.post("/", authController.socialLogin);
 
 export default router;
