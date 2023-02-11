@@ -35,12 +35,13 @@ const getUserByUserId = async (userId: number) => {
   return foundUser;
 };
 
-const createUser = async (email: string, platform: string, refreshToken: string) => {
+const createUser = async (email: string, name: string | null | undefined, platform: string, refreshToken: string) => {
   const newUser = await prisma.user.create({
     data: {
       email: email,        
       platformType: platform,
-      refreshToken: refreshToken
+      refreshToken: refreshToken,
+      name: name
     }
   });
 

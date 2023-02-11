@@ -65,7 +65,11 @@ const kakao = async (accessToken: string) => {
       return platformToken.INVALID_PLATFORM_USER;
     }
     */
-    console.log("카카오로그인 정보 ", kakaoAccount)
+    
+    return {
+      name: kakaoAccount.name,
+      email: kakaoAccount.email
+    };
 
     return kakaoAccount;
   
@@ -89,9 +93,10 @@ const naver = async (accessToken: string) => {
 
     const naverAccount = naverUser.data.response;
 
-    console.log("네이버로그인 정보: ", naverAccount)
-
-    return naverAccount;
+    return {
+      name: naverAccount.name,
+      email: naverAccount.email
+    };
   
   } catch (error) {
     console.log("네이버 로그인 에러 발생: ", error);

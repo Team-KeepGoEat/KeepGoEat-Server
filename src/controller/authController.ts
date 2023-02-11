@@ -66,7 +66,7 @@ const socialLogin = async (req: Request, res: Response) => {
     }
 
     const { refreshToken } = jwtHandler.createRefreshToken();
-    const newUser = await userService.createUser(platformUser.email, platform, refreshToken);
+    const newUser = await userService.createUser(platformUser.email, platformUser.name, platform, refreshToken);
     const { accessToken } = jwtHandler.signup(newUser.userId, newUser.email);
 
     const signupResult = {

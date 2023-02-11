@@ -45,5 +45,6 @@ model User {
   email        String  @db.VarChar(100)
   platformType String  @db.VarChar(100)
   refreshToken String? @db.VarChar(500)
+  name         String? @db.VarChar(50)
   Goal         Goal[]
 }
