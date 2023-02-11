@@ -35,12 +35,13 @@ const getUserByUserId = async (userId: number) => {
   return foundUser;
 };
 
-const createUser = async (email: string, platform: string, refreshToken: string) => {
+const createUser = async (email: string, name: string | null | undefined, platform: string, refreshToken: string) => {
   const newUser = await prisma.user.create({
     data: {
       email: email,        
       platformType: platform,
-      refreshToken: refreshToken
+      refreshToken: refreshToken,
+      name: name
     }
   });
 
@@ -58,11 +59,21 @@ const getUserByRefreshToken = async (refreshToken: string) => {
 }
 
 const deleteUserById = async (userId: number) => {
-  await prisma.user.delete({
+
+  const foundUser = await getUserByUserId(userId);
+
+  if (!foundUser) {
+    return null
+  }
+
+  const deletedUser = await prisma.user.delete({
     where: {
       userId: userId
     }
   });
+
+  return deletedUser;
+
 }
 
 const userService = {
