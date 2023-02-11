@@ -20,8 +20,8 @@ describe("POST /goal", () => {
       .send({
         "goalContent" : "하루에 파프리카",
         "isMore": true,
-      }) // request body
-      .expect(200) // 예측 상태 코드
+      }) 
+      .expect(200)
       .expect("Content-Type", "application/json; charset=utf-8") 
       .then(res => {
         expect(res.body.success).to.equal(true); // response body 

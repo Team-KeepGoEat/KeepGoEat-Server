@@ -64,6 +64,7 @@ const createGoal = async (userId: number, createGoalDTO: CreateGoalDTO, startedA
       isMore: createGoalDTO.isMore,
       writerId:  userId,
       startedAt,
+      totalCount: 0
     },
   });
   const goalId = data.goalId
@@ -114,7 +115,7 @@ const achieveGoal = async (goalId: number, isAchieved: boolean) => {
     const currentMonth = date.getCurrentMonthMinus9();
 
     dayjs.tz.setDefault("Asia/Seoul");
-    const now = dayjs().tz().format();
+    const now = dayjs().tz().format(); // 클라한테서 날짜값 받아야 할 듯
 
     // 달성 취소했을 경우
     if (!isAchieved) {
@@ -131,7 +132,6 @@ const achieveGoal = async (goalId: number, isAchieved: boolean) => {
       await dailyAchievedHistoryService.deleteDailyAchievedHistoryById(dailyAchievedHistory.achievedId); 
       await updateTotalCount(goalId, isAchieved);
 
-
       const thisMonthCount = await dailyAchievedHistoryService.getAchievedCount(goalId, currentMonth);
 
       return {
@@ -143,7 +143,6 @@ const achieveGoal = async (goalId: number, isAchieved: boolean) => {
 
     // 달성 버튼 눌렀을 경우
     const dailyAchievedHistory = await dailyAchievedHistoryService.getDailyAchievedHistory(now, goalId);
-
 
     // 일별 달성 기록이 없는 경우
     if (!dailyAchievedHistory) {
@@ -165,7 +164,7 @@ const achieveGoal = async (goalId: number, isAchieved: boolean) => {
     throw error;
   }
 
-  // 달성 기록이 있는 경우
+  // 달성 기록이 있는 경우 - try 문 안에 넣어줘야함
   console.log("이미 달성 기록이 있는 목표를 달성하려고 함");
   return achievedError.DOUBLE_ACHIEVED_ERROR;
 };
@@ -197,11 +196,14 @@ const updateTotalCount = async (goalId: number, isAchieved: boolean) => {
       }
     }
   });
+
+  return
 }
 
 
 // 목표 isAchieve 업데이트
 const updateIsAchieved = async (goalId: number, isAchieved: boolean) => {
+  // 여기서도 더블 달성이랑 더블 취소 에러 로직 필요한거 아닌가?? 
   const updatedGoal = await prisma.goal.update({
     where: {
       goalId: goalId
