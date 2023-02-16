@@ -61,6 +61,8 @@ const createGoal = async (userId: number, createGoalDTO: CreateGoalDTO, startedA
   const data = await prisma.goal.create({
     data: {
       goalContent: createGoalDTO.goalContent,
+      criterion: createGoalDTO.criterion,
+      food: createGoalDTO.food,
       isMore: createGoalDTO.isMore,
       writerId:  userId,
       startedAt,
