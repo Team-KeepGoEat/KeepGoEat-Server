@@ -91,6 +91,8 @@ const updateGoal = async (goalId: number, updateGoalDTO: UpdateGoalDTO) => {
     },
     data: {
       goalContent: updateGoalDTO.goalContent,
+      criterion: updateGoalDTO.criterion,
+      food: updateGoalDTO.food
     },
   });
   return data.goalId;
