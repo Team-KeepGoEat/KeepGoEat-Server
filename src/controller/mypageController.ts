@@ -11,7 +11,7 @@ const sortType = {
   LESS: "less"
 };
 
-const getMypageByUserId = async (req: Request, res: Response) => {
+const getKeptGoalsByUserId = async (req: Request, res: Response) => {
   const userId = req.user.userId;
 
   const sort = req.query.sort as string;
@@ -26,7 +26,7 @@ const getMypageByUserId = async (req: Request, res: Response) => {
 
   try {
   
-    const foundGoals = await mypageService.getGoalsForMypage(+userId, sort as string);
+    const foundGoals = await mypageService.getKeptGoalsForMypage(+userId, sort as string);
     
     debugLog(req.originalUrl, req.method, req.body, req.user?.userId);
     return res.status(sc.OK).send(success(sc.OK, rm.GET_GOALS_SUCCESS_FOR_MYPAGE, { "goals": foundGoals, "goalCount": foundGoals.length }));
@@ -42,7 +42,7 @@ const getMypageByUserId = async (req: Request, res: Response) => {
 };
 
 const mypageController = {
-  getMypageByUserId
+  getKeptGoalsByUserId
 }
 
 export default mypageController;

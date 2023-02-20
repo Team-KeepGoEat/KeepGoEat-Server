@@ -3,7 +3,7 @@ import date from "../modules/date";
 
 const prisma = new PrismaClient();
 
-const getGoalsForMypage = async (userId: number, sort: string) => {
+const getKeptGoalsForMypage = async (userId: number, sort: string) => {
   let goals;
   let isMore;
 
@@ -61,7 +61,7 @@ const getGoalsForMypage = async (userId: number, sort: string) => {
 };
 
 const mypageService = {
-  getGoalsForMypage,
+  getKeptGoalsForMypage,
 };
 
 export default mypageService
