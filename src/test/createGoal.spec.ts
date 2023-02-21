@@ -18,7 +18,8 @@ describe("POST /goal", () => {
       .set("Content-Type", "application/json")
       .set("accessToken", JWT_ACCESSTOKEN as string) 
       .send({
-        "goalContent" : "하루에 파프리카",
+        "food" : "파프리카",
+        "criterion": "하루에",
         "isMore": true,
       }) 
       .expect(200)

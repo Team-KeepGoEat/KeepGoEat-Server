@@ -49,7 +49,8 @@ const getKeptGoalsForMypage = async (userId: number, sort: string) => {
     return goals.map((goal) => {
       return {
         goalId: goal.goalId,
-        goalContent: goal.goalContent,
+        food: goal.food,
+        criterion: goal.criterion === null ? "" : goal.criterion,
         isMore: goal.isMore,
         isOngoing: goal.isOngoing,
         totalCount: goal.totalCount,
@@ -74,7 +75,8 @@ const getKeptGoalsForMypage = async (userId: number, sort: string) => {
   return goals.map((goal) => {
     return {
       goalId: goal.goalId,
-      goalContent: goal.goalContent,
+      food: goal.food,
+      criterion: goal.criterion === null ? "" : goal.criterion,
       isMore: goal.isMore,
       isOngoing: goal.isOngoing,
       totalCount: goal.totalCount,

@@ -132,7 +132,8 @@ const getHistoryByGoalId = async (req: Request, res: Response) => {
       "isMore": foundGoal.isMore,
       "thisMonthCount": thisMonthCount,
       "lastMonthCount": lastMonthCount,
-      "goalContent": foundGoal.goalContent,
+      "food": foundGoal.food, 
+      "criterion": foundGoal.criterion === null ? "" : foundGoal.criterion, 
       "blankBoxCount": boxCounter.getBlankBoxCount(),
       "emptyBoxCount": boxCounter.getEmptyBoxCount(thisMonthCount)
     }
@@ -183,13 +184,52 @@ const achieveGoal = async (req: Request, res: Response) => {
 
 };
 
+const sortType = {
+  ALL: "all",
+  MORE: "more",
+  LESS: "less"
+};
+
+const getKeptGoalsByUserId = async (req: Request, res: Response) => {
+  const userId = req.user.userId;
+
+  const sort = req.query.sort as string;
+
+  if (!userId || !sort) {
+    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
+  }
+
+  if (sort !== sortType.ALL && sort !== sortType.MORE && sort !== sortType.LESS) {
+    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+  }
+
+  try {
+  
+    const foundGoals = await goalService.getKeptGoals(+userId, sort as string);
+    
+    debugLog(req.originalUrl, req.method, req.body, req.user?.userId);
+    return res.status(sc.OK).send(success(sc.OK, rm.GET_GOALS_SUCCESS_FOR_KEPTGOALS, { "goals": foundGoals, "goalCount": foundGoals.length }));
+  
+  } catch (error) {
+    
+    slack.sendErrorMessageToSlack(req.method.toUpperCase(), req.originalUrl, error, req.user?.userId);
+    errorLog(req.originalUrl, req.method, req.body, error, req.user?.userId);
+
+    return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+  }
+
+};
+
+
+
 const goalController = {
   createGoal,
   deleteGoal,
   updateGoal,
   getHistoryByGoalId,
   achieveGoal,
-  keepGoal
+  keepGoal,
+  getKeptGoalsByUserId
 };
 
 export default goalController;

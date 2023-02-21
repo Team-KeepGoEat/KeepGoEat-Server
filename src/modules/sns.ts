@@ -67,7 +67,7 @@ const kakao = async (accessToken: string) => {
     */
     
     return {
-      name: kakaoAccount.name,
+      name: kakaoAccount.profile.nickname,
       email: kakaoAccount.email
     };
 
