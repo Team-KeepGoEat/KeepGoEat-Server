@@ -19,11 +19,8 @@ const getAccountInfoByUserId = async (req: Request, res: Response) => {
       "email": accountInfo?.email,
       "keptGoalsCount": keptGoalsCount
     }
-    const randInt = (min: number, max: number) => {
-      return Math.floor(Math.random() * (max - min)) + min;
-    }
     if (accountInfo?.name === null || accountInfo?.name === undefined) {
-      data.name = "user" + randInt(101, 999)
+      data.name = "유저 실명을 받아오지 못했습니다."
     }
     return res.status(sc.OK).send(success(sc.OK, rm.GET_ACCOUNT_INFO_SUCCESS_FOR_MYPAGE, data));
   } catch (error) {

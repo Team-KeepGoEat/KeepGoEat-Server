@@ -23,7 +23,7 @@ const getKeptGoalsCountForMyPage = async(userId: number) => {
   });
   keptGoals.map((goal) => {
     if (goal.keptAt !== null) { 
-      keptGoalsCount = keptGoalsCount+1; 
+      ++keptGoalsCount; 
     }
   });
   return keptGoalsCount;
