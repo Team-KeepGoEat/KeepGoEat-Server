@@ -14,7 +14,7 @@ describe("POST /goal/:goalId with vaild param", () => {
   it("목표 수정에 성공했습니다.", done => {
     const token = process.env.JWT_ACCESSTOKEN;
     const data = {
-      "goalContent" : "양파쿵야"
+      "food" : "양파쿵야"
     }
     request(app)
       .post("/goal/89") 

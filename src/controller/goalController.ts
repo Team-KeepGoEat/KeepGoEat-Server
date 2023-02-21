@@ -132,7 +132,8 @@ const getHistoryByGoalId = async (req: Request, res: Response) => {
       "isMore": foundGoal.isMore,
       "thisMonthCount": thisMonthCount,
       "lastMonthCount": lastMonthCount,
-      "goalContent": foundGoal.goalContent,
+      "food": foundGoal.food, 
+      "criterion": foundGoal.criterion === null ? "" : foundGoal.criterion, 
       "blankBoxCount": boxCounter.getBlankBoxCount(),
       "emptyBoxCount": boxCounter.getEmptyBoxCount(thisMonthCount)
     }

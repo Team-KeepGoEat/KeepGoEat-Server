@@ -41,7 +41,8 @@ const getHomeGoalsByUserId = async (currentMonth: string, userId: number) => {
 
       return {
         goalId: goal.goalId,
-        goalContent: goal.goalContent,
+        food: goal.food,
+        criterion: goal.criterion === null ? "" : goal.criterion,
         isMore: goal.isMore,
         isOngoing: goal.isOngoing,
         totalCount: goal.totalCount,
