@@ -42,7 +42,8 @@ export default {
   ACHIEVE_GOAL_FAIL_FOR_DOUBLE_ACHIEVE: "달성한 목표를 또 달성하려는 시도입니다",
 
   // 마이페이지
-  GET_GOALS_SUCCESS_FOR_MYPAGE: "마이페이지 뷰 조회 성공",
+  GET_ACCOUNT_INFO_SUCCESS_FOR_MYPAGE: "마이페이지 메인 뷰 조회 성공",
+  GET_GOALS_SUCCESS_FOR_KEPTGOALS: "보관된 목표 뷰 조회 성공",
 
   // 기록뷰
   GET_GOAL_SUCCESS_FOR_HISTORY: "기록뷰 조회 성공",

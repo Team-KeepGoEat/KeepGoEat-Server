@@ -3,6 +3,6 @@ import { mypageController } from "../controller";
 
 const router:Router = Router();
 
-router.get("/", mypageController.getMypageByUserId);
+router.get("/", mypageController.getAccountInfoByUserId);
 
 export default router;

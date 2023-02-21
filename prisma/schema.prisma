@@ -28,7 +28,6 @@ model Daily_Achieved_History {
 
 model Goal {
   goalId                 Int                      @id @default(autoincrement())
-  goalContent            String                   @db.VarChar(200)
   isMore                 Boolean
   isOngoing              Boolean                  @default(true)
   totalCount             Int                      @default(0)
@@ -36,6 +35,8 @@ model Goal {
   keptAt                 DateTime?
   isAchieved             Boolean                  @default(false)
   writerId               Int
+  criterion              String?                  @db.VarChar(20)
+  food                   String                   @db.VarChar(15)
   Daily_Achieved_History Daily_Achieved_History[]
   User                   User                     @relation(fields: [writerId], references: [userId], onDelete: Cascade, map: "writer_id")
 }

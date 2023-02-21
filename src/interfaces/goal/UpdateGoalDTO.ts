@@ -1,3 +1,4 @@
 export interface UpdateGoalDTO {
-  goalContent: string; 
+  food: string;
+  criterion: string;
 }

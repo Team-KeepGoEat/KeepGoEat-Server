@@ -196,8 +196,8 @@ const withdrawUser = async (req: Request, res: Response) => {
     // code를 안받은 네이버, 카카오 로그인인 경우
     if (!code) {
       return res
-        .status(sc.OK)
-        .send(fail(sc.OK, rm.WITHDRAWAL_SUCCESS));
+        .status(sc.NO_CONTENT)
+        .send(fail(sc.NO_CONTENT, rm.WITHDRAWAL_SUCCESS));
     }
 
     const client_secret = jwtHandler.createAppleJWT();

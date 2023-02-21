@@ -3,7 +3,33 @@ import date from "../modules/date";
 
 const prisma = new PrismaClient();
 
-const getGoalsForMypage = async (userId: number, sort: string) => {
+const getAccountInfoForMyPage = async(userId: number) => {
+  const accountInfo = await prisma.user.findUnique({
+    where: {
+      userId: userId
+    }
+  });
+
+  return accountInfo;
+};
+
+const getKeptGoalsCountForMyPage = async(userId: number) => {
+  let keptGoalsCount = 0;
+
+  const keptGoals = await prisma.goal.findMany({
+    where: {
+      writerId: userId,
+    }    
+  });
+  keptGoals.map((goal) => {
+    if (goal.keptAt !== null) { 
+      ++keptGoalsCount; 
+    }
+  });
+  return keptGoalsCount;
+}
+
+const getKeptGoalsForMypage = async (userId: number, sort: string) => {
   let goals;
   let isMore;
 
@@ -23,7 +49,8 @@ const getGoalsForMypage = async (userId: number, sort: string) => {
     return goals.map((goal) => {
       return {
         goalId: goal.goalId,
-        goalContent: goal.goalContent,
+        food: goal.food,
+        criterion: goal.criterion === null ? "" : goal.criterion,
         isMore: goal.isMore,
         isOngoing: goal.isOngoing,
         totalCount: goal.totalCount,
@@ -48,7 +75,8 @@ const getGoalsForMypage = async (userId: number, sort: string) => {
   return goals.map((goal) => {
     return {
       goalId: goal.goalId,
-      goalContent: goal.goalContent,
+      food: goal.food,
+      criterion: goal.criterion === null ? "" : goal.criterion,
       isMore: goal.isMore,
       isOngoing: goal.isOngoing,
       totalCount: goal.totalCount,
@@ -61,7 +89,9 @@ const getGoalsForMypage = async (userId: number, sort: string) => {
 };
 
 const mypageService = {
-  getGoalsForMypage,
+  getAccountInfoForMyPage,
+  getKeptGoalsCountForMyPage,
+  getKeptGoalsForMypage,
 };
 
 export default mypageService

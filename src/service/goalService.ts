@@ -41,7 +41,8 @@ const getHomeGoalsByUserId = async (currentMonth: string, userId: number) => {
 
       return {
         goalId: goal.goalId,
-        goalContent: goal.goalContent,
+        food: goal.food,
+        criterion: goal.criterion === null ? "" : goal.criterion,
         isMore: goal.isMore,
         isOngoing: goal.isOngoing,
         totalCount: goal.totalCount,
@@ -60,9 +61,10 @@ const getHomeGoalsByUserId = async (currentMonth: string, userId: number) => {
 const createGoal = async (userId: number, createGoalDTO: CreateGoalDTO, startedAt: string) => {
   const data = await prisma.goal.create({
     data: {
-      goalContent: createGoalDTO.goalContent,
+      food: createGoalDTO.food,
+      criterion: createGoalDTO.criterion,
       isMore: createGoalDTO.isMore,
-      writerId:  userId,
+      writerId: userId,
       startedAt,
       totalCount: 0
     },
@@ -88,7 +90,8 @@ const updateGoal = async (goalId: number, updateGoalDTO: UpdateGoalDTO) => {
       goalId
     },
     data: {
-      goalContent: updateGoalDTO.goalContent,
+      food: updateGoalDTO.food,
+      criterion: updateGoalDTO.criterion
     },
   });
   return data.goalId;
@@ -216,6 +219,66 @@ const updateIsAchieved = async (goalId: number, isAchieved: boolean) => {
   return updatedGoal;
 };
 
+
+const getKeptGoals = async (userId: number, sort: string) => {
+  let goals;
+  let isMore;
+
+  if (sort !== "all") {
+    sort === "more" ? isMore = true : isMore = false;
+    goals = await prisma.goal.findMany({
+      where: {        
+        writerId: userId,
+        isOngoing: false,
+        isMore: isMore
+      },
+      orderBy: {
+        startedAt: "desc"
+      },
+    });
+
+    return goals.map((goal) => {
+      return {
+        goalId: goal.goalId,
+        food: goal.food,
+        criterion: goal.criterion === null ? "" : goal.criterion,
+        isMore: goal.isMore,
+        isOngoing: goal.isOngoing,
+        totalCount: goal.totalCount,
+        startedAt: date.dateFormatter(goal.startedAt),
+        keptAt: goal.keptAt === null ? "" : date.dateFormatter(goal.keptAt),
+        isAchieved: goal.isAchieved,
+        writerId: goal.writerId
+      }
+    });
+  }
+
+  goals = await prisma.goal.findMany({
+    where: {
+      writerId: userId,
+      isOngoing: false
+    },
+    orderBy: {
+      startedAt: "desc"
+    },
+  });
+
+  return goals.map((goal) => {
+    return {
+      goalId: goal.goalId,
+      food: goal.food,
+      criterion: goal.criterion === null ? "" : goal.criterion,
+      isMore: goal.isMore,
+      isOngoing: goal.isOngoing,
+      totalCount: goal.totalCount,
+      startedAt: date.dateFormatter(goal.startedAt),
+      keptAt: goal.keptAt === null ? "" : date.dateFormatter(goal.keptAt),
+      isAchieved: goal.isAchieved,
+      writerId: goal.writerId
+    }
+  });
+};
+
 const goalService = {
   getGoalByGoalId,
   createGoal,
@@ -225,7 +288,8 @@ const goalService = {
   achieveGoal,
   updateIsAchieved,
   keepGoal,
-  updateTotalCount
+  updateTotalCount,
+  getKeptGoals
 };
 
 export default goalService;
