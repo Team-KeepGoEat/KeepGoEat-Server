@@ -60,11 +60,10 @@ const getHomeGoalsByUserId = async (currentMonth: string, userId: number) => {
 const createGoal = async (userId: number, createGoalDTO: CreateGoalDTO, startedAt: string) => {
   const data = await prisma.goal.create({
     data: {
-      goalContent: createGoalDTO.goalContent,
-      criterion: createGoalDTO.criterion,
       food: createGoalDTO.food,
+      criterion: createGoalDTO.criterion,
       isMore: createGoalDTO.isMore,
-      writerId:  userId,
+      writerId: userId,
       startedAt,
       totalCount: 0
     },
@@ -90,9 +89,8 @@ const updateGoal = async (goalId: number, updateGoalDTO: UpdateGoalDTO) => {
       goalId
     },
     data: {
-      goalContent: updateGoalDTO.goalContent,
-      criterion: updateGoalDTO.criterion,
-      food: updateGoalDTO.food
+      food: updateGoalDTO.food,
+      criterion: updateGoalDTO.criterion
     },
   });
   return data.goalId;

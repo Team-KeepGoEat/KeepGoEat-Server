@@ -1,6 +1,5 @@
 export interface CreateGoalDTO {
-  goalContent: string;
-  criterion: string;
   food: string;
+  criterion: string;
   isMore: boolean;
 }
