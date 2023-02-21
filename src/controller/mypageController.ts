@@ -28,45 +28,8 @@ const getAccountInfoByUserId = async (req: Request, res: Response) => {
   }
 }
 
-const sortType = {
-  ALL: "all",
-  MORE: "more",
-  LESS: "less"
-};
-
-const getKeptGoalsByUserId = async (req: Request, res: Response) => {
-  const userId = req.user.userId;
-
-  const sort = req.query.sort as string;
-
-  if (!userId || !sort) {
-    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
-  }
-
-  if (sort !== sortType.ALL && sort !== sortType.MORE && sort !== sortType.LESS) {
-    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
-  }
-
-  try {
-  
-    const foundGoals = await mypageService.getKeptGoalsForMypage(+userId, sort as string);
-    
-    debugLog(req.originalUrl, req.method, req.body, req.user?.userId);
-    return res.status(sc.OK).send(success(sc.OK, rm.GET_GOALS_SUCCESS_FOR_MYPAGE, { "goals": foundGoals, "goalCount": foundGoals.length }));
-  
-  } catch (error) {
-    
-    slack.sendErrorMessageToSlack(req.method.toUpperCase(), req.originalUrl, error, req.user?.userId);
-    errorLog(req.originalUrl, req.method, req.body, error, req.user?.userId);
-
-    return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
-  }
-
-};
-
 const mypageController = {
   getAccountInfoByUserId,
-  getKeptGoalsByUserId
 }
 
 export default mypageController;

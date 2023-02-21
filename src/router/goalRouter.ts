@@ -36,4 +36,6 @@ router.post(
   goalController.createGoal
 );
 
+router.get("/kept", goalController.getKeptGoalsByUserId);
+
 export default router;
