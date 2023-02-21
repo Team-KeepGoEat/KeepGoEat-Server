@@ -3,6 +3,32 @@ import date from "../modules/date";
 
 const prisma = new PrismaClient();
 
+const getAccountInfoForMyPage = async(userId: number) => {
+  const accountInfo = await prisma.user.findUnique({
+    where: {
+      userId: userId
+    }
+  });
+
+  return accountInfo;
+};
+
+const getKeptGoalsCountForMyPage = async(userId: number) => {
+  let keptGoalsCount = 0;
+
+  const keptGoals = await prisma.goal.findMany({
+    where: {
+      writerId: userId,
+    }    
+  });
+  keptGoals.map((goal) => {
+    if (goal.keptAt !== null) { 
+      keptGoalsCount = keptGoalsCount+1; 
+    }
+  });
+  return keptGoalsCount;
+}
+
 const getKeptGoalsForMypage = async (userId: number, sort: string) => {
   let goals;
   let isMore;
@@ -61,6 +87,8 @@ const getKeptGoalsForMypage = async (userId: number, sort: string) => {
 };
 
 const mypageService = {
+  getAccountInfoForMyPage,
+  getKeptGoalsCountForMyPage,
   getKeptGoalsForMypage,
 };
 
