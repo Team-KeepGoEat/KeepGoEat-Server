@@ -1,7 +1,0 @@
-{"@timestamp":"2023-02-16T09:28:53.303Z","log.level":"debug","message":"[GET] /home || Request Body: {\"goalContent\":\"하루에 단백질\",\"isMore\":true} uid: 89","ecs":{"version":"1.6.0"}}
-{"@timestamp":"2023-02-16T09:29:05.239Z","log.level":"debug","message":"[GET] /history/808 || Request Body: {\"goalContent\":\"하루에 단백질\",\"isMore\":true} uid: 89","ecs":{"version":"1.6.0"}}
-{"@timestamp":"2023-02-16T09:31:11.653Z","log.level":"debug","message":"[POST] /goal/808 || Request Body: {\"goalContent\":\"하루에 단백질\",\"criterion\":\"하루에\",\"food\":\"달걀\"} uid: 89","ecs":{"version":"1.6.0"}}
-{"@timestamp":"2023-02-16T09:31:30.839Z","log.level":"debug","message":"[GET] /history/808 || Request Body: {\"goalContent\":\"하루에 단백질\",\"criterion\":\"하루에\",\"food\":\"달걀\"} uid: 89","ecs":{"version":"1.6.0"}}
-{"@timestamp":"2023-02-16T09:31:43.934Z","log.level":"debug","message":"[GET] /history/808 || Request Body: {\"goalContent\":\"하루에 달걀\",\"criterion\":\"하루에\",\"food\":\"달걀\"} uid: 89","ecs":{"version":"1.6.0"}}
-{"@timestamp":"2023-02-16T09:31:52.937Z","log.level":"debug","message":"[POST] /goal/808 || Request Body: {\"goalContent\":\"하루에 달걀\",\"criterion\":\"하루에\",\"food\":\"달걀\"} uid: 89","ecs":{"version":"1.6.0"}}
-{"@timestamp":"2023-02-16T09:32:02.171Z","log.level":"debug","message":"[GET] /history/808 || Request Body: {\"goalContent\":\"하루에 달걀\",\"criterion\":\"하루에\",\"food\":\"달걀\"} uid: 89","ecs":{"version":"1.6.0"}}
