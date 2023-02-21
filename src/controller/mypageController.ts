@@ -5,6 +5,32 @@ import { mypageService } from "../service";
 import slack from "../modules/slack";
 import { debugLog, errorLog } from "../logger/logger";
 
+const getAccountInfoByUserId = async (req: Request, res: Response) => {
+  const userId = req.user.userId;
+  if(!userId) {
+    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
+  }
+
+  try {
+    const accountInfo = await mypageService.getAccountInfoForMyPage(+userId);
+    const keptGoalsCount = await mypageService.getKeptGoalsCountForMyPage(+userId);
+    const data = {
+      "name": accountInfo?.name,
+      "email": accountInfo?.email,
+      "keptGoalsCount": keptGoalsCount
+    }
+    const randInt = (min: number, max: number) => {
+      return Math.floor(Math.random() * (max - min)) + min;
+    }
+    if (accountInfo?.name === null || accountInfo?.name === undefined) {
+      data.name = "user" + randInt(101, 999)
+    }
+    return res.status(sc.OK).send(success(sc.OK, rm.GET_ACCOUNT_INFO_SUCCESS_FOR_MYPAGE, data));
+  } catch (error) {
+    return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+  }
+}
+
 const sortType = {
   ALL: "all",
   MORE: "more",
@@ -42,6 +68,7 @@ const getKeptGoalsByUserId = async (req: Request, res: Response) => {
 };
 
 const mypageController = {
+  getAccountInfoByUserId,
   getKeptGoalsByUserId
 }
 
