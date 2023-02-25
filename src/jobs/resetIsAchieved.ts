@@ -9,7 +9,7 @@ const resetIsAchieved = async () => {
     console.log("batch 시작 ", dayjs().format());
     const count = await prisma.goal.updateMany({
       data: {
-        isAchieved: true
+        isAchieved: false
       }
     });
     console.log("batch 끝 ", dayjs().format());
