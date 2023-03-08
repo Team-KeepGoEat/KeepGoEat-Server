@@ -54,8 +54,8 @@ const getKeptGoalsForMypage = async (userId: number, sort: string) => {
         isMore: goal.isMore,
         isOngoing: goal.isOngoing,
         totalCount: goal.totalCount,
-        startedAt: date.dateFormatter(goal.startedAt),
-        keptAt: goal.keptAt === null ? "" : date.dateFormatter(goal.keptAt),
+        startedAt: date.formatDate(goal.startedAt),
+        keptAt: goal.keptAt === null ? "" : date.formatDate(goal.keptAt),
         isAchieved: goal.isAchieved,
         writerId: goal.writerId
       }
@@ -80,8 +80,8 @@ const getKeptGoalsForMypage = async (userId: number, sort: string) => {
       isMore: goal.isMore,
       isOngoing: goal.isOngoing,
       totalCount: goal.totalCount,
-      startedAt: date.dateFormatter(goal.startedAt),
-      keptAt: goal.keptAt === null ? "" : date.dateFormatter(goal.keptAt),
+      startedAt: date.formatDate(goal.startedAt),
+      keptAt: goal.keptAt === null ? "" : date.formatDate(goal.keptAt),
       isAchieved: goal.isAchieved,
       writerId: goal.writerId
     }
