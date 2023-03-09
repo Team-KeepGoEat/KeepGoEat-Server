@@ -17,7 +17,6 @@ router.post(
   "/:goalId", 
   [
     body("food").trim().notEmpty(), 
-    body("criterion").trim().notEmpty(),
   ],
   auth, 
   goalController.updateGoal
