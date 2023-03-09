@@ -29,7 +29,6 @@ router.post(
   "/", 
   [
     body("food").trim().notEmpty(), 
-    body("criterion").trim().notEmpty(),
     body("isMore").notEmpty(),
   ], 
   auth, 
