@@ -35,7 +35,20 @@ const apple = async (identityToken: string) => {
       algorithms: [decodedToken.header.alg]
     });
 
-    console.log("애플로그인 정보 ", verifiedDecodedToken)
+    console.log("애플로그인 정보 ", verifiedDecodedToken);
+
+    if ((verifiedDecodedToken as jwt.JwtPayload).name == null) {
+      console.log("애플로그인에서 유저 이름이 등록되지 않은 경우입니다. 유저이름:  ", (verifiedDecodedToken as jwt.JwtPayload).name);
+
+      const platformUser =  {
+        name: "user" + getRandomNuber(101, 999),
+        email: (verifiedDecodedToken as jwt.JwtPayload).email
+      };
+
+      console.log("platformUser로 반환 : ", platformUser);
+
+      return platformUser;
+    }
 
     return verifiedDecodedToken;
 
@@ -43,6 +56,10 @@ const apple = async (identityToken: string) => {
     console.log("카카오 로그인 에러 발생: ", error)
     return tokenType.INVALID_PLATFORM_USER;
   } 
+}
+
+const getRandomNuber = (min: number, max: number) => {
+  return Math.floor(Math.random() * (max - min +1));
 }
 
 
