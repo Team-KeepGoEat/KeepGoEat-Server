@@ -176,7 +176,7 @@ const refresh = async (req: Request, res: Response) => {
 
 const withdrawUser = async (req: Request, res: Response) => {
   const userId = req.user.userId;
-  const code = req.body.code;
+  const code = req.query.code as string;
 
   if (!userId) {
     return res
@@ -196,8 +196,8 @@ const withdrawUser = async (req: Request, res: Response) => {
     // code를 안받은 네이버, 카카오 로그인인 경우
     if (!code) {
       return res
-        .status(sc.NO_CONTENT)
-        .send(fail(sc.NO_CONTENT, rm.WITHDRAWAL_SUCCESS));
+        .status(sc.OK)
+        .send(success(sc.OK, rm.WITHDRAWAL_SUCCESS));
     }
 
     const client_secret = jwtHandler.createAppleJWT();
@@ -226,8 +226,8 @@ const withdrawUser = async (req: Request, res: Response) => {
       });
 
     return res
-      .status(sc.NO_CONTENT)
-      .send(success(sc.NO_CONTENT, rm.WITHDRAWAL_SUCCESS));
+      .status(sc.OK)
+      .send(success(sc.OK, rm.WITHDRAWAL_SUCCESS));
 
   } catch (error) {
     if (error === 400) {
