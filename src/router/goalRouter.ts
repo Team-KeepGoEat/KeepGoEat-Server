@@ -15,10 +15,6 @@ router.post("/achieve/:goalId", goalController.achieveGoal);
 
 router.post(
   "/:goalId", 
-  [
-    body("food").trim().notEmpty(), 
-    body("criterion").trim().notEmpty(),
-  ],
   auth, 
   goalController.updateGoal
 );
@@ -29,7 +25,6 @@ router.post(
   "/", 
   [
     body("food").trim().notEmpty(), 
-    body("criterion").trim().notEmpty(),
     body("isMore").notEmpty(),
   ], 
   auth, 
