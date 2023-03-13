@@ -11,15 +11,12 @@ import achievedError from "../constants/achievedError";
 import { validationResult } from "express-validator";
 import { debugLog, errorLog } from "../logger/logger";
 
-// 기준 작성 고의적으로 안하면 클라에서 빈 문자열 - "" -> validation 없애기
-// 음식은 빈 문자열 안되니까 validation 그대로
 const createGoal = async (req: Request, res: Response) => {
   const error = validationResult(req);
   if(!error.isEmpty()) {
     return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
   }
   const criterion = req.body.criterion;
-  const food = req.body.food;
   const userId = req.user.userId;
 
   if (!userId || criterion === " ") {
@@ -62,9 +59,6 @@ const deleteGoal = async (req: Request, res: Response) => {
   }
 };
 
-// 목표 수정 시 회원이 기준이나 음식 둘 중 하나만 수정하거나 둘 다 수정할 수도
-// 기준만 수정했으면 음식은 null 클라에서 보내주기로 - 분기처리 필요
-
 const updateGoal = async (req: Request, res: Response) => {
 
   const error = validationResult(req);
@@ -81,25 +75,16 @@ const updateGoal = async (req: Request, res: Response) => {
   const { goalId } = req.params;
 
   try {
-
-    //* 음식 | 기준
-    
-    // null | 문자열 => 음식은 유지하고 기준을 수정한 경우
-    // null | "" => 음식은 유지하고 기준을 지운 경우
     if((food === null && criterion !== "") || (food === null && criterion === "")) {
       const updatedGoalId = await goalService.updateCriterion(+goalId, updateGoalDTO);
       return res.status(sc.OK).send(success(sc.OK, rm.UPDATE_GOAL_SUCCESS, { "goalId": updatedGoalId }));
-
     }
 
-    // 문자열 | null => 음식을 수정하고 기준을 유지한 경우
     if(food !== "" && criterion === null) {
       const updatedGoalId = await goalService.updateFood(+goalId, updateGoalDTO);
       return res.status(sc.OK).send(success(sc.OK, rm.UPDATE_GOAL_SUCCESS, { "goalId": updatedGoalId }));
     }
 
-    // 문자열 | 문자열 => 음식, 기준 둘 다 수정한 경우
-    // 문자열 | "" => 음식을 수정하고 기준을 지운 경우
     const updatedGoalId = await goalService.updateGoal(+goalId, updateGoalDTO);
   
     debugLog(req.originalUrl, req.method, req.body, req.user?.userId);
