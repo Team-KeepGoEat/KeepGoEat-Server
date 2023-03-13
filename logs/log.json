@@ -3,3 +3,5 @@
 {"@timestamp":"2023-03-12T09:49:58.679Z","log.level":"debug","message":"[POST] /goal/887 || Request Body: {\"food\":\"빠삐코 딸기맛\",\"criterion\":\"기준기\",\"isMore\":false} uid: 109","ecs":{"version":"1.6.0"}}
 {"@timestamp":"2023-03-13T07:57:25.217Z","log.level":"debug","message":"[POST] /goal/887 || Request Body: {\"food\":\"빠삐코 딸기맛3\",\"criterion\":\"기기기\",\"isMore\":false} uid: 109","ecs":{"version":"1.6.0"}}
 {"@timestamp":"2023-03-13T07:59:03.609Z","log.level":"debug","message":"[POST] /goal/887 || Request Body: {\"food\":\"누가바\",\"criterion\":\"기준\",\"isMore\":false} uid: 109","ecs":{"version":"1.6.0"}}
+{"@timestamp":"2023-03-13T12:38:59.512Z","log.level":"debug","message":"[POST] /goal/887 || Request Body: {\"food\":\"싸만코\",\"criterion\":\"기준쓰\",\"isMore\":false} uid: 109","ecs":{"version":"1.6.0"}}
+{"@timestamp":"2023-03-13T12:46:31.675Z","log.level":"debug","message":"[POST] /goal/887 || Request Body: {\"food\":\"싸만코딸기맛\",\"criterion\":\"\",\"isMore\":false} uid: 109","ecs":{"version":"1.6.0"}}

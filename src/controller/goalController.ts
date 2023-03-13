@@ -93,13 +93,13 @@ const updateGoal = async (req: Request, res: Response) => {
     }
 
     // 문자열 | null => 음식을 수정하고 기준을 유지한 경우
-    // 문자열 | "" => 음식을 수정하고 기준을 지운 경우  
-    if((food !== "" && criterion === null) || (food !== "" && criterion === "")) {
+    if(food !== "" && criterion === null) {
       const updatedGoalId = await goalService.updateFood(+goalId, updateGoalDTO);
       return res.status(sc.OK).send(success(sc.OK, rm.UPDATE_GOAL_SUCCESS, { "goalId": updatedGoalId }));
     }
 
     // 문자열 | 문자열 => 음식, 기준 둘 다 수정한 경우
+    // 문자열 | "" => 음식을 수정하고 기준을 지운 경우
     const updatedGoalId = await goalService.updateGoal(+goalId, updateGoalDTO);
   
     debugLog(req.originalUrl, req.method, req.body, req.user?.userId);
