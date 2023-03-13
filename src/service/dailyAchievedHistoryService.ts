@@ -9,8 +9,8 @@ const getDailyAchievedHistory = async (targetDate: string, goalId: number) => {
     where: {
       goalId: goalId,
       achievedAt: {
-        lte: date.getEndDatePlus9(targetDate),
-        gte: date.getStartDatePlus9(targetDate)
+        lte: date.getLastDatePlus9h(targetDate),
+        gte: date.getFirstDatePlus9h(targetDate)
       }
     },
   });
@@ -22,7 +22,7 @@ const getDailyAchievedHistory = async (targetDate: string, goalId: number) => {
 const createDailyAchievedHistory = async (goalId: number, targetMonth: string) => {
   const newDailyAchievedHistory = await prisma.daily_Achieved_History.create({
     data: {
-      achievedAt: date.getNowPlus9(),
+      achievedAt: date.getCurrentDatePlus9h(),
       goalId: goalId,
       achievedMonth: targetMonth
     }
@@ -35,19 +35,19 @@ const createDailyAchievedHistory = async (goalId: number, targetMonth: string) =
 // 달성 버튼 눌렀을 때 오늘 달성된 값 날짜 업데이트
 // 안씀
 const updateDailyAchievedHistory = async (targetDate: string, goalId: number) => {
-  console.log("[updateDailyAchievedHistory] endDate ", date.getStartDatePlus9(targetDate));
-  console.log("[updateDailyAchievedHistory] endDate ", date.getEndDatePlus9(targetDate));
+  console.log("[updateDailyAchievedHistory] endDate ", date.getFirstDatePlus9h(targetDate));
+  console.log("[updateDailyAchievedHistory] endDate ", date.getLastDatePlus9h(targetDate));
 
   const newDailyAchievedHistory = await prisma.daily_Achieved_History.updateMany({
     where: {
       goalId: goalId,
       achievedAt: {
-        lte: date.getStartDatePlus9(targetDate),
-        gte: date.getEndDatePlus9(targetDate)
+        lte: date.getFirstDatePlus9h(targetDate),
+        gte: date.getLastDatePlus9h(targetDate)
       }
     },
     data: {
-      achievedAt: date.getNowPlus9(),
+      achievedAt: date.getCurrentDatePlus9h(),
     }
   });
 
