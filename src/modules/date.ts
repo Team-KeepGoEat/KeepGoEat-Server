@@ -1,43 +1,43 @@
-import dayjs, { tz } from "dayjs";
+import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-const getCurrentMonthMinus9 = () => {
+const getCurrentMonthMinus9h = () => {
   dayjs.tz.setDefault("Asia/Seoul");
   return dayjs().tz().subtract(9, "hour").format("YYYY-MM");
 };
 
-const getLastMonthMinus9 = () => {
+const getLastMonthMinus9h = () => {
   dayjs.tz.setDefault("Asia/Seoul");
   return dayjs().tz().subtract(9, "hour").subtract(1, "month").format("YYYY-MM");
 };
 
-const getStartDatePlus9 = (targetDate: string) => {
+const getFirstDatePlus9h = (targetDate: string) => {
   dayjs.tz.setDefault("Asia/Seoul");
   return dayjs(targetDate).tz().add(9, "hour").startOf("date").format();
 }
 
-const getEndDatePlus9 = (targetDate: string) => {
+const getLastDatePlus9h = (targetDate: string) => {
   dayjs.tz.setDefault("Asia/Seoul");
   return dayjs(targetDate).tz().add(9, "hour").endOf("date").format();
 }
 
-const getNowPlus9 = () => {
+const getCurrentDatePlus9h = () => {
   dayjs.tz.setDefault("Asia/Seoul");
   return dayjs().tz().add(9, "hour").format();
 }
 
-const minusDate9h = (targetDate: unknown) => {
+const setTargetDateMinus9h = (targetDate: unknown) => {
   dayjs.tz.setDefault("Asia/Seoul");
   return dayjs(targetDate as string).tz().subtract(9, "hour").format();
 }
 
-const dateFormatter = (targetDate: unknown) => {
+const formatDate = (targetDate: unknown) => {
   dayjs.tz.setDefault("Asia/Seoul");
-  const minusDate = minusDate9h(targetDate);
+  const minusDate = setTargetDateMinus9h(targetDate);
   const year  = dayjs(minusDate as string).tz().get("year");
   let month: number | string = dayjs(minusDate as string).tz().get("month") + 1;
   let date: number | string = dayjs(minusDate as string).tz().get("date");
@@ -54,13 +54,13 @@ const dateFormatter = (targetDate: unknown) => {
 }
 
 const date = {
-  getCurrentMonthMinus9,
-  getLastMonthMinus9,
-  getStartDatePlus9,
-  getEndDatePlus9,
-  dateFormatter,
-  getNowPlus9,
-  minusDate9h
+  getCurrentMonthMinus9h,
+  getLastMonthMinus9h,
+  getFirstDatePlus9h,
+  getLastDatePlus9h,
+  formatDate,
+  getCurrentDatePlus9h,
+  setTargetDateMinus9h
 }
 
 export default date;

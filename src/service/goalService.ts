@@ -46,8 +46,8 @@ const getHomeGoalsByUserId = async (currentMonth: string, userId: number) => {
         isMore: goal.isMore,
         isOngoing: goal.isOngoing,
         totalCount: goal.totalCount,
-        startedAt: date.dateFormatter(goal.startedAt),
-        keptAt: goal.keptAt === null ? "" : date.dateFormatter(goal.keptAt),
+        startedAt: date.formatDate(goal.startedAt),
+        keptAt: goal.keptAt === null ? "" : date.formatDate(goal.keptAt),
         isAchieved: goal.isAchieved,
         writerId: goal.writerId,
         thisMonthCount: thisMonthCount
@@ -139,7 +139,7 @@ const achieveGoal = async (goalId: number, isAchieved: boolean) => {
   try {
     // 목표 테이블에 반영
     const updatedGoal = await goalService.updateIsAchieved(goalId, isAchieved); 
-    const currentMonth = date.getCurrentMonthMinus9();
+    const currentMonth = date.getCurrentMonthMinus9h();
 
     dayjs.tz.setDefault("Asia/Seoul");
     const now = dayjs().tz().format(); // 클라한테서 날짜값 받아야 할 듯
@@ -269,8 +269,8 @@ const getKeptGoals = async (userId: number, sort: string) => {
         isMore: goal.isMore,
         isOngoing: goal.isOngoing,
         totalCount: goal.totalCount,
-        startedAt: date.dateFormatter(goal.startedAt),
-        keptAt: goal.keptAt === null ? "" : date.dateFormatter(goal.keptAt),
+        startedAt: date.formatDate(goal.startedAt),
+        keptAt: goal.keptAt === null ? "" : date.formatDate(goal.keptAt),
         isAchieved: goal.isAchieved,
         writerId: goal.writerId
       }
@@ -295,8 +295,8 @@ const getKeptGoals = async (userId: number, sort: string) => {
       isMore: goal.isMore,
       isOngoing: goal.isOngoing,
       totalCount: goal.totalCount,
-      startedAt: date.dateFormatter(goal.startedAt),
-      keptAt: goal.keptAt === null ? "" : date.dateFormatter(goal.keptAt),
+      startedAt: date.formatDate(goal.startedAt),
+      keptAt: goal.keptAt === null ? "" : date.formatDate(goal.keptAt),
       isAchieved: goal.isAchieved,
       writerId: goal.writerId
     }

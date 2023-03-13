@@ -1,10 +1,11 @@
 import dayjs from "dayjs";
-import { TOTAL_BLANK_BOX_COUNT } from "../constants/totalBlankBoxCount";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
+
+const TOTAL_BLANK_BOX_COUNT = 35
 
 const getBlankBoxCount = () => {
   dayjs.tz.setDefault("Asia/Seoul");
