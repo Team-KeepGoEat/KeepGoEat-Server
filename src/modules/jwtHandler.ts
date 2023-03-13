@@ -74,7 +74,7 @@ const createAppleJWT = () => {
       },
     },
   )
-
+  
   return token;
 }
 
@@ -82,7 +82,8 @@ const getAppleRefresh = async (code: string) => {
   const client_secret = createAppleJWT();
 
   try {
-    let refreshToken: string;
+    let refreshToken: string | null = null;
+
     const data = {
       code: code, 
       client_id: process.env.APPLE_CLIENTID,
@@ -98,12 +99,13 @@ const getAppleRefresh = async (code: string) => {
       })
       .then(async (res) => {
         refreshToken = res.data.refresh_token;
-        return refreshToken;
       });
-    
+    return refreshToken;
+
   } catch (error) {
     console.log(error);
   }
+
 
 }
 

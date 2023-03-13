@@ -201,10 +201,14 @@ const withdrawUser = async (req: Request, res: Response) => {
     }
 
     const client_secret = jwtHandler.createAppleJWT();
-    const refresh_token = await jwtHandler.getAppleRefresh(code);
+    const refreshToken: string | null = await jwtHandler.getAppleRefresh(code) as string | null;
+
+    if (!refreshToken) {
+      throw 400;
+    }
 
     const data = {
-      token: refresh_token,
+      token: refreshToken,
       client_id: process.env.APPLE_CLIENTID,
       client_secret: client_secret,
       token_type_hint: "refresh_token"
@@ -217,11 +221,10 @@ const withdrawUser = async (req: Request, res: Response) => {
         },
       })
       .then(async (res) => {
-        console.log(res.data);
-        await userService.deleteUserById(userId);
+        console.log("애플 회원탈퇴 성공");
       })
       .catch((error) => {
-        console.log(error);
+        console.log("애플 회원탈퇴 실패", error);
         throw 400;
       });
 

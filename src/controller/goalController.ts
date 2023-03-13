@@ -24,7 +24,7 @@ const createGoal = async (req: Request, res: Response) => {
 
   try {
     const createGoalDTO: CreateGoalDTO = req.body; 
-    const startedAt = date.getNowPlus9()
+    const startedAt = date.getCurrentDatePlus9h()
 
     const data = await goalService.createGoal(userId, createGoalDTO, startedAt);
     
@@ -94,7 +94,7 @@ const keepGoal = async (req: Request, res: Response) => {
   }
 
   try {
-    const keptAt = date.getNowPlus9()
+    const keptAt = date.getCurrentDatePlus9h()
     const keptGoalId = await goalService.keepGoal(+goalId, isOngoing, keptAt);
   
     debugLog(req.originalUrl, req.method, req.body, req.user?.userId);
@@ -124,8 +124,8 @@ const getHistoryByGoalId = async (req: Request, res: Response) => {
       return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
     }
 
-    const thisMonthCount = await dailyAchievedHistoryService.getAchievedCount(+goalId, date.getCurrentMonthMinus9());
-    const lastMonthCount = await dailyAchievedHistoryService.getAchievedCount(+goalId, date.getLastMonthMinus9());
+    const thisMonthCount = await dailyAchievedHistoryService.getAchievedCount(+goalId, date.getCurrentMonthMinus9h());
+    const lastMonthCount = await dailyAchievedHistoryService.getAchievedCount(+goalId, date.getLastMonthMinus9h());
 
     const data = {
       "goalId": foundGoal.goalId,

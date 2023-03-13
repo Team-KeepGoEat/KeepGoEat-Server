@@ -14,7 +14,7 @@ const getHome = async (req: Request, res: Response) => {
   }
 
   try {
-    const goals = await goalService.getHomeGoalsByUserId(date.getCurrentMonthMinus9(), +userId);
+    const goals = await goalService.getHomeGoalsByUserId(date.getCurrentMonthMinus9h(), +userId);
     let isGoalExisted;
     goals.length === 0 ? isGoalExisted = false : isGoalExisted = true;
     const cheeringMessage = await cheeringMessageService.getRamdomMessage(isGoalExisted);
