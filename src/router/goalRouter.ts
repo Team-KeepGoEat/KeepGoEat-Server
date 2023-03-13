@@ -15,9 +15,6 @@ router.post("/achieve/:goalId", goalController.achieveGoal);
 
 router.post(
   "/:goalId", 
-  [
-    body("food").trim().notEmpty(), 
-  ],
   auth, 
   goalController.updateGoal
 );

@@ -1,10 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import { CreateGoalDTO } from "../interfaces/goal/CreateGoalDTO";
+import { UpdateGoalDTO } from "./../interfaces/goal/UpdateGoalDTO";
 import dailyAchievedHistoryService from "./dailyAchievedHistoryService";
 import dayjs from "dayjs";
 import date from "../modules/date";
 import achievedError from "../constants/achievedError";
-import { UpdateGoalDTO } from "../interfaces/goal/UpdateGoalDTO";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 
@@ -62,12 +62,12 @@ const createGoal = async (userId: number, createGoalDTO: CreateGoalDTO, startedA
   const data = await prisma.goal.create({
     data: {
       food: createGoalDTO.food,
-      criterion: createGoalDTO.criterion,
+      criterion: createGoalDTO.criterion /*== null ? 어쩌구...*/ ,
       isMore: createGoalDTO.isMore,
       writerId: userId,
       startedAt,
       totalCount: 0
-    },
+    }, // 기준에 빈 문자열 넣어주기
   });
   const goalId = data.goalId
   
@@ -84,16 +84,54 @@ const deleteGoal = async (goalId: number) => {
   return data.goalId;
 };
 
+// const deleteCriterion = async(goalId: number) => {
+//   const data = await prisma.goal.delete({
+//     where: {
+//       goalId: goalId,
+//     },
+//     data: {
+//       criterion: updateCriterion.criterion
+//     },
+//   });
+//   return data.goalId;
+// }
+
+// 플래그 변수를 만들어서 컨트롤러에서 둘 다 null이 아니면 / 둘 중 하나만 null이면 
+// if문 분기처리는 결국 컨트롤러에서.....
 const updateGoal = async (goalId: number, updateGoalDTO: UpdateGoalDTO) => {
   const data = await prisma.goal.update({
     where: {
       goalId
     },
-    data: {
-      food: updateGoalDTO.food,
-      criterion: updateGoalDTO.criterion
+    data: { // ex. 하루 한끼 가지 덜 먹기 -> 3일에 한끼 가지 덜 먹기 : 음식은 null로 -> DB에 3일에 한끼 null먹기가 들어가니까 문제가 되는 것.
+      food: updateGoalDTO.food, // 지금은 DB 쿼리를 그대로 받아서 그대로 날리는 상태. 수정되지 않은 값에는 null 값을 넣어줘야 함.
+      criterion: updateGoalDTO.criterion // 기준은 null이 아닌데 음식이 null인 경우에는 데이터에 음식을 넣어줘야 하는것
     },
   });
+  return data.goalId;
+};
+
+const updateFood = async(goalId: number, updateGoalDTO: UpdateGoalDTO) => {
+  const data = await prisma.goal.update({
+    where: {
+      goalId
+    },
+    data: {
+      food: updateGoalDTO.food
+    }
+  });
+  return data.goalId;
+};
+
+const updateCriterion = async(goalId: number, updateGoalDTO: UpdateGoalDTO) => {
+  const data = await prisma.goal.update({
+    where: {
+      goalId
+    },
+    data: {
+      criterion: updateGoalDTO.criterion
+    }
+  })
   return data.goalId;
 };
 
@@ -283,6 +321,8 @@ const goalService = {
   getGoalByGoalId,
   createGoal,
   deleteGoal,
+  updateFood,
+  updateCriterion,
   updateGoal,
   getHomeGoalsByUserId,
   achieveGoal,
