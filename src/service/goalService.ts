@@ -84,20 +84,6 @@ const deleteGoal = async (goalId: number) => {
   return data.goalId;
 };
 
-// const deleteCriterion = async(goalId: number) => {
-//   const data = await prisma.goal.delete({
-//     where: {
-//       goalId: goalId,
-//     },
-//     data: {
-//       criterion: updateCriterion.criterion
-//     },
-//   });
-//   return data.goalId;
-// }
-
-// 플래그 변수를 만들어서 컨트롤러에서 둘 다 null이 아니면 / 둘 중 하나만 null이면 
-// if문 분기처리는 결국 컨트롤러에서.....
 const updateGoal = async (goalId: number, updateGoalDTO: UpdateGoalDTO) => {
   const data = await prisma.goal.update({
     where: {
