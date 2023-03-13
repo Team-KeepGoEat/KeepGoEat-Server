@@ -9,6 +9,7 @@ import jwtHandler from "../modules/jwtHandler";
 import tokenType from "../constants/tokenType";
 import { User } from "@prisma/client";
 import slack from "../modules/slack";
+import { SignupDTO } from "../interfaces/user/SignupDTO";
 
 const socialLogin = async (req: Request, res: Response) => {
   const { platformAccessToken, platform } = req.body;
@@ -19,8 +20,9 @@ const socialLogin = async (req: Request, res: Response) => {
       .send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
   }
 
+  let platformUser: SignupDTO | number | null = null;
+
   try {
-    let platformUser;
     switch (platform) {
       case "KAKAO":
         platformUser = await sns.kakao(platformAccessToken as string);
@@ -33,6 +35,12 @@ const socialLogin = async (req: Request, res: Response) => {
       case "NAVER":
         platformUser = await sns.naver(platformAccessToken as string);
         break;
+    }
+
+    if (platformUser === null) {
+      return res
+        .status(sc.BAD_REQUEST)
+        .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
     }
 
     if (platformUser === tokenType.INVALID_PLATFORM_USER) {
@@ -48,7 +56,7 @@ const socialLogin = async (req: Request, res: Response) => {
         .send(fail(sc.UNAUTHORIZED, rm.UNAUTHORIZED_PLATFORM_USER));
     }
 
-    const existingUser = await userService.getUserByEmail(platformUser.email, platform);
+    const existingUser = await userService.getUserByEmail((platformUser as SignupDTO).email, platform);
 
     if (existingUser) {
       const { refreshToken } = jwtHandler.createRefreshToken();
@@ -66,7 +74,7 @@ const socialLogin = async (req: Request, res: Response) => {
     }
 
     const { refreshToken } = jwtHandler.createRefreshToken();
-    const newUser = await userService.createUser(platformUser.email, platformUser.name, platform, refreshToken);
+    const newUser = await userService.createUser((platformUser as SignupDTO).email, (platformUser as SignupDTO).name, platform, refreshToken);
     const { accessToken } = jwtHandler.signup(newUser.userId, newUser.email);
 
     const signupResult = {
@@ -176,7 +184,7 @@ const refresh = async (req: Request, res: Response) => {
 
 const withdrawUser = async (req: Request, res: Response) => {
   const userId = req.user.userId;
-  const code = req.body.code;
+  const code = req.query.code as string;
 
   if (!userId) {
     return res
@@ -196,8 +204,8 @@ const withdrawUser = async (req: Request, res: Response) => {
     // code를 안받은 네이버, 카카오 로그인인 경우
     if (!code) {
       return res
-        .status(sc.NO_CONTENT)
-        .send(fail(sc.NO_CONTENT, rm.WITHDRAWAL_SUCCESS));
+        .status(sc.OK)
+        .send(success(sc.OK, rm.WITHDRAWAL_SUCCESS));
     }
 
     const client_secret = jwtHandler.createAppleJWT();
@@ -229,8 +237,8 @@ const withdrawUser = async (req: Request, res: Response) => {
       });
 
     return res
-      .status(sc.NO_CONTENT)
-      .send(success(sc.NO_CONTENT, rm.WITHDRAWAL_SUCCESS));
+      .status(sc.OK)
+      .send(success(sc.OK, rm.WITHDRAWAL_SUCCESS));
 
   } catch (error) {
     if (error === 400) {

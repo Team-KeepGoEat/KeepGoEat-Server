@@ -35,8 +35,6 @@ const apple = async (identityToken: string) => {
       algorithms: [decodedToken.header.alg]
     });
 
-    console.log("애플로그인 정보 ", verifiedDecodedToken);
-
     if ((verifiedDecodedToken as jwt.JwtPayload).name == null) {
       console.log("애플로그인에서 유저 이름이 등록되지 않은 경우입니다. 유저이름:  ", (verifiedDecodedToken as jwt.JwtPayload).name);
 
@@ -45,15 +43,16 @@ const apple = async (identityToken: string) => {
         email: (verifiedDecodedToken as jwt.JwtPayload).email
       };
 
-      console.log("platformUser로 반환 : ", platformUser);
-
       return platformUser;
     }
 
-    return verifiedDecodedToken;
+    return {
+      name: (verifiedDecodedToken as jwt.JwtPayload).name,
+      email: (verifiedDecodedToken as jwt.JwtPayload).email
+    };
 
   } catch (error) {
-    console.log("카카오 로그인 에러 발생: ", error)
+    console.log("애플 로그인 에러 발생: ", error)
     return tokenType.INVALID_PLATFORM_USER;
   } 
 }
@@ -61,7 +60,6 @@ const apple = async (identityToken: string) => {
 const getRandomNuber = (min: number, max: number) => {
   return Math.floor(Math.random() * (max - min +1));
 }
-
 
 const kakao = async (accessToken: string) => {
   
@@ -87,8 +85,6 @@ const kakao = async (accessToken: string) => {
       name: kakaoAccount.profile.nickname,
       email: kakaoAccount.email
     };
-
-    return kakaoAccount;
   
   } catch (error) {
     console.log("카카오 로그인 에러 발생: ", error)
