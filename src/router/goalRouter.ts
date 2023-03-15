@@ -1,13 +1,11 @@
 import { Router } from "express";
 import { goalController } from "../controller";
-import auth from "../middlewares/auth";
 const { body } = require("express-validator");
 
 const router: Router = Router();
 
 router.post(
   "/keep/:goalId", 
-  auth, 
   goalController.keepGoal
 );
 
@@ -19,11 +17,10 @@ router.post(
     body("food").trim().notEmpty(), 
     body("criterion").trim().notEmpty(),
   ],
-  auth, 
   goalController.updateGoal
 );
 
-router.delete("/:goalId", auth, goalController.deleteGoal);
+router.delete("/:goalId", goalController.deleteGoal);
 
 router.post(
   "/", 
@@ -32,7 +29,6 @@ router.post(
     body("criterion").trim().notEmpty(),
     body("isMore").notEmpty(),
   ], 
-  auth, 
   goalController.createGoal
 );
 
