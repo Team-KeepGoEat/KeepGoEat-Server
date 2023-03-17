@@ -1,7 +1,7 @@
 import { refreshTokenOption } from "./../constants/jwtTokenOptions";
 import jwt from "jsonwebtoken";
 import { accessTokenOption } from "../constants/jwtTokenOptions";
-import tokenType from "../constants/tokenType";
+import { tokenError } from "../error/customError";
 import axios from "axios";
 import qs from "qs";
 import dayjs from "dayjs";
@@ -43,12 +43,12 @@ const verify = (accessToken: string) => {
   } catch (error: any) {
     if (error.message === "jwt expired") {
       console.log("만료된 토큰")
-      return tokenType.TOKEN_EXPIRED;
+      return tokenError.TOKEN_EXPIRED;
     } else if (error.message === "invalid token") {
-      console.log("유효하지 않은 토큰 토큰");
-      return tokenType.TOKEN_INVALID;
+      console.log("유효하지 않은 토큰");
+      return tokenError.TOKEN_INVALID;
     } else {
-      return tokenType.TOKEN_INVALID;
+      return tokenError.TOKEN_INVALID;
     }
   }
 

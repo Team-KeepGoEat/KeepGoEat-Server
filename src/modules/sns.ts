@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 const { JwksClient } = require("jwks-rsa");
 import axios from "axios";
-import tokenType from "../constants/tokenType";
+import { tokenError } from "../error/customError";
 
 const apple = async (identityToken: string) => {
 
@@ -14,7 +14,7 @@ const apple = async (identityToken: string) => {
 
     // 애플은 토큰 만료 시 에러가 바로 안터지고 그냥 decodedToken이 null이 반환됨
     if (!decodedToken) {
-      return tokenType.INVALID_PLATFORM_USER;
+      return tokenError.INVALID_PLATFORM_USER;
     }
     
     // 복호화한 토큰에서 keyId 가져옴
@@ -53,7 +53,7 @@ const apple = async (identityToken: string) => {
 
   } catch (error) {
     console.log("애플 로그인 에러 발생: ", error)
-    return tokenType.INVALID_PLATFORM_USER;
+    return tokenError.INVALID_PLATFORM_USER;
   } 
 }
 
@@ -88,7 +88,7 @@ const kakao = async (accessToken: string) => {
   
   } catch (error) {
     console.log("카카오 로그인 에러 발생: ", error)
-    return tokenType.INVALID_PLATFORM_USER;
+    return tokenError.INVALID_PLATFORM_USER;
   }
 }
 
@@ -113,7 +113,7 @@ const naver = async (accessToken: string) => {
   
   } catch (error) {
     console.log("네이버 로그인 에러 발생: ", error);
-    return tokenType.INVALID_PLATFORM_USER;
+    return tokenError.INVALID_PLATFORM_USER;
   }
 }
 

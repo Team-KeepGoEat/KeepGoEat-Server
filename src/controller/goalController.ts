@@ -7,7 +7,7 @@ import slack from "../modules/slack";
 import { dailyAchievedHistoryService, goalService } from "../service";
 import date from "../modules/date"
 import boxCounter from "../modules/boxCounter";
-import achievedError from "../constants/achievedError";
+import { goalError } from "../error/customError";
 import { validationResult } from "express-validator";
 import { debugLog, errorLog } from "../logger/logger";
 
@@ -29,6 +29,10 @@ const createGoal = async (req: Request, res: Response) => {
 
     const data = await goalService.createGoal(userId, createGoalDTO, startedAt);
     
+    if (data == goalError.MAX_GOAL_COUNT_ERROR) {
+      return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.MAX_GOAL_COUNT_ERROR))
+    }
+
     debugLog(req.originalUrl, req.method, req.body, req.user?.userId);
     return res.status(sc.OK).send(success(sc.OK, rm.CREATE_GOAL_SUCCESS, data));
   
@@ -187,12 +191,12 @@ const achieveGoal = async (req: Request, res: Response) => {
     return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR)); // 서버 내부 에러
   }
 
-  if (data === achievedError.DOUBLE_ACHIEVED_ERROR) {
+  if (data === goalError.DOUBLE_ACHIEVED_ERROR) {
     slack.sendErrorMessageToSlack(req.method.toUpperCase(), req.originalUrl, "[achievedError] Double Checked Error", req.user?.userId);
     return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.ACHIEVE_GOAL_FAIL_FOR_DOUBLE_ACHIEVE));
   }
 
-  if (data === achievedError.DOUBLE_CANCELED_ERROR) {
+  if (data === goalError.DOUBLE_CANCELED_ERROR) {
     slack.sendErrorMessageToSlack(req.method.toUpperCase(), req.originalUrl,  "[achievedError] Double Canceled Error", req.user?.userId);
     return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.ACHIEVE_GOAL_FAIL_FOR_DOUBLE_CANCEL));
   }

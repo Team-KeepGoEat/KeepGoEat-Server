@@ -4,9 +4,9 @@ import { UpdateGoalDTO } from "./../interfaces/goal/UpdateGoalDTO";
 import dailyAchievedHistoryService from "./dailyAchievedHistoryService";
 import dayjs from "dayjs";
 import date from "../modules/date";
-import achievedError from "../constants/achievedError";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import { goalError } from "../error/customError";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -59,6 +59,17 @@ const getHomeGoalsByUserId = async (currentMonth: string, userId: number) => {
 };
 
 const createGoal = async (userId: number, createGoalDTO: CreateGoalDTO, startedAt: string) => {
+  
+  const goalCount = await prisma.goal.count({
+    where: {
+      writerId: userId
+    }
+  }); 
+
+  if (goalCount >= 3) {
+    return goalError.MAX_GOAL_COUNT_ERROR;
+  }
+
   const data = await prisma.goal.create({
     data: {
       food: createGoalDTO.food,
@@ -152,7 +163,7 @@ const achieveGoal = async (goalId: number, isAchieved: boolean) => {
       // 일별 달성 기록이 없는 경우
       if (!dailyAchievedHistory) {
         console.log("달성 취소(isAchieved false) 요청 실패. 달성이 안된 목표를 취소하려함");
-        return achievedError.DOUBLE_CANCELED_ERROR;
+        return goalError.DOUBLE_CANCELED_ERROR;
       }
 
       // 일별 달성 기록이 있는 경우 - 달성 기록 삭제 및 total count -1 
@@ -193,7 +204,7 @@ const achieveGoal = async (goalId: number, isAchieved: boolean) => {
 
   // 달성 기록이 있는 경우 - try 문 안에 넣어줘야함
   console.log("이미 달성 기록이 있는 목표를 달성하려고 함");
-  return achievedError.DOUBLE_ACHIEVED_ERROR;
+  return goalError.DOUBLE_ACHIEVED_ERROR;
 };
 
 const updateTotalCount = async (goalId: number, isAchieved: boolean) => {

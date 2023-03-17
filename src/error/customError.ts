@@ -1,0 +1,12 @@
+export const tokenError = {
+  TOKEN_EXPIRED: -1,
+  TOKEN_INVALID: -2,
+  INVALID_PLATFORM_USER: -3,
+};
+
+export const goalError = {
+  DOUBLE_CANCELED_ERROR: -4,
+  DOUBLE_ACHIEVED_ERROR: -5,
+  CANCELED_NOT_EXISTING_MONTHLY: -6,
+  MAX_GOAL_COUNT_ERROR: -7
+}
