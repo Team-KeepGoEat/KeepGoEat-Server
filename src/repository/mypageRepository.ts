@@ -14,18 +14,14 @@ const findAccountInfoForMyPage = async(userId: number) => {
 };
 
 const findKeptGoalsCountForMyPage = async(userId: number) => {
-  let keptGoalsCount = 0;
 
-  const keptGoals = await prisma.goal.findMany({
+  const keptGoalsCount = await prisma.goal.count({
     where: {
       writerId: userId,
+      isOngoing: false
     }    
   });
-  keptGoals.map((goal) => {
-    if (goal.keptAt !== null) { 
-      ++keptGoalsCount; 
-    }
-  });
+
   return keptGoalsCount;
 }
 
