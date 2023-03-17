@@ -207,9 +207,8 @@ const sortType = {
   LESS: "less"
 };
 
-const getKeptGoalsByUserId = async (req: Request, res: Response) => {
+const getKeptGoalsByUserId = async (req: Request, res: Response) => {  
   const userId = req.user.userId;
-
   const sort = req.query.sort as string;
 
   if (!userId || !sort) {

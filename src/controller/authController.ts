@@ -152,11 +152,11 @@ const refresh = async (req: Request, res: Response) => {
 
       const user = await userService.getUserByRefreshToken(refreshToken as string);
 
-      // rf로 찾은 유저가 없을 때 - 400 에러 
+      // rf로 찾은 유저가 없을 때 - 401 에러 
       if (!user) {
         return res
-          .status(sc.BAD_REQUEST)
-          .send(fail(sc.BAD_REQUEST, rm.NOT_EXISITING_USER));
+          .status(sc.UNAUTHORIZED)
+          .send(fail(sc.UNAUTHORIZED, rm.NOT_EXISITING_USER));
       }
 
       const { accessToken } = jwtHandler.signup((user as User).userId, (user as User).email);

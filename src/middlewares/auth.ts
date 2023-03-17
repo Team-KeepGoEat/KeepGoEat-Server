@@ -9,8 +9,9 @@ import slack from "../modules/slack";
 
 const auth = async (req: Request, res: Response, next: NextFunction) => {
   const accessToken = req.headers.accesstoken;
+  const refreshToken = req.headers.refreshtoken;
 
-  if (!accessToken) {
+  if (!accessToken || !refreshToken) {
     return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
   }
 
