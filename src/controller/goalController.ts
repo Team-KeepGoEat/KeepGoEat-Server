@@ -16,9 +16,10 @@ const createGoal = async (req: Request, res: Response) => {
   if(!error.isEmpty()) {
     return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
   }
+  const criterion = req.body.criterion;
   const userId = req.user.userId;
 
-  if (!userId) {
+  if (!userId || criterion === " ") {
     return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
   }
 
@@ -60,8 +61,10 @@ const deleteGoal = async (req: Request, res: Response) => {
 
 const updateGoal = async (req: Request, res: Response) => {
 
-  const error = validationResult(req);
-  if(!error.isEmpty()) {
+  const food = req.body.food;
+  const criterion = req.body.criterion;
+
+  if (criterion === " ") {
     return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
   }
 
@@ -69,9 +72,23 @@ const updateGoal = async (req: Request, res: Response) => {
   const { goalId } = req.params;
 
   try {
-  
-    const updatedGoalId = await goalService.updateGoal(+goalId, updateGoalDTO);
 
+    // 기준만 수정 혹은 삭제되는 케이스
+    if((food === null && criterion !== "" && typeof criterion === "string") 
+        || (food === null && criterion === "")) {
+      const updatedGoalId = await goalService.updateCriterion(+goalId, updateGoalDTO);
+      return res.status(sc.OK).send(success(sc.OK, rm.UPDATE_GOAL_SUCCESS, { "goalId": updatedGoalId }));
+    }
+
+    // 음식만 수정되는 케이스
+    if(typeof food === "string" && food !== "" && criterion === null) { // criterion == ""
+      const updatedGoalId = await goalService.updateFood(+goalId, updateGoalDTO);
+      return res.status(sc.OK).send(success(sc.OK, rm.UPDATE_GOAL_SUCCESS, { "goalId": updatedGoalId }));
+    }
+
+    // 음식, 기준 둘 다 수정하거나 음식을 수정하고 기준 삭제한 케이서
+    const updatedGoalId = await goalService.updateGoal(+goalId, updateGoalDTO);
+  
     debugLog(req.originalUrl, req.method, req.body, req.user?.userId);
     return res.status(sc.OK).send(success(sc.OK, rm.UPDATE_GOAL_SUCCESS, { "goalId": updatedGoalId }));
   
