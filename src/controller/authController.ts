@@ -6,7 +6,7 @@ import { fail, success } from "../constants/response";
 import sns from "../modules/sns";
 import { userService } from "../service";
 import jwtHandler from "../modules/jwtHandler";
-import tokenType from "../constants/tokenType";
+import { tokenError } from "../error/customError";
 import { User } from "@prisma/client";
 import slack from "../modules/slack";
 import { SignupDTO } from "../interfaces/user/SignupDTO";
@@ -43,7 +43,7 @@ const socialLogin = async (req: Request, res: Response) => {
         .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
     }
 
-    if (platformUser === tokenType.INVALID_PLATFORM_USER) {
+    if (platformUser === tokenError.INVALID_PLATFORM_USER) {
       return res
         .status(sc.UNAUTHORIZED)
         .send(fail(sc.UNAUTHORIZED, rm.UNAUTHORIZED_PLATFORM_USER));
@@ -117,25 +117,25 @@ const refresh = async (req: Request, res: Response) => {
     const decodedAccess = jwtHandler.verify(accessToken as string);
 
     // accessToken이 만료되지 않았을 때 - 400 에러
-    if (decodedAccess !== tokenType.TOKEN_EXPIRED) {
+    if (decodedAccess !== tokenError.TOKEN_EXPIRED) {
       return res
         .status(sc.BAD_REQUEST)
         .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
     }
 
     // accessToken이 유효하지 않았을 때 - 401 에러
-    if (decodedAccess === tokenType.TOKEN_INVALID) {
+    if (decodedAccess === tokenError.TOKEN_INVALID) {
       console.log("accessToken이 유효하지 않았을 때");
       return res
         .status(sc.UNAUTHORIZED)
         .send(fail(sc.UNAUTHORIZED, rm.INVALID_ACCESS_TOKEN));
     }
 
-    if (decodedAccess === tokenType.TOKEN_EXPIRED) {
+    if (decodedAccess === tokenError.TOKEN_EXPIRED) {
       const decodedRefresh = jwtHandler.verify(refreshToken as string);
 
       // accessToken이 만료되었고 refreshToken는 유효하지 않았을 때 - 401 에러
-      if (decodedRefresh === tokenType.TOKEN_INVALID) {
+      if (decodedRefresh === tokenError.TOKEN_INVALID) {
         console.log("accessToken이 만료되었고 refreshToken는 유효하지 않았을 때");
         return res
           .status(sc.UNAUTHORIZED)
@@ -143,7 +143,7 @@ const refresh = async (req: Request, res: Response) => {
       }
 
       // accessToken이 만료되었고 refreshToken도 만료되었을 때 - 401 에러
-      if (decodedRefresh === tokenType.TOKEN_EXPIRED) {
+      if (decodedRefresh === tokenError.TOKEN_EXPIRED) {
         console.log("accessToken이 만료되었고 refreshToken도 만료되었을 때");
         return res
           .status(sc.UNAUTHORIZED)
@@ -209,14 +209,14 @@ const withdrawUser = async (req: Request, res: Response) => {
     }
 
     const client_secret = jwtHandler.createAppleJWT();
-    const refreshToken: string | null = await jwtHandler.getAppleRefresh(code) as string | null;
+    const refresh_token: string | null = await jwtHandler.getAppleRefresh(code) as string | null;
 
-    if (!refreshToken) {
+    if (!refresh_token) {
       throw 400;
     }
 
     const data = {
-      token: refreshToken,
+      token: refresh_token,
       client_id: process.env.APPLE_CLIENTID,
       client_secret: client_secret,
       token_type_hint: "refresh_token"

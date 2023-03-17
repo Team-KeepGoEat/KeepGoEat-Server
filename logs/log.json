@@ -1,0 +1,1 @@
+{"@timestamp":"2023-03-17T06:28:15.274Z","log.level":"debug","message":"[POST] /goal || Request Body: {\"isMore\":true,\"food\":\"테스트4\",\"criterion\":\"테스트기준\"} uid: 109","ecs":{"version":"1.6.0"}}

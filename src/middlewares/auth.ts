@@ -2,7 +2,7 @@ import { fail } from "./../constants/response";
 import { Request, Response, NextFunction } from "express"
 import { sc, rm } from "../constants";
 import jwt from "../modules/jwtHandler";
-import tokenType from "../constants/tokenType";
+import { tokenError } from "../error/customError";
 import { JwtPayload } from "jsonwebtoken";
 import { userService } from "../service";
 import slack from "../modules/slack";
@@ -17,10 +17,10 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
 
   try {
     const decodedToken = jwt.verify(accessToken as string);
-    if (decodedToken === tokenType.TOKEN_EXPIRED) {
+    if (decodedToken === tokenError.TOKEN_EXPIRED) {
       return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.EXPIRED_TOKEN));
     }
-    if (decodedToken === tokenType.TOKEN_INVALID) {
+    if (decodedToken === tokenError.TOKEN_INVALID) {
       return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.INVALID_ACCESS_TOKEN));
     }
 
