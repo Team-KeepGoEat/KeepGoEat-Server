@@ -109,8 +109,8 @@ const refresh = async (req: Request, res: Response) => {
 
   if (!accessToken || !refreshToken) {
     return res
-      .status(sc.UNAUTHORIZED)
-      .send(fail(sc.UNAUTHORIZED, rm.NULL_VALUE));
+      .status(sc.BAD_REQUEST)
+      .send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
   }
 
   try {
