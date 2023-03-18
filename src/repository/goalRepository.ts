@@ -60,13 +60,14 @@ const findHomeGoalsByUserId = async (currentMonth: string, userId: number) => {
 
 const createGoal = async (userId: number, createGoalDTO: CreateGoalDTO, startedAt: string) => {
   
-  const goalCount = await prisma.goal.count({
+  const ongoingGoalCount = await prisma.goal.count({
     where: {
-      writerId: userId
+      writerId: userId,
+      isOngoing: true
     }
   }); 
 
-  if (goalCount >= 3) {
+  if (ongoingGoalCount >= 3) {
     return goalError.MAX_GOAL_COUNT_ERROR;
   }
 
