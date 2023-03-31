@@ -49,3 +49,9 @@ model User {
   name         String? @db.VarChar(50)
   Goal         Goal[]
 }
+
+model Version_Info {
+  versionId Int    @id @default(autoincrement())
+  version   String @db.VarChar(20)
+  osType    String @db.VarChar(20)
+}
