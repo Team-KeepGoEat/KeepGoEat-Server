@@ -10,7 +10,9 @@ import { debugLog, errorLog } from "../logger/logger";
 const getHome = async (req: Request, res: Response) => {
   const userId = req.user.userId;
   if (!userId) {
-    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
+    return res
+      .status(sc.BAD_REQUEST)
+      .send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
   }
 
   try {
@@ -22,19 +24,28 @@ const getHome = async (req: Request, res: Response) => {
 
     debugLog(req.originalUrl, req.method, req.body, req.user?.userId);
 
-    return res.status(sc.OK).send(success(sc.OK, rm.GET_GOALS_SUCCCESS_FOR_HOME, {
-      "goals": goals,
-      "goalCount": goals.length,
-      "cheeringMessage": cheeringMessage,
-      "daytime": currentDayTime
-    }));
+    return res
+      .status(sc.OK)
+        .send(success(sc.OK, rm.GET_GOALS_SUCCCESS_FOR_HOME, {
+          "goals": goals,
+          "goalCount": goals.length,
+          "cheeringMessage": cheeringMessage,
+          "daytime": currentDayTime
+        }));
 
   } catch (error) {
     
-    slack.sendErrorMessageToSlack(req.method.toUpperCase(), req.originalUrl, error, req.user?.userId);
+    slack
+      .sendErrorMessageToSlack(
+        req.method.toUpperCase(), 
+        req.originalUrl, 
+        error, 
+        req.user?.userId);
     errorLog(req.originalUrl, req.method, req.body, error, req.user?.userId);
     
-    return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+    return res
+      .status(sc.INTERNAL_SERVER_ERROR)
+      .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
   }
 };
 

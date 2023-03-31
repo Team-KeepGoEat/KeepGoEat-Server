@@ -1,4 +1,3 @@
-import { PrismaClient } from "@prisma/client";
 import { cheeringMessageRepository } from "../repository";
 
 const getRamdomMessage = async (isGoalExisted: boolean) => {

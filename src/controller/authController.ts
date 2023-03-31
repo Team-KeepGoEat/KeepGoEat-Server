@@ -186,7 +186,7 @@ const withdrawUser = async (req: Request, res: Response) => {
   const userId = req.user.userId;
   const code = req.query.code as string;
 
-  if (!userId) {
+  if (!userId || !code) {
     return res
       .status(sc.BAD_REQUEST)
       .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
@@ -201,8 +201,8 @@ const withdrawUser = async (req: Request, res: Response) => {
         .send(fail(sc.BAD_REQUEST, rm.NOT_EXISITING_USER));
     }
 
-    // code를 안받은 네이버, 카카오 로그인인 경우
-    if (!code) {
+    // 네이버, 카카오 로그인인 경우
+    if (code == "NAVER" || code == "KAKAO") {
       return res
         .status(sc.OK)
         .send(success(sc.OK, rm.WITHDRAWAL_SUCCESS));

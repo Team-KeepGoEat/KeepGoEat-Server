@@ -1,4 +1,3 @@
-import { PrismaClient } from "@prisma/client";
 import { CreateGoalDTO } from "../interfaces/goal/CreateGoalDTO";
 import { UpdateGoalDTO } from "./../interfaces/goal/UpdateGoalDTO";
 import dailyAchievedHistoryService from "./dailyAchievedHistoryService";
@@ -11,8 +10,6 @@ import goalRepository from "../repository/goalRepository";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
-
-const prisma = new PrismaClient();
 
 const getGoalByGoalId = async (goalId: number) => {
   return await goalRepository.findGoalByGoalId(goalId);
