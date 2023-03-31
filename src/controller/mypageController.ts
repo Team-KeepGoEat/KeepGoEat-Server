@@ -6,7 +6,9 @@ import { mypageService } from "../service";
 const getAccountInfoByUserId = async (req: Request, res: Response) => {
   const userId = req.user.userId;
   if(!userId) {
-    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
+    return res
+      .status(sc.BAD_REQUEST)
+      .send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
   }
 
   try {
@@ -20,9 +22,13 @@ const getAccountInfoByUserId = async (req: Request, res: Response) => {
     if (accountInfo?.name === null || accountInfo?.name === undefined) {
       data.name = "유저 실명을 받아오지 못했습니다."
     }
-    return res.status(sc.OK).send(success(sc.OK, rm.GET_ACCOUNT_INFO_SUCCESS_FOR_MYPAGE, data));
+    return res
+      .status(sc.OK)
+      .send(success(sc.OK, rm.GET_ACCOUNT_INFO_SUCCESS_FOR_MYPAGE, data));
   } catch (error) {
-    return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+    return res
+      .status(sc.INTERNAL_SERVER_ERROR)
+      .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
   }
 }
 
