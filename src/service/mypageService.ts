@@ -1,4 +1,3 @@
-import date from "../modules/date";
 import { mypageRepository } from "../repository";
 
 const getAccountInfoForMyPage = async (userId: number) => {

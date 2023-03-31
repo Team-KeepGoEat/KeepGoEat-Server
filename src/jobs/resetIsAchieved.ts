@@ -1,4 +1,3 @@
-import dayjs from "dayjs";
 import { PrismaClient } from "@prisma/client";
 import slack from "../modules/slack";
 

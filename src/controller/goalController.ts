@@ -14,13 +14,17 @@ import { debugLog, errorLog } from "../logger/logger";
 const createGoal = async (req: Request, res: Response) => {
   const error = validationResult(req);
   if(!error.isEmpty()) {
-    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
+    return res
+      .status(sc.BAD_REQUEST)
+      .send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
   }
   const criterion = req.body.criterion;
   const userId = req.user.userId;
 
   if (!userId || criterion === " ") {
-    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
+    return res
+      .status(sc.BAD_REQUEST)
+      .send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
   }
 
   try {
@@ -30,17 +34,28 @@ const createGoal = async (req: Request, res: Response) => {
     const data = await goalService.createGoal(userId, createGoalDTO, startedAt);
     
     if (data == goalError.MAX_GOAL_COUNT_ERROR) {
-      return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.MAX_GOAL_COUNT_ERROR))
+      return res
+        .status(sc.BAD_REQUEST)
+        .send(fail(sc.BAD_REQUEST, rm.MAX_GOAL_COUNT_ERROR))
     }
 
     debugLog(req.originalUrl, req.method, req.body, req.user?.userId);
-    return res.status(sc.OK).send(success(sc.OK, rm.CREATE_GOAL_SUCCESS, data));
+    return res
+      .status(sc.OK)
+      .send(success(sc.OK, rm.CREATE_GOAL_SUCCESS, data));
   
   } catch (error) {
   
-    slack.sendErrorMessageToSlack(req.method.toUpperCase(), req.originalUrl, error, req.user?.userId);
+    slack
+      .sendErrorMessageToSlack(
+        req.method.toUpperCase(), 
+        req.originalUrl, 
+        error, 
+        req.user?.userId);
     errorLog(req.originalUrl, req.method, req.body, error, req.user?.userId);
-    return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR)); 
+    return res
+      .status(sc.INTERNAL_SERVER_ERROR)
+      .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR)); 
   
   }
 }
@@ -56,9 +71,16 @@ const deleteGoal = async (req: Request, res: Response) => {
   
   } catch (error) {
 
-    slack.sendErrorMessageToSlack(req.method.toUpperCase(), req.originalUrl, error, req.user?.userId);
+    slack
+      .sendErrorMessageToSlack(
+        req.method.toUpperCase(), 
+        req.originalUrl, 
+        error, 
+        req.user?.userId);
     errorLog(req.originalUrl, req.method, req.body, error, req.user?.userId);
-    return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR)); 
+    return res
+      .status(sc.INTERNAL_SERVER_ERROR)
+      .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR)); 
   
   }
 };
@@ -69,7 +91,9 @@ const updateGoal = async (req: Request, res: Response) => {
   const criterion = req.body.criterion;
 
   if (criterion === " ") {
-    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
+    return res
+      .status(sc.BAD_REQUEST)
+      .send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
   }
 
   const updateGoalDTO: UpdateGoalDTO = req.body;
@@ -81,27 +105,35 @@ const updateGoal = async (req: Request, res: Response) => {
     if((food === null && criterion !== "" && typeof criterion === "string") 
         || (food === null && criterion === "")) {
       const updatedGoalId = await goalService.updateCriterion(+goalId, updateGoalDTO);
-      return res.status(sc.OK).send(success(sc.OK, rm.UPDATE_GOAL_SUCCESS, { "goalId": updatedGoalId }));
+      return res
+        .status(sc.OK)
+        .send(success(sc.OK, rm.UPDATE_GOAL_SUCCESS, { "goalId": updatedGoalId }));
     }
 
     // 음식만 수정되는 케이스
     if(typeof food === "string" && food !== "" && criterion === null) { // criterion == ""
       const updatedGoalId = await goalService.updateFood(+goalId, updateGoalDTO);
-      return res.status(sc.OK).send(success(sc.OK, rm.UPDATE_GOAL_SUCCESS, { "goalId": updatedGoalId }));
+      return res
+        .status(sc.OK)
+        .send(success(sc.OK, rm.UPDATE_GOAL_SUCCESS, { "goalId": updatedGoalId }));
     }
 
     // 음식, 기준 둘 다 수정하거나 음식을 수정하고 기준 삭제한 케이서
     const updatedGoalId = await goalService.updateGoal(+goalId, updateGoalDTO);
   
     debugLog(req.originalUrl, req.method, req.body, req.user?.userId);
-    return res.status(sc.OK).send(success(sc.OK, rm.UPDATE_GOAL_SUCCESS, { "goalId": updatedGoalId }));
+    return res
+      .status(sc.OK)
+      .send(success(sc.OK, rm.UPDATE_GOAL_SUCCESS, { "goalId": updatedGoalId }));
   
   } catch (error) {
 
     slack.sendErrorMessageToSlack(req.method.toUpperCase(), req.originalUrl, error, req.user?.userId);
     errorLog(req.originalUrl, req.method, req.body, error, req.user?.userId);
     
-    return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR)); 
+    return res
+      .status(sc.INTERNAL_SERVER_ERROR)
+      .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR)); 
   }
 
 };
@@ -111,7 +143,9 @@ const keepGoal = async (req: Request, res: Response) => {
   const isOngoing = false;
 
   if (!goalId) {
-    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+    return res
+      .status(sc.BAD_REQUEST)
+      .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
   }
 
   try {
@@ -119,14 +153,23 @@ const keepGoal = async (req: Request, res: Response) => {
     const keptGoalId = await goalService.keepGoal(+goalId, isOngoing, keptAt);
   
     debugLog(req.originalUrl, req.method, req.body, req.user?.userId);
-    return res.status(sc.OK).send(success(sc.OK, rm.KEEP_GOAL_SUCCESS, { "goalId": keptGoalId }));
+    return res
+      .status(sc.OK)
+      .send(success(sc.OK, rm.KEEP_GOAL_SUCCESS, { "goalId": keptGoalId }));
   
   } catch (error) {
   
-    slack.sendErrorMessageToSlack(req.method.toUpperCase(), req.originalUrl, error, req.user?.userId);
+    slack
+      .sendErrorMessageToSlack(
+        req.method.toUpperCase(), 
+        req.originalUrl, 
+        error, 
+        req.user?.userId);
     errorLog(req.originalUrl, req.method, req.body, error, req.user?.userId);
   
-    return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR)); 
+    return res
+      .status(sc.INTERNAL_SERVER_ERROR)
+      .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR)); 
   }
 
 };
@@ -135,14 +178,18 @@ const getHistoryByGoalId = async (req: Request, res: Response) => {
   // middleware로 유저 검증하는 로직도 필요함
   const { goalId } = req.params;
   if (!goalId) {
-    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
+    return res
+      .status(sc.BAD_REQUEST)
+      .send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
   }
 
   try {
     const foundGoal = await goalService.getGoalByGoalId(+goalId);
 
     if (!foundGoal) {
-      return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+      return res
+        .status(sc.BAD_REQUEST)
+        .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
     }
 
     const thisMonthCount = await dailyAchievedHistoryService.getAchievedCount(+goalId, date.getCurrentMonthMinus9h());
@@ -160,14 +207,23 @@ const getHistoryByGoalId = async (req: Request, res: Response) => {
     }
 
     debugLog(req.originalUrl, req.method, req.body, req.user?.userId);
-    return res.status(sc.OK).send(success(sc.OK, rm.GET_GOAL_SUCCESS_FOR_HISTORY, data));
+    return res
+      .status(sc.OK)
+      .send(success(sc.OK, rm.GET_GOAL_SUCCESS_FOR_HISTORY, data));
   
   } catch (error) {
     
-    slack.sendErrorMessageToSlack(req.method.toUpperCase(), req.originalUrl, error, req.user?.userId);
+    slack
+      .sendErrorMessageToSlack(
+        req.method.toUpperCase(), 
+        req.originalUrl, 
+        error, 
+        req.user?.userId);
     errorLog(req.originalUrl, req.method, req.body, error, req.user?.userId);
     
-    return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+    return res
+      .status(sc.INTERNAL_SERVER_ERROR)
+      .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
   }
 }
 
@@ -177,7 +233,9 @@ const achieveGoal = async (req: Request, res: Response) => {
   const { isAchieved } = req.body;
 
   if (!userId || isAchieved === null || isAchieved === undefined) {
-    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
+    return res
+      .status(sc.BAD_REQUEST)
+      .send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
   }
 
   let data;
@@ -186,22 +244,45 @@ const achieveGoal = async (req: Request, res: Response) => {
     debugLog(req.originalUrl, req.method, req.body, req.user?.userId);
 
   } catch (error) {
-    slack.sendErrorMessageToSlack(req.method.toUpperCase(), req.originalUrl, error, req.user?.userId);
+    slack
+      .sendErrorMessageToSlack(
+        req.method.toUpperCase(), 
+        req.originalUrl, 
+        error, 
+        req.user?.userId);
     errorLog(req.originalUrl, req.method, req.body, error, req.user?.userId);
-    return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR)); // 서버 내부 에러
+    return res
+      .status(sc.INTERNAL_SERVER_ERROR)
+      .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR)); // 서버 내부 에러
   }
 
   if (data === goalError.DOUBLE_ACHIEVED_ERROR) {
-    slack.sendErrorMessageToSlack(req.method.toUpperCase(), req.originalUrl, "[achievedError] Double Checked Error", req.user?.userId);
-    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.ACHIEVE_GOAL_FAIL_FOR_DOUBLE_ACHIEVE));
+    slack
+      .sendErrorMessageToSlack(
+        req.method.toUpperCase(), 
+        req.originalUrl, 
+        "[achievedError] Double Checked Error", 
+        req.user?.userId);
+    return res
+      .status(sc.BAD_REQUEST)
+      .send(fail(sc.BAD_REQUEST, rm.ACHIEVE_GOAL_FAIL_FOR_DOUBLE_ACHIEVE));
   }
 
   if (data === goalError.DOUBLE_CANCELED_ERROR) {
-    slack.sendErrorMessageToSlack(req.method.toUpperCase(), req.originalUrl,  "[achievedError] Double Canceled Error", req.user?.userId);
-    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.ACHIEVE_GOAL_FAIL_FOR_DOUBLE_CANCEL));
+    slack
+      .sendErrorMessageToSlack(
+        req.method.toUpperCase(), 
+        req.originalUrl,  
+        "[achievedError] Double Canceled Error", 
+        req.user?.userId);
+    return res
+      .status(sc.BAD_REQUEST)
+      .send(fail(sc.BAD_REQUEST, rm.ACHIEVE_GOAL_FAIL_FOR_DOUBLE_CANCEL));
   }
 
-  return res.status(sc.CREATED).send(success(sc.CREATED, rm.ACHIEVE_GOAL_SUCCESS, data));
+  return res
+    .status(sc.CREATED)
+    .send(success(sc.CREATED, rm.ACHIEVE_GOAL_SUCCESS, data));
 
 };
 
@@ -216,11 +297,15 @@ const getKeptGoalsByUserId = async (req: Request, res: Response) => {
   const sort = req.query.sort as string;
 
   if (!userId || !sort) {
-    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
+    return res
+      .status(sc.BAD_REQUEST)
+      .send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
   }
 
   if (sort !== sortType.ALL && sort !== sortType.MORE && sort !== sortType.LESS) {
-    return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+    return res
+      .status(sc.BAD_REQUEST)
+      .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
   }
 
   try {
@@ -228,14 +313,25 @@ const getKeptGoalsByUserId = async (req: Request, res: Response) => {
     const foundGoals = await goalService.getKeptGoals(+userId, sort as string);
     
     debugLog(req.originalUrl, req.method, req.body, req.user?.userId);
-    return res.status(sc.OK).send(success(sc.OK, rm.GET_GOALS_SUCCESS_FOR_KEPTGOALS, { "goals": foundGoals, "goalCount": foundGoals.length }));
+    return res
+      .status(sc.OK)
+      .send(success(sc.OK, 
+        rm.GET_GOALS_SUCCESS_FOR_KEPTGOALS, 
+        { "goals": foundGoals, "goalCount": foundGoals.length }));
   
   } catch (error) {
     
-    slack.sendErrorMessageToSlack(req.method.toUpperCase(), req.originalUrl, error, req.user?.userId);
+    slack
+      .sendErrorMessageToSlack(
+        req.method.toUpperCase(), 
+        req.originalUrl, 
+        error, 
+        req.user?.userId);
     errorLog(req.originalUrl, req.method, req.body, error, req.user?.userId);
 
-    return res.status(sc.INTERNAL_SERVER_ERROR).send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+    return res
+      .status(sc.INTERNAL_SERVER_ERROR)
+      .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
   }
 
 };

@@ -2,8 +2,6 @@ import { Request, Response } from "express";
 import { sc, rm } from "../constants";
 import { fail, success } from "../constants/response";
 import { mypageService } from "../service";
-import slack from "../modules/slack";
-import { debugLog, errorLog } from "../logger/logger";
 
 const getAccountInfoByUserId = async (req: Request, res: Response) => {
   const userId = req.user.userId;
