@@ -2,20 +2,25 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-const findversionInfo = async(client: string) => {
-  let osTypeName;
-  if(client) {
-    client === "iOS" ? osTypeName = "iOS" : osTypeName = "AOS"
-    return await prisma.version_Info.findMany({
-      where: {
-        osType: osTypeName,
-      }
-    });
-  }
+const findVersionInfo = async(client: string) => {
+  console.log("client: ", client)
+  console.log("client type: ", typeof client)
+
+  const version =  await prisma.version_Info.findMany({
+    where: {
+      osType: client,
+    },
+    orderBy: {
+      versionId: "desc"
+    },
+    take: 1,
+  });
+
+  return version[0];
 };
 
 const versioninfoRepository = {
-  findversionInfo,
+  findVersionInfo,
 };
 
 export default versioninfoRepository;

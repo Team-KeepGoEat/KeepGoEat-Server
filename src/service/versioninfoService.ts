@@ -1,14 +1,13 @@
-import { PrismaClient } from "@prisma/client";
 import versioninfoRepository from "../repository/versioninfoRepository";
 
-const prisma = new PrismaClient();
-
 const getVersionInfo = async(client: string) => {
-  const versionInfo = await versioninfoRepository.findversionInfo(client);
+  const versionInfo = await versioninfoRepository.findVersionInfo(client);
 
-  return {
-    "version": versionInfo
-  };
+  if (!versionInfo) {
+    return "5.0.5";
+  }
+
+  return versionInfo.version;
 }; 
 
 const versioninfoService = {
