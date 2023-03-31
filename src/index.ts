@@ -20,8 +20,8 @@ app.listen(PORT, () => {
 
 const rule = new schedule.RecurrenceRule
 rule.dayOfWeek = [0, new schedule.Range(0, 6)];
-rule.hour = 20;
-rule.minute = 30;
+rule.hour = 0;
+rule.minute = 0;
 rule.tz = "Asia/Seoul";
 
 const job = schedule.scheduleJob(rule, resetIsAchieved);
