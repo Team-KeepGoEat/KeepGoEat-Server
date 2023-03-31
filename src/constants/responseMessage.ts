@@ -50,7 +50,8 @@ export default {
   GET_GOAL_SUCCESS_FOR_HISTORY: "기록뷰 조회 성공",
 
   // 홈뷰
-  GET_GOALS_SUCCCESS_FOR_HOME: "홈 뷰 조회 성공"
+  GET_GOALS_SUCCCESS_FOR_HOME: "홈 뷰 조회 성공",
 
-
+  // 버전정보
+  GET_VERSION_INFO_SUCCESS: "버전 정보 조회 성공"
 };
