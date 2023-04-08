@@ -11,10 +11,10 @@ const resetIsAchieved = async () => {
       }
     });
     console.log("batch 결과 카운트 ", count);
-    slack.sendBatchMessageToSlack(count.count);
+    slack.sendBatchSuccessMessageToSlack(count.count);
 
-  } catch (error) {
-    slack.sendSimpleTextToSlack("[ERROR] isAchieved 업데이트 job 에러");
+  } catch (error: any) {
+    slack.sendBatchErrorMessageToSlack(error.stack);
     console.log("isAchieved 업데이트 실패 ", error);
   }
 };

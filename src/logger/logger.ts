@@ -1,7 +1,7 @@
 const winston = require("winston");
 const ecsFormat = require("@elastic/ecs-winston-format");
 
-export const debugLog = (url?: any, method?: any, body?: any, uid?: any) => {
+const debugLog = (url?: any, method?: any, body?: any, uid?: any) => {
   const logger = winston.createLogger({
     level: "debug",
     format: ecsFormat({ convertReqRes: true }),
@@ -17,7 +17,7 @@ export const debugLog = (url?: any, method?: any, body?: any, uid?: any) => {
 
 };
 
-export const infoLog = (url?: any, method?: any, body?: any, uid?: any) => {
+const infoLog = (url?: any, method?: any, body?: any, uid?: any) => {
   const logger = winston.createLogger({
     level: "info",
     format: ecsFormat({ convertReqRes: true }),
@@ -33,7 +33,7 @@ export const infoLog = (url?: any, method?: any, body?: any, uid?: any) => {
 
 };
 
-export const errorLog = (url?: any, method?: any, body?: any, error?: any, uid?: any) => {
+const errorLog = (url?: any, method?: any, body?: any, error?: any, uid?: any) => {
   const logger = winston.createLogger({
     level: "error",
     format: ecsFormat({ convertReqRes: true }),
@@ -48,3 +48,13 @@ export const errorLog = (url?: any, method?: any, body?: any, error?: any, uid?:
   logger.log("error", `[${method}] ${url} || Request Body: ${JSON.stringify(body)} ${uid ? `uid: ${uid}` : "uid is Null"} || error: ${error}`);
 
 };
+
+const logger = {
+  debugLog,
+  infoLog,
+  errorLog
+};
+
+export default logger;
+
+

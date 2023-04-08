@@ -14,14 +14,20 @@ const sendErrorMessageToSlack = (method: string, originalUrl: string, error: any
   sendSimpleTextToSlack(message);
 };
 
-const sendBatchMessageToSlack = (count: number) => {
-  const message = `[BATCH] Job Completed. ${count} events are done`;
+const sendBatchSuccessMessageToSlack = (count: number) => {
+  const message = `[BATCH_SUCCESS] Job Completed. ${count} events are done`;
+  sendSimpleTextToSlack(message);
+};
+
+const sendBatchErrorMessageToSlack = (error: Error) => {
+  const message = `[BATCH_ERROR] Job Failed. Error message: ${error}`;
   sendSimpleTextToSlack(message);
 };
 
 const slack = {
   sendErrorMessageToSlack,
-  sendBatchMessageToSlack,
+  sendBatchSuccessMessageToSlack,
+  sendBatchErrorMessageToSlack,
   sendSimpleTextToSlack
 };
 

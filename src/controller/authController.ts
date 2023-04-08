@@ -10,6 +10,7 @@ import { tokenError } from "../error/customError";
 import { User } from "@prisma/client";
 import slack from "../modules/slack";
 import { SignupDTO } from "../interfaces/user/SignupDTO";
+import logger from "../logger/logger";
 
 const socialLogin = async (req: Request, res: Response) => {
   const { platformAccessToken, platform } = req.body;
@@ -90,12 +91,15 @@ const socialLogin = async (req: Request, res: Response) => {
 
   } catch (error: any) {
     console.log("소셜 로그인 및 회원가입 에러 ", error);
-    slack
-      .sendErrorMessageToSlack(
-        req.method.toUpperCase(), 
-        req.originalUrl, 
-        error, 
-        req.user?.userId);
+    
+    logger.errorLog(req.originalUrl, req.method, req.body, error, (error as any).stack);
+
+    slack.sendErrorMessageToSlack(
+      req.method.toUpperCase(), 
+      req.originalUrl, 
+      (error as any).stack, 
+      req.user?.userId);
+
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
@@ -169,12 +173,15 @@ const refresh = async (req: Request, res: Response) => {
   } catch (error) {
 
     console.log("토큰 재발급 에러 ", error);
-    slack
-      .sendErrorMessageToSlack(
-        req.method.toUpperCase(), 
-        req.originalUrl, 
-        error, 
-        req.user?.userId);
+    
+    logger.errorLog(req.originalUrl, req.method, req.body, error, (error as any).stack);
+
+    slack.sendErrorMessageToSlack(
+      req.method.toUpperCase(), 
+      req.originalUrl, 
+      (error as any).stack, 
+      req.user?.userId);
+
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
@@ -241,6 +248,15 @@ const withdrawUser = async (req: Request, res: Response) => {
       .send(success(sc.OK, rm.WITHDRAWAL_SUCCESS));
 
   } catch (error) {
+
+    logger.errorLog(req.originalUrl, req.method, req.body, error, (error as any).stack);
+
+    slack.sendErrorMessageToSlack(
+      req.method.toUpperCase(), 
+      req.originalUrl, 
+      (error as any).stack, 
+      req.user?.userId);
+
     if (error === 400) {
       return res
         .status(sc.BAD_REQUEST)

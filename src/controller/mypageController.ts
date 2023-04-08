@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import { sc, rm } from "../constants";
 import { fail, success } from "../constants/response";
 import { mypageService } from "../service";
+import slack from "../modules/slack";
+import logger from "../logger/logger";
 
 const getAccountInfoByUserId = async (req: Request, res: Response) => {
   const userId = req.user.userId;
@@ -26,6 +28,15 @@ const getAccountInfoByUserId = async (req: Request, res: Response) => {
       .status(sc.OK)
       .send(success(sc.OK, rm.GET_ACCOUNT_INFO_SUCCESS_FOR_MYPAGE, data));
   } catch (error) {
+    
+    logger.errorLog(req.originalUrl, req.method, req.body, error, (error as any).stack);
+
+    slack.sendErrorMessageToSlack(
+      req.method.toUpperCase(), 
+      req.originalUrl, 
+      (error as any).stack, 
+      req.user?.userId);
+
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));

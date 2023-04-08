@@ -24,4 +24,4 @@ rule.hour = 0;
 rule.minute = 0;
 rule.tz = "Asia/Seoul";
 
-const job = schedule.scheduleJob(rule, resetIsAchieved);
+schedule.scheduleJob(rule, resetIsAchieved);
