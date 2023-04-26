@@ -9,7 +9,7 @@ import date from "../modules/date"
 import boxCounter from "../modules/boxCounter";
 import { goalError } from "../error/customError";
 import { validationResult } from "express-validator";
-import { debugLog, errorLog } from "../logger/logger";
+import logger from "../logger/logger";
 
 const createGoal = async (req: Request, res: Response) => {
   const error = validationResult(req);
@@ -39,20 +39,20 @@ const createGoal = async (req: Request, res: Response) => {
         .send(fail(sc.BAD_REQUEST, rm.MAX_GOAL_COUNT_ERROR))
     }
 
-    debugLog(req.originalUrl, req.method, req.body, req.user?.userId);
     return res
       .status(sc.OK)
       .send(success(sc.OK, rm.CREATE_GOAL_SUCCESS, data));
   
   } catch (error) {
   
-    slack
-      .sendErrorMessageToSlack(
-        req.method.toUpperCase(), 
-        req.originalUrl, 
-        error, 
-        req.user?.userId);
-    errorLog(req.originalUrl, req.method, req.body, error, req.user?.userId);
+    logger.errorLog(req.originalUrl, req.method, req.body, error, (error as any).stack);
+
+    slack.sendErrorMessageToSlack(
+      req.method.toUpperCase(), 
+      req.originalUrl, 
+      (error as any).stack, 
+      req.user?.userId);
+    
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR)); 
@@ -66,18 +66,18 @@ const deleteGoal = async (req: Request, res: Response) => {
     const { goalId } = req.params;
     const deletedGoalId = await goalService.deleteGoal(+goalId);
     
-    debugLog(req.originalUrl, req.method, req.body, req.user?.userId);
     return res.status(sc.OK).send(success(sc.OK, rm.DELETE_GOAL_SUCCESS, { "goalId": deletedGoalId }));
   
   } catch (error) {
 
-    slack
-      .sendErrorMessageToSlack(
-        req.method.toUpperCase(), 
-        req.originalUrl, 
-        error, 
-        req.user?.userId);
-    errorLog(req.originalUrl, req.method, req.body, error, req.user?.userId);
+    logger.errorLog(req.originalUrl, req.method, req.body, error, (error as any).stack);
+
+    slack.sendErrorMessageToSlack(
+      req.method.toUpperCase(), 
+      req.originalUrl, 
+      (error as any).stack, 
+      req.user?.userId);
+    
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR)); 
@@ -121,15 +121,19 @@ const updateGoal = async (req: Request, res: Response) => {
     // 음식, 기준 둘 다 수정하거나 음식을 수정하고 기준 삭제한 케이서
     const updatedGoalId = await goalService.updateGoal(+goalId, updateGoalDTO);
   
-    debugLog(req.originalUrl, req.method, req.body, req.user?.userId);
     return res
       .status(sc.OK)
       .send(success(sc.OK, rm.UPDATE_GOAL_SUCCESS, { "goalId": updatedGoalId }));
   
   } catch (error) {
 
-    slack.sendErrorMessageToSlack(req.method.toUpperCase(), req.originalUrl, error, req.user?.userId);
-    errorLog(req.originalUrl, req.method, req.body, error, req.user?.userId);
+    logger.errorLog(req.originalUrl, req.method, req.body, error, (error as any).stack);
+
+    slack.sendErrorMessageToSlack(
+      req.method.toUpperCase(), 
+      req.originalUrl, 
+      (error as any).stack, 
+      req.user?.userId);
     
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
@@ -152,20 +156,19 @@ const keepGoal = async (req: Request, res: Response) => {
     const keptAt = date.getCurrentDatePlus9h()
     const keptGoalId = await goalService.keepGoal(+goalId, isOngoing, keptAt);
   
-    debugLog(req.originalUrl, req.method, req.body, req.user?.userId);
     return res
       .status(sc.OK)
       .send(success(sc.OK, rm.KEEP_GOAL_SUCCESS, { "goalId": keptGoalId }));
   
   } catch (error) {
   
-    slack
-      .sendErrorMessageToSlack(
-        req.method.toUpperCase(), 
-        req.originalUrl, 
-        error, 
-        req.user?.userId);
-    errorLog(req.originalUrl, req.method, req.body, error, req.user?.userId);
+    logger.errorLog(req.originalUrl, req.method, req.body, error, (error as any).stack);
+
+    slack.sendErrorMessageToSlack(
+      req.method.toUpperCase(), 
+      req.originalUrl, 
+      (error as any).stack, 
+      req.user?.userId);
   
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
@@ -206,20 +209,19 @@ const getHistoryByGoalId = async (req: Request, res: Response) => {
       "emptyBoxCount": boxCounter.getEmptyBoxCount(thisMonthCount)
     }
 
-    debugLog(req.originalUrl, req.method, req.body, req.user?.userId);
     return res
       .status(sc.OK)
       .send(success(sc.OK, rm.GET_GOAL_SUCCESS_FOR_HISTORY, data));
   
   } catch (error) {
     
-    slack
-      .sendErrorMessageToSlack(
-        req.method.toUpperCase(), 
-        req.originalUrl, 
-        error, 
-        req.user?.userId);
-    errorLog(req.originalUrl, req.method, req.body, error, req.user?.userId);
+    logger.errorLog(req.originalUrl, req.method, req.body, error, (error as any).stack);
+
+    slack.sendErrorMessageToSlack(
+      req.method.toUpperCase(), 
+      req.originalUrl, 
+      (error as any).stack, 
+      req.user?.userId);
     
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
@@ -241,24 +243,24 @@ const achieveGoal = async (req: Request, res: Response) => {
   let data;
   try {
     data = await goalService.achieveGoal(+goalId, isAchieved as boolean);
-    debugLog(req.originalUrl, req.method, req.body, req.user?.userId);
 
   } catch (error) {
-    slack
-      .sendErrorMessageToSlack(
-        req.method.toUpperCase(), 
-        req.originalUrl, 
-        error, 
-        req.user?.userId);
-    errorLog(req.originalUrl, req.method, req.body, error, req.user?.userId);
+    
+    logger.errorLog(req.originalUrl, req.method, req.body, error, (error as any).stack);
+
+    slack.sendErrorMessageToSlack(
+      req.method.toUpperCase(), 
+      req.originalUrl, 
+      (error as any).stack, 
+      req.user?.userId);
+    
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR)); // 서버 내부 에러
   }
 
   if (data === goalError.DOUBLE_ACHIEVED_ERROR) {
-    slack
-      .sendErrorMessageToSlack(
+    slack.sendErrorMessageToSlack(
         req.method.toUpperCase(), 
         req.originalUrl, 
         "[achievedError] Double Checked Error", 
@@ -269,8 +271,7 @@ const achieveGoal = async (req: Request, res: Response) => {
   }
 
   if (data === goalError.DOUBLE_CANCELED_ERROR) {
-    slack
-      .sendErrorMessageToSlack(
+    slack.sendErrorMessageToSlack(
         req.method.toUpperCase(), 
         req.originalUrl,  
         "[achievedError] Double Canceled Error", 
@@ -312,7 +313,6 @@ const getKeptGoalsByUserId = async (req: Request, res: Response) => {
   
     const foundGoals = await goalService.getKeptGoals(+userId, sort as string);
     
-    debugLog(req.originalUrl, req.method, req.body, req.user?.userId);
     return res
       .status(sc.OK)
       .send(success(sc.OK, 
@@ -321,13 +321,13 @@ const getKeptGoalsByUserId = async (req: Request, res: Response) => {
   
   } catch (error) {
     
-    slack
-      .sendErrorMessageToSlack(
-        req.method.toUpperCase(), 
-        req.originalUrl, 
-        error, 
-        req.user?.userId);
-    errorLog(req.originalUrl, req.method, req.body, error, req.user?.userId);
+    logger.errorLog(req.originalUrl, req.method, req.body, error, (error as any).stack);
+
+    slack.sendErrorMessageToSlack(
+      req.method.toUpperCase(), 
+      req.originalUrl, 
+      (error as any).stack, 
+      req.user?.userId);
 
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
