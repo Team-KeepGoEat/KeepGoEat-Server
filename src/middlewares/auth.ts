@@ -32,7 +32,7 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
     const foundUser = await userService.getUserByUserId(userId);
 
     if (!foundUser) {
-      return res.status(sc.UNAUTHORIZED).send(fail(sc.UNAUTHORIZED, rm.NOT_EXISITING_USER));
+      return res.status(sc.BAD_REQUEST).send(fail(sc.BAD_REQUEST, rm.NOT_EXISITING_USER));
     }
 
     req.user = foundUser;
