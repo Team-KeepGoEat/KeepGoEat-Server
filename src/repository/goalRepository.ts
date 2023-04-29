@@ -74,12 +74,12 @@ const createGoal = async (userId: number, createGoalDTO: CreateGoalDTO, startedA
   const data = await prisma.goal.create({
     data: {
       food: createGoalDTO.food,
-      criterion: createGoalDTO.criterion /*== null ? 어쩌구...*/ ,
+      criterion: createGoalDTO.criterion,
       isMore: createGoalDTO.isMore,
       writerId: userId,
       startedAt,
       totalCount: 0
-    }, // 기준에 빈 문자열 넣어주기
+    }, 
   });
   const goalId = data.goalId
   
@@ -145,68 +145,6 @@ const keepGoal = async (goalId: number, isOngoing: boolean, keptAt: string) => {
   });
   return data.goalId;
 }
-
-const achieveGoal = async (goalId: number, isAchieved: boolean) => {
-
-  try {
-    // 목표 테이블에 반영
-    const updatedGoal = await goalRepository.updateIsAchieved(goalId, isAchieved); 
-    const currentMonth = date.getCurrentMonthMinus9h();
-
-    dayjs.tz.setDefault("Asia/Seoul");
-    const now = dayjs().tz().format(); // 클라한테서 날짜값 받아야 할 듯
-
-    // 달성 취소했을 경우
-    if (!isAchieved) {
-      
-      const dailyAchievedHistory = await dailyAchievedHistoryService.getDailyAchievedHistory(now, goalId);
-
-      // 일별 달성 기록이 없는 경우
-      if (!dailyAchievedHistory) {
-        console.log("달성 취소(isAchieved false) 요청 실패. 달성이 안된 목표를 취소하려함");
-        return goalError.DOUBLE_CANCELED_ERROR;
-      }
-
-      // 일별 달성 기록이 있는 경우 - 달성 기록 삭제 및 total count -1 
-      await dailyAchievedHistoryService.deleteDailyAchievedHistoryById(dailyAchievedHistory.achievedId); 
-      await updateTotalCount(goalId, isAchieved);
-
-      const thisMonthCount = await dailyAchievedHistoryService.getAchievedCount(goalId, currentMonth);
-
-      return {
-        "thisMonthCount": thisMonthCount,
-        "goalId": updatedGoal.goalId,
-        "updatedIsAchieved": updatedGoal.isAchieved
-      };
-    }
-
-    // 달성 버튼 눌렀을 경우
-    const dailyAchievedHistory = await dailyAchievedHistoryService.getDailyAchievedHistory(now, goalId);
-
-    // 일별 달성 기록이 없는 경우
-    if (!dailyAchievedHistory) {
-      // 당일 달성 기록 추가 및 totalCount+1
-      await dailyAchievedHistoryService.createDailyAchievedHistory(goalId, currentMonth); 
-      await updateTotalCount(goalId, isAchieved);
-      
-      const thisMonthCount = await dailyAchievedHistoryService.getAchievedCount(goalId, currentMonth);
-
-      return {
-        "thisMonthCount": thisMonthCount,
-        "goalId": updatedGoal.goalId,
-        "updatedIsAchieved": updatedGoal.isAchieved
-      };
-    }
-
-  } catch (error) {
-    console.log("achieveGoal service 에러 발생 ", error);
-    throw error;
-  }
-
-  // 달성 기록이 있는 경우 - try 문 안에 넣어줘야함
-  console.log("이미 달성 기록이 있는 목표를 달성하려고 함");
-  return goalError.DOUBLE_ACHIEVED_ERROR;
-};
 
 const updateTotalCount = async (goalId: number, isAchieved: boolean) => {
   // 취소한 목표인 경우 total count -1
@@ -290,7 +228,6 @@ const goalRepository = {
   updateCriterion,
   updateGoal,
   findHomeGoalsByUserId,
-  achieveGoal,
   updateIsAchieved,
   keepGoal,
   updateTotalCount,

@@ -47,11 +47,10 @@ const achieveGoal = async (goalId: number, isAchieved: boolean) => {
 
   try {
     // 목표 테이블에 반영
+    const now = date.getNow();
     const updatedGoal = await goalRepository.updateIsAchieved(goalId, isAchieved); 
-    const currentMonth = date.getCurrentMonthMinus9h();
+    const currentMonth = date.getCurrentMonth(now);
 
-    dayjs.tz.setDefault("Asia/Seoul");
-    const now = dayjs().tz().format(); // 클라한테서 날짜값 받아야 할 듯
 
     // 달성 취소했을 경우
     if (!isAchieved) {

@@ -12,6 +12,7 @@ import { validationResult } from "express-validator";
 import logger from "../logger/logger";
 
 const createGoal = async (req: Request, res: Response) => {
+  const now = date.getNow();
   const error = validationResult(req);
   if(!error.isEmpty()) {
     return res
@@ -29,7 +30,7 @@ const createGoal = async (req: Request, res: Response) => {
 
   try {
     const createGoalDTO: CreateGoalDTO = req.body; 
-    const startedAt = date.getCurrentDatePlus9h()
+    const startedAt = date.getCurrentDatePlus9h(now);
 
     const data = await goalService.createGoal(userId, createGoalDTO, startedAt);
     
@@ -143,6 +144,7 @@ const updateGoal = async (req: Request, res: Response) => {
 };
 
 const keepGoal = async (req: Request, res: Response) => {
+  const now = date.getNow();
   const { goalId } = req.params;
   const isOngoing = false;
 
@@ -153,7 +155,7 @@ const keepGoal = async (req: Request, res: Response) => {
   }
 
   try {
-    const keptAt = date.getCurrentDatePlus9h()
+    const keptAt = date.getCurrentDatePlus9h(now);
     const keptGoalId = await goalService.keepGoal(+goalId, isOngoing, keptAt);
   
     return res
@@ -179,6 +181,7 @@ const keepGoal = async (req: Request, res: Response) => {
 
 const getHistoryByGoalId = async (req: Request, res: Response) => {
   // middleware로 유저 검증하는 로직도 필요함
+  const now = date.getNow();
   const { goalId } = req.params;
   if (!goalId) {
     return res
@@ -195,8 +198,8 @@ const getHistoryByGoalId = async (req: Request, res: Response) => {
         .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
     }
 
-    const thisMonthCount = await dailyAchievedHistoryService.getAchievedCount(+goalId, date.getCurrentMonthMinus9h());
-    const lastMonthCount = await dailyAchievedHistoryService.getAchievedCount(+goalId, date.getLastMonthMinus9h());
+    const thisMonthCount = await dailyAchievedHistoryService.getAchievedCount(+goalId, date.getCurrentMonth(now));
+    const lastMonthCount = await dailyAchievedHistoryService.getAchievedCount(+goalId, date.getLastMonth(now));
 
     const data = {
       "goalId": foundGoal.goalId,
