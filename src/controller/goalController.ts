@@ -244,6 +244,34 @@ const achieveGoal = async (req: Request, res: Response) => {
   try {
     data = await goalService.achieveGoal(+goalId, isAchieved as boolean);
 
+    if (data === goalError.DOUBLE_ACHIEVED_ERROR) {
+      slack.sendErrorMessageToSlack(
+          req.method.toUpperCase(), 
+          req.originalUrl, 
+          "[achievedError] Double Checked Error", 
+          req.user?.userId);
+      
+      return res
+        .status(sc.BAD_REQUEST)
+        .send(fail(sc.BAD_REQUEST, rm.ACHIEVE_GOAL_FAIL_FOR_DOUBLE_ACHIEVE));
+    }
+  
+    if (data === goalError.DOUBLE_CANCELED_ERROR) {
+      slack.sendErrorMessageToSlack(
+          req.method.toUpperCase(), 
+          req.originalUrl,  
+          "[achievedError] Double Canceled Error", 
+          req.user?.userId);
+          
+      return res
+        .status(sc.BAD_REQUEST)
+        .send(fail(sc.BAD_REQUEST, rm.ACHIEVE_GOAL_FAIL_FOR_DOUBLE_CANCEL));
+    }
+
+    return res
+      .status(sc.CREATED)
+      .send(success(sc.CREATED, rm.ACHIEVE_GOAL_SUCCESS, data));
+
   } catch (error) {
     
     logger.errorLog(req.originalUrl, req.method, req.body, error, (error as any).stack);
@@ -258,33 +286,6 @@ const achieveGoal = async (req: Request, res: Response) => {
       .status(sc.INTERNAL_SERVER_ERROR)
       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR)); // 서버 내부 에러
   }
-
-  if (data === goalError.DOUBLE_ACHIEVED_ERROR) {
-    slack.sendErrorMessageToSlack(
-        req.method.toUpperCase(), 
-        req.originalUrl, 
-        "[achievedError] Double Checked Error", 
-        req.user?.userId);
-    return res
-      .status(sc.BAD_REQUEST)
-      .send(fail(sc.BAD_REQUEST, rm.ACHIEVE_GOAL_FAIL_FOR_DOUBLE_ACHIEVE));
-  }
-
-  if (data === goalError.DOUBLE_CANCELED_ERROR) {
-    slack.sendErrorMessageToSlack(
-        req.method.toUpperCase(), 
-        req.originalUrl,  
-        "[achievedError] Double Canceled Error", 
-        req.user?.userId);
-    return res
-      .status(sc.BAD_REQUEST)
-      .send(fail(sc.BAD_REQUEST, rm.ACHIEVE_GOAL_FAIL_FOR_DOUBLE_CANCEL));
-  }
-
-  return res
-    .status(sc.CREATED)
-    .send(success(sc.CREATED, rm.ACHIEVE_GOAL_SUCCESS, data));
-
 };
 
 const sortType = {

@@ -53,6 +53,11 @@ const formatDate = (targetDate: unknown) => {
   return year.toString() + ". " + month.toString() + ". "+ date.toString();
 }
 
+const getNow = () => {
+  dayjs.tz.setDefault("Asia/Seoul");
+  return dayjs().tz().format(); 
+}
+
 const date = {
   getCurrentMonthMinus9h,
   getLastMonthMinus9h,
@@ -60,7 +65,8 @@ const date = {
   getLastDatePlus9h,
   formatDate,
   getCurrentDatePlus9h,
-  setTargetDateMinus9h
+  setTargetDateMinus9h,
+  getNow
 }
 
 export default date;
