@@ -7,23 +7,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model test {
-  id   Int     @id @default(autoincrement())
-  name String? @db.VarChar(100)
-}
-
 model Cheering_Message {
-  cheeringMessageId Int      @id @default(autoincrement())
+  cheeringMessageId Int      @id @unique @default(autoincrement())
   cheeringMessage   String   @db.VarChar(100)
   isGoalExisted     Boolean?
 }
 
 model Daily_Achieved_History {
-  achievedId    Int      @id @default(autoincrement())
-  achievedAt    DateTime @default(now())
+  achievedId    Int       @id @unique @default(autoincrement())
+  achievedAt    DateTime? @default(now()) @db.Timestamp(6)
+  achievedMonth String?   @db.VarChar(50)
   goalId        Int
-  achievedMonth String?  @db.VarChar(50)
-  Goal          Goal     @relation(fields: [goalId], references: [goalId], onDelete: Cascade, map: "goal_id")
+  Goal          Goal      @relation(fields: [goalId], references: [goalId], onDelete: Cascade, map: "goal_id")
 }
 
 model Goal {
@@ -31,18 +26,19 @@ model Goal {
   isMore                 Boolean
   isOngoing              Boolean                  @default(true)
   totalCount             Int                      @default(0)
-  startedAt              DateTime                 @default(now())
-  keptAt                 DateTime?
+  startedAt              DateTime                 @default(now()) @db.Timestamp(6)
+  keptAt                 DateTime?                @db.Timestamp(6)
   isAchieved             Boolean                  @default(false)
-  writerId               Int
   criterion              String?                  @db.VarChar(20)
   food                   String                   @db.VarChar(15)
+  writerId               Int
+  achievedAt             DateTime?                @db.Timestamp(6)
   Daily_Achieved_History Daily_Achieved_History[]
   User                   User                     @relation(fields: [writerId], references: [userId], onDelete: Cascade, map: "writer_id")
 }
 
 model User {
-  userId       Int     @id(map: "table_name_pkey") @default(autoincrement())
+  userId       Int     @id @default(autoincrement())
   email        String  @db.VarChar(100)
   platformType String  @db.VarChar(100)
   refreshToken String? @db.VarChar(500)

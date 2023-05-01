@@ -6,19 +6,8 @@ const getDailyAchievedHistory = async (targetDate: string, goalId: number) => {
 };
 
 // 달성 버튼 눌렀을 때 오늘 달성된 값 저장
-const createDailyAchievedHistory = async (goalId: number, targetMonth: string) => {
-  return await dailyAchievedHistoryRepository.createDailyAchievedHistory(goalId, targetMonth);
-}
-
-// 달성 버튼 눌렀을 때 오늘 달성된 값 날짜 업데이트
-const updateDailyAchievedHistory = async (targetDate: string, goalId: number) => {
-  const data = await updateDailyAchievedHistory(targetDate, goalId);
-
-  if (!data) {
-    return null;
-  }
-
-  return
+const createDailyAchievedHistory = async (goalId: number, targetMonth: string, achievedAt: string) => {
+  return await dailyAchievedHistoryRepository.createDailyAchievedHistory(goalId, targetMonth, achievedAt);
 }
 
 const deleteDailyAchievedHistoryById = async (achievedId: number) => {
@@ -39,7 +28,6 @@ const getAchievedCount = async (goalId: number, achievedMonth: string) => {
 const dailyAchievedHistoryService = {
   getDailyAchievedHistory,
   createDailyAchievedHistory,
-  updateDailyAchievedHistory,
   deleteDailyAchievedHistoryById,
   getAchievedCount
 }

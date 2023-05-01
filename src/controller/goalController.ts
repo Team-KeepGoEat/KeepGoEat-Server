@@ -233,6 +233,8 @@ const getHistoryByGoalId = async (req: Request, res: Response) => {
 }
 
 const achieveGoal = async (req: Request, res: Response) => {
+  const now = date.getNow();
+  const nowPlus9h = date.getCurrentDatePlus9h(now);
   const userId = req.user.userId;
   const { goalId } = req.params;
   const { isAchieved } = req.body;
@@ -245,7 +247,35 @@ const achieveGoal = async (req: Request, res: Response) => {
 
   let data;
   try {
-    data = await goalService.achieveGoal(+goalId, isAchieved as boolean);
+    data = await goalService.achieveGoal(+goalId, isAchieved as boolean, now, nowPlus9h);
+
+    if (data === goalError.DOUBLE_ACHIEVED_ERROR) {
+      slack.sendErrorMessageToSlack(
+          req.method.toUpperCase(), 
+          req.originalUrl, 
+          "[achievedError] Double Checked Error", 
+          req.user?.userId);
+      
+      return res
+        .status(sc.BAD_REQUEST)
+        .send(fail(sc.BAD_REQUEST, rm.ACHIEVE_GOAL_FAIL_FOR_DOUBLE_ACHIEVE));
+    }
+  
+    if (data === goalError.DOUBLE_CANCELED_ERROR) {
+      slack.sendErrorMessageToSlack(
+          req.method.toUpperCase(), 
+          req.originalUrl,  
+          "[achievedError] Double Canceled Error", 
+          req.user?.userId);
+          
+      return res
+        .status(sc.BAD_REQUEST)
+        .send(fail(sc.BAD_REQUEST, rm.ACHIEVE_GOAL_FAIL_FOR_DOUBLE_CANCEL));
+    }
+
+    return res
+      .status(sc.CREATED)
+      .send(success(sc.CREATED, rm.ACHIEVE_GOAL_SUCCESS, data));
 
   } catch (error) {
     
@@ -261,33 +291,6 @@ const achieveGoal = async (req: Request, res: Response) => {
       .status(sc.INTERNAL_SERVER_ERROR)
       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR)); // 서버 내부 에러
   }
-
-  if (data === goalError.DOUBLE_ACHIEVED_ERROR) {
-    slack.sendErrorMessageToSlack(
-        req.method.toUpperCase(), 
-        req.originalUrl, 
-        "[achievedError] Double Checked Error", 
-        req.user?.userId);
-    return res
-      .status(sc.BAD_REQUEST)
-      .send(fail(sc.BAD_REQUEST, rm.ACHIEVE_GOAL_FAIL_FOR_DOUBLE_ACHIEVE));
-  }
-
-  if (data === goalError.DOUBLE_CANCELED_ERROR) {
-    slack.sendErrorMessageToSlack(
-        req.method.toUpperCase(), 
-        req.originalUrl,  
-        "[achievedError] Double Canceled Error", 
-        req.user?.userId);
-    return res
-      .status(sc.BAD_REQUEST)
-      .send(fail(sc.BAD_REQUEST, rm.ACHIEVE_GOAL_FAIL_FOR_DOUBLE_CANCEL));
-  }
-
-  return res
-    .status(sc.CREATED)
-    .send(success(sc.CREATED, rm.ACHIEVE_GOAL_SUCCESS, data));
-
 };
 
 const sortType = {
@@ -297,6 +300,7 @@ const sortType = {
 };
 
 const getKeptGoalsByUserId = async (req: Request, res: Response) => {  
+  const now = date.getNow();
   const userId = req.user.userId;
   const sort = req.query.sort as string;
 
@@ -314,7 +318,7 @@ const getKeptGoalsByUserId = async (req: Request, res: Response) => {
 
   try {
   
-    const foundGoals = await goalService.getKeptGoals(+userId, sort as string);
+    const foundGoals = await goalService.getKeptGoals(+userId, sort as string, now);
     
     return res
       .status(sc.OK)

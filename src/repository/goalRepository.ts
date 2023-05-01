@@ -1,7 +1,7 @@
-import { PrismaClient } from "@prisma/client";
+import { Goal, PrismaClient } from "@prisma/client";
 import { CreateGoalDTO } from "../interfaces/goal/CreateGoalDTO";
 import { UpdateGoalDTO } from "./../interfaces/goal/UpdateGoalDTO";
-import dailyAchievedHistoryService from "../service/dailyAchievedHistoryService";
+import { dailyAchievedHistoryService, goalService } from "../service";
 import dayjs from "dayjs";
 import date from "../modules/date";
 import utc from "dayjs/plugin/utc";
@@ -23,7 +23,7 @@ const findGoalByGoalId = async (goalId: number) => {
   return goal;
 };
 
-const findHomeGoalsByUserId = async (currentMonth: string, userId: number) => {
+const findHomeGoalsByUserId = async (currentMonth: string, userId: number, now: string) => {
 
   const fountGoals = await prisma.goal.findMany({
     where: {
@@ -48,7 +48,7 @@ const findHomeGoalsByUserId = async (currentMonth: string, userId: number) => {
         totalCount: goal.totalCount,
         startedAt: date.formatDate(goal.startedAt),
         keptAt: goal.keptAt === null ? "" : date.formatDate(goal.keptAt),
-        isAchieved: goal.isAchieved,
+        isAchieved: goalService.isAchievedToday(goal.achievedAt, goal.isAchieved, now),
         writerId: goal.writerId,
         thisMonthCount: thisMonthCount
       }
@@ -147,7 +147,6 @@ const keepGoal = async (goalId: number, isOngoing: boolean, keptAt: string) => {
 }
 
 const updateTotalCount = async (goalId: number, isAchieved: boolean) => {
-  // 취소한 목표인 경우 total count -1
   if (!isAchieved) {
     await prisma.goal.update({
       where: {
@@ -178,26 +177,26 @@ const updateTotalCount = async (goalId: number, isAchieved: boolean) => {
 }
 
 
-// 목표 isAchieve 업데이트
-const updateIsAchieved = async (goalId: number, isAchieved: boolean) => {
-  // 여기서도 더블 달성이랑 더블 취소 에러 로직 필요한거 아닌가?? 
+// 목표 T에서 isAchieve 업데이트
+const updateIsAchieved = async (goalId: number, isAchieved: boolean, achievedAt: string) => {
   const updatedGoal = await prisma.goal.update({
     where: {
       goalId: goalId
     },
     data: {
-      isAchieved: isAchieved
+      isAchieved: isAchieved,
+      achievedAt: achievedAt
     }
   });
 
   return updatedGoal;
 };
 
-const findKeptGoals = async (userId: number, sort: string) => {
+const findKeptGoals = async (userId: number, sort: string, now: string) => {
   let isMore;
   if (sort !== "all") {
     sort === "more" ? isMore = true : isMore = false;
-    return await prisma.goal.findMany({
+    const keptGoals = await prisma.goal.findMany({
       where: {        
         writerId: userId,
         isOngoing: false,
@@ -207,9 +206,11 @@ const findKeptGoals = async (userId: number, sort: string) => {
         startedAt: "desc"
       },
     });
+
+    return sortKeptGoals(keptGoals, now);
   }
 
-  return await prisma.goal.findMany({
+  const keptGoals = await prisma.goal.findMany({
     where: {        
       writerId: userId,
       isOngoing: false,
@@ -218,7 +219,27 @@ const findKeptGoals = async (userId: number, sort: string) => {
       startedAt: "desc"
     },
   });
+
+  return sortKeptGoals(keptGoals, now);
 };
+
+const sortKeptGoals = (keptGoals: Goal[], now: string) => {
+  return keptGoals.map((goal) => {
+    return {
+      goalId: goal.goalId,
+      food: goal.food,
+      criterion: goal.criterion === null ? "" : goal.criterion,
+      isMore: goal.isMore,
+      isOngoing: goal.isOngoing,
+      totalCount: goal.totalCount,
+      startedAt: date.formatDate(goal.startedAt),
+      keptAt: goal.keptAt === null ? "" : date.formatDate(goal.keptAt),
+      isAchieved: goalService.isAchievedToday(goal.achievedAt, goal.isAchieved, now),
+      writerId: goal.writerId
+    }
+  });
+};
+
 
 const goalRepository = {
   findGoalByGoalId,
@@ -231,7 +252,7 @@ const goalRepository = {
   updateIsAchieved,
   keepGoal,
   updateTotalCount,
-  findKeptGoals
+  findKeptGoals,
 };
 
 export default goalRepository;

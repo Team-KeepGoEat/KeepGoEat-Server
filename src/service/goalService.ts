@@ -15,8 +15,8 @@ const getGoalByGoalId = async (goalId: number) => {
   return await goalRepository.findGoalByGoalId(goalId);
 };
 
-const getHomeGoalsByUserId = async (currentMonth: string, userId: number) => {
-  return await goalRepository.findHomeGoalsByUserId(currentMonth, userId);
+const getHomeGoalsByUserId = async (currentMonth: string, userId: number, now: string) => {
+  return await goalRepository.findHomeGoalsByUserId(currentMonth, userId, now);
 };
 
 const createGoal = async (userId: number, createGoalDTO: CreateGoalDTO, startedAt: string) => {
@@ -43,30 +43,31 @@ const keepGoal = async (goalId: number, isOngoing: boolean, keptAt: string) => {
   return await goalRepository.keepGoal(goalId, isOngoing, keptAt);    
 }
 
-const achieveGoal = async (goalId: number, isAchieved: boolean) => {
+const achieveGoal = async (goalId: number, isAchieved: boolean, now: string, nowPlus9h: string ) => {
 
   try {
-    // 목표 테이블에 반영
-    const now = date.getNow();
-    const updatedGoal = await goalRepository.updateIsAchieved(goalId, isAchieved); 
     const currentMonth = date.getCurrentMonth(now);
 
+    const dailyAchievedHistory = await dailyAchievedHistoryService.getDailyAchievedHistory(now, goalId);
 
     // 달성 취소했을 경우
     if (!isAchieved) {
-      
-      const dailyAchievedHistory = await dailyAchievedHistoryService.getDailyAchievedHistory(now, goalId);
-
+    
       // 일별 달성 기록이 없는 경우
       if (!dailyAchievedHistory) {
         console.log("달성 취소(isAchieved false) 요청 실패. 달성이 안된 목표를 취소하려함");
         return goalError.DOUBLE_CANCELED_ERROR;
       }
 
-      // 일별 달성 기록이 있는 경우 - 달성 기록 삭제 및 total count -1 
+      // 일별 달성 기록이 있는 경우
+      // 1. Goal T에서 isAchieved 반영 및 achievedAt 타임스탬프 업데이트
+      const updatedGoal = await updateIsAchieved(goalId, isAchieved, nowPlus9h); 
+
+      // 2. 달성 기록 삭제 및 total count -1 
       await dailyAchievedHistoryService.deleteDailyAchievedHistoryById(dailyAchievedHistory.achievedId); 
       await updateTotalCount(goalId, isAchieved);
 
+      // 3. thisMonthCount 가져오기
       const thisMonthCount = await dailyAchievedHistoryService.getAchievedCount(goalId, currentMonth);
 
       return {
@@ -77,67 +78,74 @@ const achieveGoal = async (goalId: number, isAchieved: boolean) => {
     }
 
     // 달성 버튼 눌렀을 경우
-    const dailyAchievedHistory = await dailyAchievedHistoryService.getDailyAchievedHistory(now, goalId);
+    // 일별 달성 기록이 있는 경우
+    if (dailyAchievedHistory) {
+      console.log("이미 달성 기록이 있는 목표를 달성하려고 함");
+      return goalError.DOUBLE_ACHIEVED_ERROR;
+    }
 
     // 일별 달성 기록이 없는 경우
-    if (!dailyAchievedHistory) {
-      // 당일 달성 기록 추가 및 totalCount+1
-      await dailyAchievedHistoryService.createDailyAchievedHistory(goalId, currentMonth); 
-      await updateTotalCount(goalId, isAchieved);
-      
-      const thisMonthCount = await dailyAchievedHistoryService.getAchievedCount(goalId, currentMonth);
+    // 1. Goal T에서 isAchieved 반영 및 achievedAt 타임스탬프 업데이트
+    const updatedGoal = await updateIsAchieved(goalId, isAchieved, nowPlus9h); 
 
-      return {
-        "thisMonthCount": thisMonthCount,
-        "goalId": updatedGoal.goalId,
-        "updatedIsAchieved": updatedGoal.isAchieved
-      };
-    }
+    // 2. 당일 달성 기록 추가 및 totalCount+1
+    await dailyAchievedHistoryService.createDailyAchievedHistory(goalId, currentMonth, nowPlus9h); 
+    await updateTotalCount(goalId, isAchieved);
+    
+    // 3. thisMonthCount 가져오기
+    const thisMonthCount = await dailyAchievedHistoryService.getAchievedCount(goalId, currentMonth);
+
+    return {
+      "thisMonthCount": thisMonthCount,
+      "goalId": updatedGoal.goalId,
+      "updatedIsAchieved": updatedGoal.isAchieved
+    };
+    
 
   } catch (error) {
     console.log("achieveGoal service 에러 발생 ", error);
     throw error;
   }
-
-  // 달성 기록이 있는 경우 - try 문 안에 넣어줘야함
-  console.log("이미 달성 기록이 있는 목표를 달성하려고 함");
-  return goalError.DOUBLE_ACHIEVED_ERROR;
 };
 
 const updateTotalCount = async (goalId: number, isAchieved: boolean) => {
-  // 취소한 목표인 경우 total count -1
   await goalRepository.updateTotalCount(goalId, isAchieved);
   return
 }
 
-
-// 목표 isAchieve 업데이트
-const updateIsAchieved = async (goalId: number, isAchieved: boolean) => {
-  // 여기서도 더블 달성이랑 더블 취소 에러 로직 필요한거 아닌가?? 
-  return await goalRepository.updateIsAchieved(goalId, isAchieved);
+const updateIsAchieved = async (goalId: number, isAchieved: boolean, achievedAt: string) => {
+  return await goalRepository.updateIsAchieved(goalId, isAchieved, achievedAt);
 };
 
 
-const getKeptGoals = async (userId: number, sort: string) => {
-
-  const goals = await goalRepository.findKeptGoals(userId, sort);
-  
-  return goals.map((goal) => {
-    return {
-      goalId: goal.goalId,
-      food: goal.food,
-      criterion: goal.criterion === null ? "" : goal.criterion,
-      isMore: goal.isMore,
-      isOngoing: goal.isOngoing,
-      totalCount: goal.totalCount,
-      startedAt: date.formatDate(goal.startedAt),
-      keptAt: goal.keptAt === null ? "" : date.formatDate(goal.keptAt),
-      isAchieved: goal.isAchieved,
-      writerId: goal.writerId
-    }
-  });
-  
+const getKeptGoals = async (userId: number, sort: string, now: string) => {
+  return await goalRepository.findKeptGoals(userId, sort, now);
 };
+
+const isAchievedToday = (achievedAt: Date | null, isAchieved: boolean, now: string) => {
+
+  if (achievedAt == null) {
+    console.log("achievedAt이 null");
+    return false;
+  }
+
+  const startTime = dayjs(date.getFirstDatePlus9h(now)).toDate();
+  const endTime = dayjs(date.getLastDatePlus9h(now)).toDate();
+
+  console.log("startTime: " + startTime);
+  console.log("endTime: " + endTime);
+
+
+  if (startTime <= dayjs(achievedAt).toDate() && dayjs(achievedAt).toDate() <= endTime) {
+    console.log("achievedAt이 api 호출 당일에 업데이트됨 achievedAt: " + achievedAt);
+    return isAchieved;
+  }
+
+  console.log("achievedAt이 api 호출 당일보다 이전에 업데이트 됨 achievedAt: " + achievedAt);
+
+  return false;
+
+}
 
 const goalService = {
   getGoalByGoalId,
@@ -151,7 +159,8 @@ const goalService = {
   updateIsAchieved,
   keepGoal,
   updateTotalCount,
-  getKeptGoals
+  getKeptGoals,
+  isAchievedToday
 };
 
 export default goalService;
