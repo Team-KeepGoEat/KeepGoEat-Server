@@ -1,7 +1,7 @@
-import { PrismaClient } from "@prisma/client";
+import { Goal, PrismaClient } from "@prisma/client";
 import { CreateGoalDTO } from "../interfaces/goal/CreateGoalDTO";
 import { UpdateGoalDTO } from "./../interfaces/goal/UpdateGoalDTO";
-import dailyAchievedHistoryService from "../service/dailyAchievedHistoryService";
+import { dailyAchievedHistoryService, goalService } from "../service";
 import dayjs from "dayjs";
 import date from "../modules/date";
 import utc from "dayjs/plugin/utc";
@@ -48,7 +48,7 @@ const findHomeGoalsByUserId = async (currentMonth: string, userId: number, now: 
         totalCount: goal.totalCount,
         startedAt: date.formatDate(goal.startedAt),
         keptAt: goal.keptAt === null ? "" : date.formatDate(goal.keptAt),
-        isAchieved: isAchievedToday(goal.achievedAt, goal.isAchieved, now),
+        isAchieved: goalService.isAchievedToday(goal.achievedAt, goal.isAchieved, now),
         writerId: goal.writerId,
         thisMonthCount: thisMonthCount
       }
@@ -147,7 +147,6 @@ const keepGoal = async (goalId: number, isOngoing: boolean, keptAt: string) => {
 }
 
 const updateTotalCount = async (goalId: number, isAchieved: boolean) => {
-  // 취소한 목표인 경우 total count -1
   if (!isAchieved) {
     await prisma.goal.update({
       where: {
@@ -193,11 +192,11 @@ const updateIsAchieved = async (goalId: number, isAchieved: boolean, achievedAt:
   return updatedGoal;
 };
 
-const findKeptGoals = async (userId: number, sort: string) => {
+const findKeptGoals = async (userId: number, sort: string, now: string) => {
   let isMore;
   if (sort !== "all") {
     sort === "more" ? isMore = true : isMore = false;
-    return await prisma.goal.findMany({
+    const keptGoals = await prisma.goal.findMany({
       where: {        
         writerId: userId,
         isOngoing: false,
@@ -207,9 +206,11 @@ const findKeptGoals = async (userId: number, sort: string) => {
         startedAt: "desc"
       },
     });
+
+    return sortKeptGoals(keptGoals, now);
   }
 
-  return await prisma.goal.findMany({
+  const keptGoals = await prisma.goal.findMany({
     where: {        
       writerId: userId,
       isOngoing: false,
@@ -218,34 +219,27 @@ const findKeptGoals = async (userId: number, sort: string) => {
       startedAt: "desc"
     },
   });
+
+  return sortKeptGoals(keptGoals, now);
 };
 
-const isAchievedToday = (achievedAt: Date | null, isAchieved: boolean, now: string) => {
+const sortKeptGoals = (keptGoals: Goal[], now: string) => {
+  return keptGoals.map((goal) => {
+    return {
+      goalId: goal.goalId,
+      food: goal.food,
+      criterion: goal.criterion === null ? "" : goal.criterion,
+      isMore: goal.isMore,
+      isOngoing: goal.isOngoing,
+      totalCount: goal.totalCount,
+      startedAt: date.formatDate(goal.startedAt),
+      keptAt: goal.keptAt === null ? "" : date.formatDate(goal.keptAt),
+      isAchieved: goalService.isAchievedToday(goal.achievedAt, goal.isAchieved, now),
+      writerId: goal.writerId
+    }
+  });
+};
 
-  // console.log("achievedAt: " + achievedAt);
-
-  if (achievedAt == null) {
-    console.log("achievedAt이 null");
-    return false;
-  }
-
-  const startTime = dayjs(date.getFirstDatePlus9h(now)).toDate();
-  const endTime = dayjs(date.getLastDatePlus9h(now)).toDate();
-
-  console.log("startTime: " + startTime);
-  console.log("endTime: " + endTime);
-
-
-  if (startTime <= dayjs(achievedAt).toDate() && dayjs(achievedAt).toDate() <= endTime) {
-    console.log("achievedAt이 api 호출 당일에 업데이트됨 achievedAt: " + achievedAt);
-    return isAchieved;
-  }
-
-  console.log("achievedAt이 api 호출 당일보다 이전에 업데이트 됨 achievedAt: " + achievedAt);
-
-  return false;
-
-}
 
 const goalRepository = {
   findGoalByGoalId,
@@ -259,7 +253,6 @@ const goalRepository = {
   keepGoal,
   updateTotalCount,
   findKeptGoals,
-  isAchievedToday
 };
 
 export default goalRepository;

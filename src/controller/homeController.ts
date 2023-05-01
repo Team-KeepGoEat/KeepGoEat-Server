@@ -17,7 +17,6 @@ const getHome = async (req: Request, res: Response) => {
   }
 
   try {
-    const now = date.getNow();
 
     const goals = await goalService.getHomeGoalsByUserId(date.getCurrentMonth(now), +userId, now);
     let isGoalExisted;

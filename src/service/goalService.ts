@@ -43,11 +43,9 @@ const keepGoal = async (goalId: number, isOngoing: boolean, keptAt: string) => {
   return await goalRepository.keepGoal(goalId, isOngoing, keptAt);    
 }
 
-const achieveGoal = async (goalId: number, isAchieved: boolean) => {
+const achieveGoal = async (goalId: number, isAchieved: boolean, now: string, nowPlus9h: string ) => {
 
   try {
-    const now = date.getNow();
-    const nowPlus9h = date.getCurrentDatePlus9h(now);
     const currentMonth = date.getCurrentMonth(now);
 
     const dailyAchievedHistory = await dailyAchievedHistoryService.getDailyAchievedHistory(now, goalId);
@@ -120,26 +118,34 @@ const updateIsAchieved = async (goalId: number, isAchieved: boolean, achievedAt:
 };
 
 
-const getKeptGoals = async (userId: number, sort: string) => {
-
-  const goals = await goalRepository.findKeptGoals(userId, sort);
-  
-  return goals.map((goal) => {
-    return {
-      goalId: goal.goalId,
-      food: goal.food,
-      criterion: goal.criterion === null ? "" : goal.criterion,
-      isMore: goal.isMore,
-      isOngoing: goal.isOngoing,
-      totalCount: goal.totalCount,
-      startedAt: date.formatDate(goal.startedAt),
-      keptAt: goal.keptAt === null ? "" : date.formatDate(goal.keptAt),
-      isAchieved: goal.isAchieved,
-      writerId: goal.writerId
-    }
-  });
-  
+const getKeptGoals = async (userId: number, sort: string, now: string) => {
+  return await goalRepository.findKeptGoals(userId, sort, now);
 };
+
+const isAchievedToday = (achievedAt: Date | null, isAchieved: boolean, now: string) => {
+
+  if (achievedAt == null) {
+    console.log("achievedAt이 null");
+    return false;
+  }
+
+  const startTime = dayjs(date.getFirstDatePlus9h(now)).toDate();
+  const endTime = dayjs(date.getLastDatePlus9h(now)).toDate();
+
+  console.log("startTime: " + startTime);
+  console.log("endTime: " + endTime);
+
+
+  if (startTime <= dayjs(achievedAt).toDate() && dayjs(achievedAt).toDate() <= endTime) {
+    console.log("achievedAt이 api 호출 당일에 업데이트됨 achievedAt: " + achievedAt);
+    return isAchieved;
+  }
+
+  console.log("achievedAt이 api 호출 당일보다 이전에 업데이트 됨 achievedAt: " + achievedAt);
+
+  return false;
+
+}
 
 const goalService = {
   getGoalByGoalId,
@@ -153,7 +159,8 @@ const goalService = {
   updateIsAchieved,
   keepGoal,
   updateTotalCount,
-  getKeptGoals
+  getKeptGoals,
+  isAchievedToday
 };
 
 export default goalService;

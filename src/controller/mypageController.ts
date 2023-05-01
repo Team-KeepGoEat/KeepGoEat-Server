@@ -4,8 +4,10 @@ import { fail, success } from "../constants/response";
 import { mypageService } from "../service";
 import slack from "../modules/slack";
 import logger from "../logger/logger";
+import date from "../modules/date";
 
 const getAccountInfoByUserId = async (req: Request, res: Response) => {
+  const now = date.getNow();
   const userId = req.user.userId;
   if(!userId) {
     return res
