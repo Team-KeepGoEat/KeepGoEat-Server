@@ -74,12 +74,12 @@ const createGoal = async (userId: number, createGoalDTO: CreateGoalDTO, startedA
   const data = await prisma.goal.create({
     data: {
       food: createGoalDTO.food,
-      criterion: createGoalDTO.criterion /*== null ? 어쩌구...*/ ,
+      criterion: createGoalDTO.criterion,
       isMore: createGoalDTO.isMore,
       writerId: userId,
       startedAt,
       totalCount: 0
-    }, // 기준에 빈 문자열 넣어주기
+    }, 
   });
   const goalId = data.goalId
   

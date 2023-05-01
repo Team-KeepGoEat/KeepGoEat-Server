@@ -8,6 +8,7 @@ import slack from "../modules/slack";
 import logger from "../logger/logger";
 
 const getHome = async (req: Request, res: Response) => {
+  const now = date.getNow();
   const userId = req.user.userId;
   if (!userId) {
     return res
@@ -18,7 +19,7 @@ const getHome = async (req: Request, res: Response) => {
   try {
     const now = date.getNow();
 
-    const goals = await goalService.getHomeGoalsByUserId(date.getCurrentMonthMinus9h(), +userId, now);
+    const goals = await goalService.getHomeGoalsByUserId(date.getCurrentMonth(now), +userId, now);
     let isGoalExisted;
     goals.length === 0 ? isGoalExisted = false : isGoalExisted = true;
     const cheeringMessage = await cheeringMessageService.getRamdomMessage(isGoalExisted);

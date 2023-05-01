@@ -1,13 +1,14 @@
 import { PrismaClient } from "@prisma/client";
-import date from "../modules/date";
+import date from "../modules/date"
 const prisma = new PrismaClient();
 
 // 달성 버튼을 누른 날에 달성 버튼을 누른 적이 있는지 확인
 const findDailyAchievedHistory = async (targetDate: string, goalId: number) => {
+
   const dailyAchievedHistory = await prisma.daily_Achieved_History.findFirst({
     where: {
       goalId: goalId,
-      achievedAt: {
+      achievedAt: { 
         lte: date.getLastDatePlus9h(targetDate),
         gte: date.getFirstDatePlus9h(targetDate)
       }
@@ -40,7 +41,6 @@ const deleteDailyAchievedHistoryById = async (achievedId: number) => {
   return
 }
 
-
 const findAchievedCount = async (goalId: number, achievedMonth: string) => {
   return await prisma.daily_Achieved_History.groupBy({
     by: ["achievedMonth", "goalId"],
@@ -56,9 +56,9 @@ const findAchievedCount = async (goalId: number, achievedMonth: string) => {
 
 const dailyAchievedHistoryRepository = {
   findDailyAchievedHistory,
-  createDailyAchievedHistory,
   deleteDailyAchievedHistoryById,
   findAchievedCount,
+  createDailyAchievedHistory
 }
 
 export default dailyAchievedHistoryRepository;

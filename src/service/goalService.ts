@@ -46,10 +46,9 @@ const keepGoal = async (goalId: number, isOngoing: boolean, keptAt: string) => {
 const achieveGoal = async (goalId: number, isAchieved: boolean) => {
 
   try {
-    const currentMonth = date.getCurrentMonthMinus9h();
-    const nowPlus9h = date.getCurrentDatePlus9h();
     const now = date.getNow();
-    console.log("now: " + now);
+    const nowPlus9h = date.getCurrentDatePlus9h(now);
+    const currentMonth = date.getCurrentMonth(now);
 
     const dailyAchievedHistory = await dailyAchievedHistoryService.getDailyAchievedHistory(now, goalId);
 
