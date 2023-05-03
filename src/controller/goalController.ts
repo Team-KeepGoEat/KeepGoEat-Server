@@ -19,10 +19,11 @@ const createGoal = async (req: Request, res: Response) => {
       .status(sc.BAD_REQUEST)
       .send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
   }
+  const food = req.body.food;
   const criterion = req.body.criterion;
   const userId = req.user.userId;
 
-  if (!userId || criterion === " ") {
+  if (!userId) {
     return res
       .status(sc.BAD_REQUEST)
       .send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
@@ -32,8 +33,15 @@ const createGoal = async (req: Request, res: Response) => {
     const createGoalDTO: CreateGoalDTO = req.body; 
     const startedAt = date.getCurrentDatePlus9h(now);
 
+
+    if(criterion === "" && typeof food === "string") {
+      const data = await goalService.createFoodGoal(userId, createGoalDTO, startedAt);
+      console.log(data);
+      return res.status(sc.OK).send(success(sc.OK, rm.CREATE_GOAL_SUCCESS, data));
+    }
+
     const data = await goalService.createGoal(userId, createGoalDTO, startedAt);
-    
+
     if (data == goalError.MAX_GOAL_COUNT_ERROR) {
       return res
         .status(sc.BAD_REQUEST)
