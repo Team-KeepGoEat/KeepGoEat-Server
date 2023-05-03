@@ -102,23 +102,6 @@ const updateGoal = async (req: Request, res: Response) => {
 
   try {
 
-    // // 기준만 수정 혹은 삭제되는 케이스
-    // if((food === null && criterion !== "" && typeof criterion === "string") 
-    //     || (food === null && criterion === "")) {
-    //   const updatedGoalId = await goalService.updateCriterion(+goalId, updateGoalDTO);
-    //   return res
-    //     .status(sc.OK)
-    //     .send(success(sc.OK, rm.UPDATE_GOAL_SUCCESS, { "goalId": updatedGoalId }));
-    // }
-
-    // // 음식만 수정되는 케이스
-    // if(typeof food === "string" && food !== "" && criterion === null) { // criterion == ""
-    //   const updatedGoalId = await goalService.updateFood(+goalId, updateGoalDTO);
-    //   return res
-    //     .status(sc.OK)
-    //     .send(success(sc.OK, rm.UPDATE_GOAL_SUCCESS, { "goalId": updatedGoalId }));
-    // }
-
     // 음식, 기준 둘 다 수정하거나 음식을 수정하고 기준 삭제한 케이스
     const updatedGoalId = await goalService.updateGoal(+goalId, updateGoalDTO);
   
