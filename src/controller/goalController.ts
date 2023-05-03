@@ -91,7 +91,7 @@ const updateGoal = async (req: Request, res: Response) => {
   const food = req.body.food;
   const criterion = req.body.criterion;
 
-  if (criterion === " " || food === "" || food === " ") {
+  if (criterion === " " || food === "") {
     return res
       .status(sc.BAD_REQUEST)
       .send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
