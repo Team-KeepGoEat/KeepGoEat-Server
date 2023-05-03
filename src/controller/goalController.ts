@@ -23,7 +23,7 @@ const createGoal = async (req: Request, res: Response) => {
   const criterion = req.body.criterion;
   const userId = req.user.userId;
 
-  if (!userId) {
+  if (!userId || criterion === " ") {
     return res
       .status(sc.BAD_REQUEST)
       .send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
