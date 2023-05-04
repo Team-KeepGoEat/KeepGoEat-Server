@@ -87,6 +87,35 @@ const createGoal = async (userId: number, createGoalDTO: CreateGoalDTO, startedA
   
 };
 
+const createFoodGoal = async (userId: number, createGoalDTO: CreateGoalDTO, startedAt: string) => {
+  
+  const ongoingGoalCount = await prisma.goal.count({
+    where: {
+      writerId: userId,
+      isOngoing: true
+    }
+  }); 
+
+  if (ongoingGoalCount >= 3) {
+    return goalError.MAX_GOAL_COUNT_ERROR;
+  }
+
+  const data = await prisma.goal.create({
+    data: {
+      food: createGoalDTO.food,
+      criterion: null,
+      isMore: createGoalDTO.isMore,
+      writerId: userId,
+      startedAt,
+      totalCount: 0
+    }, 
+  });
+  const goalId = data.goalId
+  
+  return { goalId };
+  
+};
+
 const deleteGoal = async (goalId: number) => {
   const data = await prisma.goal.delete({
     where: {
@@ -244,6 +273,7 @@ const sortKeptGoals = (keptGoals: Goal[], now: string) => {
 const goalRepository = {
   findGoalByGoalId,
   createGoal,
+  createFoodGoal,
   deleteGoal,
   updateFood,
   updateCriterion,
