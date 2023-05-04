@@ -93,11 +93,15 @@ const deleteGoal = async (req: Request, res: Response) => {
 };
 
 const updateGoal = async (req: Request, res: Response) => {
-
-  const food = req.body.food;
+  const error = validationResult(req);
+  if(!error.isEmpty()) {
+    return res
+      .status(sc.BAD_REQUEST)
+      .send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
+  }
   const criterion = req.body.criterion;
 
-  if (criterion === " " || food === "") {
+  if (criterion === null) {
     return res
       .status(sc.BAD_REQUEST)
       .send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
