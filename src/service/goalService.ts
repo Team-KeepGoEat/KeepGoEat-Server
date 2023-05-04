@@ -35,14 +35,6 @@ const updateGoal = async (goalId: number, updateGoalDTO: UpdateGoalDTO) => {
   return await goalRepository.updateGoal(goalId, updateGoalDTO);
 };
 
-const updateFood = async(goalId: number, updateGoalDTO: UpdateGoalDTO) => {
-  return await goalRepository.updateFood(goalId, updateGoalDTO);  
-};
-
-const updateCriterion = async(goalId: number, updateGoalDTO: UpdateGoalDTO) => {
-  return await goalRepository.updateCriterion(goalId, updateGoalDTO);  
-};
-
 const keepGoal = async (goalId: number, isOngoing: boolean, keptAt: string) => {
   return await goalRepository.keepGoal(goalId, isOngoing, keptAt);    
 }
@@ -156,8 +148,6 @@ const goalService = {
   createGoal,
   createFoodGoal,
   deleteGoal,
-  updateFood,
-  updateCriterion,
   updateGoal,
   getHomeGoalsByUserId,
   achieveGoal,

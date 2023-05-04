@@ -15,7 +15,6 @@ router.post(
   "/:goalId", 
   [
     body("food").trim().notEmpty(), 
-    body("criterion").trim().notEmpty(),
   ],
   goalController.updateGoal
 );
