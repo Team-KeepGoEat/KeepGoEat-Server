@@ -35,7 +35,10 @@ const createGoal = async (req: Request, res: Response) => {
 
 
     if(criterion === "" && typeof food === "string") {
-      await goalService.createFoodGoal(userId, createGoalDTO, startedAt);
+      const data = await goalService.createFoodGoal(userId, createGoalDTO, startedAt);
+      return res
+      .status(sc.OK)
+      .send(success(sc.OK, rm.CREATE_GOAL_SUCCESS, data));
     }
 
     const data = await goalService.createGoal(userId, createGoalDTO, startedAt);
