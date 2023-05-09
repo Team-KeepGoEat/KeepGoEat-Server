@@ -23,10 +23,6 @@ const createGoal = async (userId: number, createGoalDTO: CreateGoalDTO, startedA
   return await goalRepository.createGoal(userId, createGoalDTO, startedAt);
 };
 
-const createFoodGoal = async(userId: number,createGoalDTO: CreateGoalDTO, startedAt: string) => {
-  return await goalRepository.createFoodGoal(userId, createGoalDTO, startedAt);
-};
-
 const deleteGoal = async (goalId: number) => {
   return await goalRepository.deleteGoal(goalId);
 };
@@ -146,7 +142,6 @@ const isAchievedToday = (achievedAt: Date | null, isAchieved: boolean, now: stri
 const goalService = {
   getGoalByGoalId,
   createGoal,
-  createFoodGoal,
   deleteGoal,
   updateGoal,
   getHomeGoalsByUserId,
