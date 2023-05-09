@@ -33,11 +33,6 @@ const createGoal = async (req: Request, res: Response) => {
     const createGoalDTO: CreateGoalDTO = req.body; 
     const startedAt = date.getCurrentDatePlus9h(now);
 
-
-    if(criterion === "" && typeof food === "string") {
-      await goalService.createFoodGoal(userId, createGoalDTO, startedAt);
-    }
-
     const data = await goalService.createGoal(userId, createGoalDTO, startedAt);
 
     if (data == goalError.MAX_GOAL_COUNT_ERROR) {
