@@ -1,6 +1,6 @@
 import { Goal, PrismaClient } from "@prisma/client";
-import { CreateGoalDTO } from "../interfaces/goal/CreateGoalDTO";
-import { UpdateGoalDTO } from "./../interfaces/goal/UpdateGoalDTO";
+import { CreateGoalDTO } from "../DTO/goal/CreateGoalDTO";
+import { UpdateGoalDTO } from "../DTO/goal/UpdateGoalDTO";
 import { dailyAchievedHistoryService, goalService } from "../service";
 import dayjs from "dayjs";
 import date from "../modules/date";

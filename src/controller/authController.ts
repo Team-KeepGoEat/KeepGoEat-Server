@@ -9,7 +9,7 @@ import jwtHandler from "../modules/jwtHandler";
 import { tokenError } from "../error/customError";
 import { User } from "@prisma/client";
 import slack from "../modules/slack";
-import { SignupDTO } from "../interfaces/user/SignupDTO";
+import { SignupDTO } from "../DTO/user/SignupDTO";
 import logger from "../logger/logger";
 
 const socialLogin = async (req: Request, res: Response) => {

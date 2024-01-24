@@ -7,6 +7,6 @@ app.use(express.urlencoded({ extended: false }))
 
 app.get("/test", (req: Request, res: Response) => {
   res.send("server is listening on 3000");
-});
+})
 
 export default app

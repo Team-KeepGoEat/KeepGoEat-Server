@@ -15,7 +15,7 @@
 </div><br>
 
 ## 🥗 API Docs 
-[🍽️ 킵고잇 API 명세서](https://www.notion.so/68space/API-e09873efb3514933967638e8b6eaa20e?pvs=4)
+[🍽️ 킵고잇 API 명세서](https://sphenoid-garment-9b0.notion.site/API-fa0260244ac448fb88b942879882921a?pvs=4)
 
 <br>
 
