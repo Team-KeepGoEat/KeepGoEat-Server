@@ -1,6 +1,5 @@
-import { refreshTokenOption } from "./../constants/jwtTokenOptions";
 import jwt from "jsonwebtoken";
-import { accessTokenOption } from "../constants/jwtTokenOptions";
+import { jwtTokenOptions } from "../constants";
 import { tokenError } from "../error/customError";
 import axios from "axios";
 import qs from "qs";
@@ -20,7 +19,7 @@ const signup = (userId: number, email:string) => {
   };
 
   const accessToken = {
-    accessToken: jwt.sign(payload, secretKey, accessTokenOption)
+    accessToken: jwt.sign(payload, secretKey, jwtTokenOptions.accessTokenOption)
   };
 
   return accessToken
@@ -28,7 +27,7 @@ const signup = (userId: number, email:string) => {
 
 const createRefreshToken = () => {
   const refreshToken = {
-    refreshToken: jwt.sign({}, secretKey, refreshTokenOption)
+    refreshToken: jwt.sign({}, secretKey, jwtTokenOptions.refreshTokenOption)
   };
 
   return refreshToken; 
