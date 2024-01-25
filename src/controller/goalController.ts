@@ -1,15 +1,12 @@
-import { UpdateGoalDTO } from "../DTO/goal/UpdateGoalDTO";
-import { CreateGoalDTO } from "../DTO/goal/CreateGoalDTO";
 import { Request, Response } from "express";
-import { sc, rm } from "../constants";
-import { fail, success } from "../constants/response";
-import slack from "../modules/slack";
-import { dailyAchievedHistoryService, goalService } from "../service";
-import date from "../modules/date"
-import boxCounter from "../modules/boxCounter";
+import { AchieveGoalResponseDTO, GetGoalHistoryResponseDTO, GetKeptGoalsResponseDTO } from "../DTO/response";
+import { AchieveGoalRequestDTO, CreateGoalRequestDTO, UpdateGoalRequestDTO } from "../DTO/request";
+import { sc, rm, sortType } from "../constants";
+import { fail, success } from "../DTO/common/response";
+import { slack, date, logger } from "../modules";
+import { goalService } from "../service";
 import { goalError } from "../error/customError";
 import { validationResult } from "express-validator";
-import logger from "../logger/logger";
 
 const createGoal = async (req: Request, res: Response) => {
   const now = date.getNow();
@@ -19,9 +16,8 @@ const createGoal = async (req: Request, res: Response) => {
       .status(sc.BAD_REQUEST)
       .send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
   }
-  const food = req.body.food;
-  const criterion = req.body.criterion;
-  const userId = req.user.userId;
+  const criterion: string = req.body.criterion;
+  const userId: number = req.user.userId;
 
   if (!userId || criterion === " ") {
     return res
@@ -30,8 +26,8 @@ const createGoal = async (req: Request, res: Response) => {
   }
 
   try {
-    const createGoalDTO: CreateGoalDTO = req.body; 
-    const startedAt = date.getCurrentDatePlus9h(now);
+    const createGoalDTO: CreateGoalRequestDTO = req.body; 
+    const startedAt: string = date.getCurrentDatePlus9h(now);
 
     const data = await goalService.createGoal(userId, createGoalDTO, startedAt);
 
@@ -66,7 +62,7 @@ const deleteGoal = async (req: Request, res: Response) => {
   try {
   
     const { goalId } = req.params;
-    const deletedGoalId = await goalService.deleteGoal(+goalId);
+    const deletedGoalId: number = await goalService.deleteGoal(+goalId);
     
     return res.status(sc.OK).send(success(sc.OK, rm.DELETE_GOAL_SUCCESS, { "goalId": deletedGoalId }));
   
@@ -94,7 +90,7 @@ const updateGoal = async (req: Request, res: Response) => {
       .status(sc.BAD_REQUEST)
       .send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
   }
-  const criterion = req.body.criterion;
+  const criterion: string = req.body.criterion;
 
   if (criterion === null) {
     return res
@@ -102,13 +98,12 @@ const updateGoal = async (req: Request, res: Response) => {
       .send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
   }
 
-  const updateGoalDTO: UpdateGoalDTO = req.body;
+  const updateGoalDTO: UpdateGoalRequestDTO = req.body;
   const { goalId } = req.params;
 
   try {
-
     // 음식, 기준 둘 다 수정하거나 음식을 수정하고 기준 삭제한 케이스
-    const updatedGoalId = await goalService.updateGoal(+goalId, updateGoalDTO);
+    const updatedGoalId: number = await goalService.updateGoal(+goalId, updateGoalDTO);
   
     return res
       .status(sc.OK)
@@ -132,9 +127,9 @@ const updateGoal = async (req: Request, res: Response) => {
 };
 
 const keepGoal = async (req: Request, res: Response) => {
-  const now = date.getNow();
+  const now: string = date.getNow();
   const { goalId } = req.params;
-  const isOngoing = false;
+  const isOngoing: boolean = false;
 
   if (!goalId) {
     return res
@@ -143,8 +138,8 @@ const keepGoal = async (req: Request, res: Response) => {
   }
 
   try {
-    const keptAt = date.getCurrentDatePlus9h(now);
-    const keptGoalId = await goalService.keepGoal(+goalId, isOngoing, keptAt);
+    const keptAt: string = date.getCurrentDatePlus9h(now);
+    const keptGoalId: number = await goalService.keepGoal(+goalId, isOngoing, keptAt);
   
     return res
       .status(sc.OK)
@@ -168,8 +163,7 @@ const keepGoal = async (req: Request, res: Response) => {
 };
 
 const getHistoryByGoalId = async (req: Request, res: Response) => {
-  // middleware로 유저 검증하는 로직도 필요함
-  const now = date.getNow();
+  const now: string = date.getNow();
   const { goalId } = req.params;
   if (!goalId) {
     return res
@@ -178,26 +172,12 @@ const getHistoryByGoalId = async (req: Request, res: Response) => {
   }
 
   try {
-    const foundGoal = await goalService.getGoalByGoalId(+goalId);
+    const data: GetGoalHistoryResponseDTO | null = await goalService.getGoalByGoalId(+goalId, now);
 
-    if (!foundGoal) {
+    if (!data) {
       return res
         .status(sc.BAD_REQUEST)
         .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
-    }
-
-    const thisMonthCount = await dailyAchievedHistoryService.getAchievedCount(+goalId, date.getCurrentMonth(now));
-    const lastMonthCount = await dailyAchievedHistoryService.getAchievedCount(+goalId, date.getLastMonth(now));
-
-    const data = {
-      "goalId": foundGoal.goalId,
-      "isMore": foundGoal.isMore,
-      "thisMonthCount": thisMonthCount,
-      "lastMonthCount": lastMonthCount,
-      "food": foundGoal.food, 
-      "criterion": foundGoal.criterion === null ? "" : foundGoal.criterion, 
-      "blankBoxCount": boxCounter.getBlankBoxCount(),
-      "emptyBoxCount": boxCounter.getEmptyBoxCount(thisMonthCount)
     }
 
     return res
@@ -221,11 +201,12 @@ const getHistoryByGoalId = async (req: Request, res: Response) => {
 }
 
 const achieveGoal = async (req: Request, res: Response) => {
-  const now = date.getNow();
-  const nowPlus9h = date.getCurrentDatePlus9h(now);
-  const userId = req.user.userId;
-  const { goalId } = req.params;
-  const { isAchieved } = req.body;
+  const now: string = date.getNow();
+  const nowPlus9h: string = date.getCurrentDatePlus9h(now);
+  const userId: number = req.user.userId;
+  const { goalId }  = req.params;
+  let acheieveGoalRequestDTO: AchieveGoalRequestDTO = req.body;
+  let isAchieved: boolean = acheieveGoalRequestDTO.isAchieved;
 
   if (!userId || isAchieved === null || isAchieved === undefined) {
     return res
@@ -233,9 +214,8 @@ const achieveGoal = async (req: Request, res: Response) => {
       .send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
   }
 
-  let data;
   try {
-    data = await goalService.achieveGoal(+goalId, isAchieved as boolean, now, nowPlus9h);
+    const data: AchieveGoalResponseDTO | number = await goalService.achieveGoal(+goalId, isAchieved, now, nowPlus9h);
 
     if (data === goalError.DOUBLE_ACHIEVED_ERROR) {
       slack.sendErrorMessageToSlack(
@@ -281,15 +261,9 @@ const achieveGoal = async (req: Request, res: Response) => {
   }
 };
 
-const sortType = {
-  ALL: "all",
-  MORE: "more",
-  LESS: "less"
-};
-
 const getKeptGoalsByUserId = async (req: Request, res: Response) => {  
-  const now = date.getNow();
-  const userId = req.user.userId;
+  const now: string = date.getNow();
+  const userId: number = req.user.userId;
   const sort = req.query.sort as string;
 
   if (!userId || !sort) {
@@ -306,13 +280,13 @@ const getKeptGoalsByUserId = async (req: Request, res: Response) => {
 
   try {
   
-    const foundGoals = await goalService.getKeptGoals(+userId, sort as string, now);
+    const data: GetKeptGoalsResponseDTO = await goalService.getKeptGoals(+userId, sort as string, now);
     
     return res
       .status(sc.OK)
       .send(success(sc.OK, 
         rm.GET_GOALS_SUCCESS_FOR_KEPTGOALS, 
-        { "goals": foundGoals, "goalCount": foundGoals.length }));
+        data));
   
   } catch (error) {
     

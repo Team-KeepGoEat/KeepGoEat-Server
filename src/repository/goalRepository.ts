@@ -1,6 +1,5 @@
 import { Goal, PrismaClient } from "@prisma/client";
-import { CreateGoalDTO } from "../DTO/goal/CreateGoalDTO";
-import { UpdateGoalDTO } from "../DTO/goal/UpdateGoalDTO";
+import { CreateGoalRequestDTO, UpdateGoalRequestDTO } from "../DTO/request";
 import { dailyAchievedHistoryService, goalService } from "../service";
 import dayjs from "dayjs";
 import date from "../modules/date";
@@ -35,30 +34,11 @@ const findHomeGoalsByUserId = async (currentMonth: string, userId: number, now: 
     }
   });
 
-  const result = await Promise.all(
-    fountGoals.map(async (goal) => {
-      const thisMonthCount = await dailyAchievedHistoryService.getAchievedCount(goal.goalId, currentMonth);
+  return fountGoals;
 
-      return {
-        goalId: goal.goalId,
-        food: goal.food,
-        criterion: goal.criterion === null ? "" : goal.criterion,
-        isMore: goal.isMore,
-        isOngoing: goal.isOngoing,
-        totalCount: goal.totalCount,
-        startedAt: date.formatDate(goal.startedAt),
-        keptAt: goal.keptAt === null ? "" : date.formatDate(goal.keptAt),
-        isAchieved: goalService.isAchievedToday(goal.achievedAt, goal.isAchieved, now),
-        writerId: goal.writerId,
-        thisMonthCount: thisMonthCount
-      }
-    })
-  );
-
-  return result;
 };
 
-const createGoal = async (userId: number, createGoalDTO: CreateGoalDTO, startedAt: string) => {
+const createGoal = async (userId: number, createGoalDTO: CreateGoalRequestDTO, startedAt: string) => {
   
   const ongoingGoalCount = await prisma.goal.count({
     where: {
@@ -96,7 +76,7 @@ const deleteGoal = async (goalId: number) => {
   return data.goalId;
 };
 
-const updateGoal = async (goalId: number, updateGoalDTO: UpdateGoalDTO) => {
+const updateGoal = async (goalId: number, updateGoalDTO: UpdateGoalRequestDTO) => {
   const data = await prisma.goal.update({
     where: {
       goalId
@@ -109,7 +89,7 @@ const updateGoal = async (goalId: number, updateGoalDTO: UpdateGoalDTO) => {
   return data.goalId;
 };
 
-const updateFood = async(goalId: number, updateGoalDTO: UpdateGoalDTO) => {
+const updateFood = async(goalId: number, updateGoalDTO: UpdateGoalRequestDTO) => {
   const data = await prisma.goal.update({
     where: {
       goalId
@@ -121,7 +101,7 @@ const updateFood = async(goalId: number, updateGoalDTO: UpdateGoalDTO) => {
   return data.goalId;
 };
 
-const updateCriterion = async(goalId: number, updateGoalDTO: UpdateGoalDTO) => {
+const updateCriterion = async(goalId: number, updateGoalDTO: UpdateGoalRequestDTO) => {
   const data = await prisma.goal.update({
     where: {
       goalId
@@ -240,6 +220,16 @@ const sortKeptGoals = (keptGoals: Goal[], now: string) => {
   });
 };
 
+const findKeptGoalCount = async(userId: number) => {
+  const keptGoalsCount = await prisma.goal.count({
+    where: {
+      writerId: userId,
+      isOngoing: false
+    }    
+  });
+
+  return keptGoalsCount;
+}
 
 const goalRepository = {
   findGoalByGoalId,
@@ -253,6 +243,7 @@ const goalRepository = {
   keepGoal,
   updateTotalCount,
   findKeptGoals,
+  findKeptGoalCount
 };
 
 export default goalRepository;

@@ -1,4 +1,4 @@
-import { fail } from "./../constants/response";
+import { fail } from "../DTO/common/response";
 import { Request, Response, NextFunction } from "express"
 import { sc, rm } from "../constants";
 import jwt from "../modules/jwtHandler";

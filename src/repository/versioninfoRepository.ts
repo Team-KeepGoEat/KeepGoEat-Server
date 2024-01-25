@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-const findVersionInfo = async(client: string) => {
+const findVersionInfoByOS = async(client: string) => {
   console.log("client: ", client)
   console.log("client type: ", typeof client)
 
@@ -20,7 +20,7 @@ const findVersionInfo = async(client: string) => {
 };
 
 const versioninfoRepository = {
-  findVersionInfo,
+  findVersionInfoByOS,
 };
 
 export default versioninfoRepository;

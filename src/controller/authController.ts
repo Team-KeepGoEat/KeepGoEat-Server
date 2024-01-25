@@ -2,15 +2,12 @@ import axios from "axios";
 import qs from "qs";
 import { Request, Response } from "express"
 import { rm, sc } from "../constants"
-import { fail, success } from "../constants/response";
-import sns from "../modules/sns";
+import { fail, success } from "../DTO/common/response";
+import { sns, jwtHandler, slack, logger } from "../modules";
 import { userService } from "../service";
-import jwtHandler from "../modules/jwtHandler";
 import { tokenError } from "../error/customError";
 import { User } from "@prisma/client";
-import slack from "../modules/slack";
-import { SignupDTO } from "../DTO/user/SignupDTO";
-import logger from "../logger/logger";
+import { SignupRequestDTO } from "../DTO/request";
 
 const socialLogin = async (req: Request, res: Response) => {
   const { platformAccessToken, platform } = req.body;
@@ -21,7 +18,7 @@ const socialLogin = async (req: Request, res: Response) => {
       .send(fail(sc.BAD_REQUEST, rm.NULL_VALUE));
   }
 
-  let platformUser: SignupDTO | number | null = null;
+  let platformUser: SignupRequestDTO | number | null = null;
 
   try {
     switch (platform) {
@@ -57,7 +54,7 @@ const socialLogin = async (req: Request, res: Response) => {
         .send(fail(sc.UNAUTHORIZED, rm.UNAUTHORIZED_PLATFORM_USER));
     }
 
-    const existingUser = await userService.getUserByEmail((platformUser as SignupDTO).email, platform);
+    const existingUser = await userService.getUserByEmail((platformUser as SignupRequestDTO).email, platform);
 
     if (existingUser) {
       const { refreshToken } = jwtHandler.createRefreshToken();
@@ -75,7 +72,7 @@ const socialLogin = async (req: Request, res: Response) => {
     }
 
     const { refreshToken } = jwtHandler.createRefreshToken();
-    const newUser = await userService.createUser((platformUser as SignupDTO).email, (platformUser as SignupDTO).name, platform, refreshToken);
+    const newUser = await userService.createUser((platformUser as SignupRequestDTO).email, (platformUser as SignupRequestDTO).name, platform, refreshToken);
     const { accessToken } = jwtHandler.signup(newUser.userId, newUser.email);
 
     const signupResult = {

@@ -8,17 +8,17 @@ datasource db {
 }
 
 model Cheering_Message {
-  cheeringMessageId Int      @id @unique @default(autoincrement())
+  cheeringMessageId Int      @id @default(autoincrement())
   cheeringMessage   String   @db.VarChar(100)
   isGoalExisted     Boolean?
 }
 
 model Daily_Achieved_History {
-  achievedId    Int       @id @unique @default(autoincrement())
-  achievedAt    DateTime? @default(now()) @db.Timestamp(6)
-  achievedMonth String?   @db.VarChar(50)
+  achievedId    Int      @id @default(autoincrement())
+  achievedAt    DateTime @default(now())
+  achievedMonth String?  @db.VarChar(50)
   goalId        Int
-  Goal          Goal      @relation(fields: [goalId], references: [goalId], onDelete: Cascade, map: "goal_id")
+  Goal          Goal     @relation(fields: [goalId], references: [goalId], onDelete: Cascade, map: "goal_id")
 }
 
 model Goal {
@@ -26,8 +26,8 @@ model Goal {
   isMore                 Boolean
   isOngoing              Boolean                  @default(true)
   totalCount             Int                      @default(0)
-  startedAt              DateTime                 @default(now()) @db.Timestamp(6)
-  keptAt                 DateTime?                @db.Timestamp(6)
+  startedAt              DateTime                 @default(now())
+  keptAt                 DateTime?
   isAchieved             Boolean                  @default(false)
   criterion              String?                  @db.VarChar(20)
   food                   String                   @db.VarChar(15)

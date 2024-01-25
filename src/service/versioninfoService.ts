@@ -1,13 +1,13 @@
-import versioninfoRepository from "../repository/versioninfoRepository";
+import { GetVersionInfoResponseDTO } from "../DTO/response";
+import { versioninfoRepository } from "../repository";
 
-const getVersionInfo = async(client: string) => {
-  const versionInfo = await versioninfoRepository.findVersionInfo(client);
-
-  if (!versionInfo) {
-    return "1.0.0";
+const getVersionInfo = async(OS: string) => {
+  const versionInfo = await versioninfoRepository.findVersionInfoByOS(OS);
+  const responseDTO: GetVersionInfoResponseDTO = {
+    version: versionInfo == null ? "1.0.0" : versionInfo.version
   }
 
-  return versionInfo.version;
+  return responseDTO;
 }; 
 
 const versioninfoService = {
