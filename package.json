@@ -43,5 +43,7 @@
     "prisma": "^4.8.0",
     "supertest": "^6.3.3",
     "winston": "^3.8.2"
-  }
+  },
+  "repository": "https://github.com/Team-KeepGoEat/KeepGoEat-Server.git",
+  "author": "seunghaLim <tmdgk490255@gmail.com>"
 }

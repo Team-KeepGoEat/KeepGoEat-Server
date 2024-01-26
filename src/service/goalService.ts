@@ -1,25 +1,83 @@
-import { CreateGoalDTO } from "../interfaces/goal/CreateGoalDTO";
-import { UpdateGoalDTO } from "./../interfaces/goal/UpdateGoalDTO";
-import dailyAchievedHistoryService from "./dailyAchievedHistoryService";
+import { dailyAchievedHistoryService } from "../service";
 import dayjs from "dayjs";
-import date from "../modules/date";
+import { cheeringMessageService } from "../service";
+import { date, boxCounter, time } from "../modules";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { goalError } from "../error/customError";
-import goalRepository from "../repository/goalRepository";
+import { goalRepository } from "../repository";
+import { GetGoalResponseDTO, GetHomeGoalResponseDTO, GetHomeGoalsResponseDTO, GetKeptGoalsResponseDTO, GetGoalHistoryResponseDTO, AchieveGoalResponseDTO } from "../DTO/response";
+import { UpdateGoalRequestDTO, CreateGoalRequestDTO } from "../DTO/request";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-const getGoalByGoalId = async (goalId: number) => {
-  return await goalRepository.findGoalByGoalId(goalId);
+const getGoalByGoalId = async (goalId: number, now: string) => {
+  const foundGoals = await goalRepository.findGoalByGoalId(goalId);
+
+  const thisMonthCount = await dailyAchievedHistoryService.getAchievedCount(+goalId, date.getCurrentMonth(now));
+  const lastMonthCount = await dailyAchievedHistoryService.getAchievedCount(+goalId, date.getLastMonth(now));
+  
+  if (foundGoals != null) {
+    const responseDTO: GetGoalHistoryResponseDTO  = {
+      goalId: foundGoals.goalId,
+      isMore: foundGoals.isMore,
+      thisMonthCount: thisMonthCount,
+      lastMonthCount: lastMonthCount,
+      food: foundGoals.food, 
+      criterion: foundGoals.criterion === null ? "" : foundGoals.criterion, 
+      blankBoxCount: boxCounter.getBlankBoxCount(),
+      emptyBoxCount: boxCounter.getEmptyBoxCount(thisMonthCount)
+    };
+    return responseDTO;
+  }
+  return null;
 };
 
 const getHomeGoalsByUserId = async (currentMonth: string, userId: number, now: string) => {
-  return await goalRepository.findHomeGoalsByUserId(currentMonth, userId, now);
+  const foundGoals = await goalRepository.findHomeGoalsByUserId(currentMonth, userId, now);
+
+  let goalResponseDTOs: GetHomeGoalResponseDTO[] = []
+  if (foundGoals != null) {
+    goalResponseDTOs = await Promise.all(
+      foundGoals.map(async (goal) => {
+        const thisMonthCount = await dailyAchievedHistoryService.getAchievedCount(goal.goalId, currentMonth);
+
+        return {
+          goalId: goal.goalId,
+          food: goal.food,
+          criterion: goal.criterion === null ? "" : goal.criterion,
+          isMore: goal.isMore,
+          isOngoing: goal.isOngoing,
+          totalCount: goal.totalCount,
+          startedAt: date.formatDate(goal.startedAt),
+          keptAt: goal.keptAt === null ? "" : date.formatDate(goal.keptAt),
+          isAchieved: goalService.isAchievedToday(goal.achievedAt, goal.isAchieved, now),
+          writerId: goal.writerId,
+          thisMonthCount: thisMonthCount
+        };
+      }));
+  }
+
+  let isGoalExisted = false;
+  if (foundGoals.length != 0) {
+    isGoalExisted = true;
+  }
+  const cheeringMessage = await cheeringMessageService.getRamdomMessage(isGoalExisted);
+  const currentDayTime = await time.getDayTime();
+
+  const responseDTO :GetHomeGoalsResponseDTO = {
+    goals: goalResponseDTOs,
+    goalCount: goalResponseDTOs.length,
+    cheeringMessage: cheeringMessage,
+    daytime: currentDayTime
+  }
+  
+  return responseDTO;
+
 };
 
-const createGoal = async (userId: number, createGoalDTO: CreateGoalDTO, startedAt: string) => {
+const createGoal = async (userId: number, createGoalDTO: CreateGoalRequestDTO, startedAt: string) => {
   return await goalRepository.createGoal(userId, createGoalDTO, startedAt);
 };
 
@@ -27,7 +85,7 @@ const deleteGoal = async (goalId: number) => {
   return await goalRepository.deleteGoal(goalId);
 };
 
-const updateGoal = async (goalId: number, updateGoalDTO: UpdateGoalDTO) => {
+const updateGoal = async (goalId: number, updateGoalDTO: UpdateGoalRequestDTO) => {
   return await goalRepository.updateGoal(goalId, updateGoalDTO);
 };
 
@@ -62,11 +120,13 @@ const achieveGoal = async (goalId: number, isAchieved: boolean, now: string, now
       // 3. thisMonthCount 가져오기
       const thisMonthCount = await dailyAchievedHistoryService.getAchievedCount(goalId, currentMonth);
 
-      return {
-        "thisMonthCount": thisMonthCount,
-        "goalId": updatedGoal.goalId,
-        "updatedIsAchieved": updatedGoal.isAchieved
+      const responseDTO: AchieveGoalResponseDTO = {
+        thisMonthCount: thisMonthCount,
+        goalId: updatedGoal.goalId,
+        updatedIsAchieved: updatedGoal.isAchieved
       };
+
+      return responseDTO
     }
 
     // 달성 버튼 눌렀을 경우
@@ -87,11 +147,13 @@ const achieveGoal = async (goalId: number, isAchieved: boolean, now: string, now
     // 3. thisMonthCount 가져오기
     const thisMonthCount = await dailyAchievedHistoryService.getAchievedCount(goalId, currentMonth);
 
-    return {
-      "thisMonthCount": thisMonthCount,
-      "goalId": updatedGoal.goalId,
-      "updatedIsAchieved": updatedGoal.isAchieved
+    const responseDTO: AchieveGoalResponseDTO = {
+      thisMonthCount: thisMonthCount,
+      goalId: updatedGoal.goalId,
+      updatedIsAchieved: updatedGoal.isAchieved
     };
+
+    return responseDTO
     
 
   } catch (error) {
@@ -111,8 +173,35 @@ const updateIsAchieved = async (goalId: number, isAchieved: boolean, achievedAt:
 
 
 const getKeptGoals = async (userId: number, sort: string, now: string) => {
-  return await goalRepository.findKeptGoals(userId, sort, now);
+  const foundGoals = await goalRepository.findKeptGoals(userId, sort, now);
+  let goalResponseDTOs: GetGoalResponseDTO[] = [];
+  
+  foundGoals.forEach (foundGoal => {
+    const goalResponseDTO: GetGoalResponseDTO = {
+      goalId: foundGoal.goalId,
+      food: foundGoal.food,
+      criterion: foundGoal.criterion,
+      isMore: foundGoal.isMore,
+      isOngoing: foundGoal.isOngoing,
+      totalCount: foundGoal.totalCount,
+      startedAt: foundGoal.startedAt,
+      keptAt: foundGoal.keptAt,
+      isAchieved: foundGoal.isAchieved,
+      writerId: foundGoal.writerId
+    }
+
+    goalResponseDTOs.push(goalResponseDTO)
+  });
+
+  const responseDTO: GetKeptGoalsResponseDTO = {
+    goals: goalResponseDTOs,
+    goalCount: goalResponseDTOs.length
+  }
+
+  return responseDTO
+
 };
+
 
 const isAchievedToday = (achievedAt: Date | null, isAchieved: boolean, now: string) => {
 
